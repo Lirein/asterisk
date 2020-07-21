@@ -202,7 +202,6 @@ static int compare(const char *text, const char *template)
 		case 0:
 			return -1;
 		case '1':
-			digit = '1';
 			break;
 		case '2':
 		case 'A':
@@ -540,9 +539,7 @@ static struct ast_config *realtime_directory(char *context)
 			if (!(cat = ast_category_new_dynamic(ctx))) {
 				ast_log(LOG_WARNING, "Out of memory\n");
 				ast_config_destroy(cfg);
-				if (rtdata) {
-					ast_config_destroy(rtdata);
-				}
+				ast_config_destroy(rtdata);
 				return NULL;
 			}
 			ast_category_append(cfg, cat);

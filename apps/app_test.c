@@ -186,9 +186,6 @@ static int testclient_exec(struct ast_channel *chan, const char *data)
 		res = 0;
 	ast_debug(1, "server version: %s\n", serverver);
 
-	if (res > 0)
-		res = 0;
-
 	if (!res)
 		res = ast_safe_sleep(chan, 1000);
 	/* Send test id */
@@ -210,16 +207,14 @@ static int testclient_exec(struct ast_channel *chan, const char *data)
 			fprintf(f, "ANSWER:        PASS\n");
 			res = 0;
 
-			if (!res) {
-				/* Step 1: Wait for "1" */
-				ast_debug(1, "TestClient: 2.  Wait DTMF 1\n");
-				res = ast_waitfordigit(chan, 3000);
-				fprintf(f, "WAIT DTMF 1:   %s\n", (res != '1') ? "FAIL" : "PASS");
-				if (res == '1')
-					res = 0;
-				else
-					res = -1;
-			}
+			/* Step 1: Wait for "1" */
+			ast_debug(1, "TestClient: 2.  Wait DTMF 1\n");
+			res = ast_waitfordigit(chan, 3000);
+			fprintf(f, "WAIT DTMF 1:   %s\n", (res != '1') ? "FAIL" : "PASS");
+			if (res == '1')
+				res = 0;
+			else
+				res = -1;
 			if (!res) {
 				res = ast_safe_sleep(chan, 1000);
 			}

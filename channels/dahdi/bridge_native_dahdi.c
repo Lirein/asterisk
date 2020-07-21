@@ -842,9 +842,6 @@ static int native_bridge_write(struct ast_bridge *bridge, struct ast_bridge_chan
 		if (native_bridge_changed(bridge)) {
 			native_request_stop(bridge);
 			native_request_start(bridge);
-			if (!tech_pvt->connected) {
-				break;
-			}
 		}
 
 		/*

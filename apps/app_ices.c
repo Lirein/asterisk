@@ -197,7 +197,7 @@ static int ices_exec(struct ast_channel *chan, const char *data)
 
 	if (pid > -1)
 		kill(pid, SIGKILL);
-	if (!res && oreadformat)
+	if ((res < 0) && oreadformat)
 		ast_set_read_format(chan, oreadformat);
 	ao2_cleanup(oreadformat);
 

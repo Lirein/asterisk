@@ -259,7 +259,7 @@ static int auth_exec(struct ast_channel *chan, const char *data)
 	} else {
 		if (!ast_streamfile(chan, "vm-goodbye", ast_channel_language(chan)))
 			res = ast_waitstream(chan, "");
-		res = -1;
+		else res = -1;
 	}
 
 	return res;

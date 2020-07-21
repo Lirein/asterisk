@@ -440,7 +440,7 @@ static int init_jack_data(struct ast_channel *chan, struct jack_data *jack_data)
 		jack_data->client = jack_client_open(client_name, jack_options, &status);
 	}
 
-	if (status)
+	if ((int)status != 0)
 		log_jack_status("Client Open Status", status);
 
 	if (!jack_data->client)
@@ -472,7 +472,7 @@ static int init_jack_data(struct ast_channel *chan, struct jack_data *jack_data)
 		return -1;
 	}
 
-	while (!ast_strlen_zero(jack_data->connect_input_port)) {
+	if(!ast_strlen_zero(jack_data->connect_input_port)) {
 		const char **ports;
 		int i;
 
@@ -482,28 +482,27 @@ static int init_jack_data(struct ast_channel *chan, struct jack_data *jack_data)
 		if (!ports) {
 			ast_log(LOG_ERROR, "No input port matching '%s' was found\n",
 				jack_data->connect_input_port);
-			break;
-		}
-
-		for (i = 0; ports[i]; i++) {
-			ast_debug(1, "Found port '%s' that matched specified input port '%s'\n",
-				ports[i], jack_data->connect_input_port);
-		}
-
-		if (jack_connect(jack_data->client, jack_port_name(jack_data->output_port), ports[0])) {
-			ast_log(LOG_ERROR, "Failed to connect '%s' to '%s'\n", ports[0],
-				jack_port_name(jack_data->output_port));
 		} else {
-			ast_debug(1, "Connected '%s' to '%s'\n", ports[0],
-				jack_port_name(jack_data->output_port));
+
+			for (i = 0; ports[i]; i++) {
+				ast_debug(1, "Found port '%s' that matched specified input port '%s'\n",
+					ports[i], jack_data->connect_input_port);
+			}
+
+			if (jack_connect(jack_data->client, jack_port_name(jack_data->output_port), ports[0])) {
+				ast_log(LOG_ERROR, "Failed to connect '%s' to '%s'\n", ports[0],
+					jack_port_name(jack_data->output_port));
+			} else {
+				ast_debug(1, "Connected '%s' to '%s'\n", ports[0],
+					jack_port_name(jack_data->output_port));
+			}
+
+			jack_free(ports);
+
 		}
-
-		jack_free(ports);
-
-		break;
 	}
 
-	while (!ast_strlen_zero(jack_data->connect_output_port)) {
+	if (!ast_strlen_zero(jack_data->connect_output_port)) {
 		const char **ports;
 		int i;
 
@@ -513,25 +512,24 @@ static int init_jack_data(struct ast_channel *chan, struct jack_data *jack_data)
 		if (!ports) {
 			ast_log(LOG_ERROR, "No output port matching '%s' was found\n",
 				jack_data->connect_output_port);
-			break;
-		}
-
-		for (i = 0; ports[i]; i++) {
-			ast_debug(1, "Found port '%s' that matched specified output port '%s'\n",
-				ports[i], jack_data->connect_output_port);
-		}
-
-		if (jack_connect(jack_data->client, ports[0], jack_port_name(jack_data->input_port))) {
-			ast_log(LOG_ERROR, "Failed to connect '%s' to '%s'\n", ports[0],
-				jack_port_name(jack_data->input_port));
 		} else {
-			ast_debug(1, "Connected '%s' to '%s'\n", ports[0],
-				jack_port_name(jack_data->input_port));
+
+			for (i = 0; ports[i]; i++) {
+				ast_debug(1, "Found port '%s' that matched specified output port '%s'\n",
+					ports[i], jack_data->connect_output_port);
+			}
+
+			if (jack_connect(jack_data->client, ports[0], jack_port_name(jack_data->input_port))) {
+				ast_log(LOG_ERROR, "Failed to connect '%s' to '%s'\n", ports[0],
+					jack_port_name(jack_data->input_port));
+			} else {
+				ast_debug(1, "Connected '%s' to '%s'\n", ports[0],
+					jack_port_name(jack_data->input_port));
+			}
+
+			jack_free(ports);
+
 		}
-
-		jack_free(ports);
-
-		break;
 	}
 
 	return 0;
@@ -816,7 +814,7 @@ static int jack_exec(struct ast_channel *chan, const char *data)
 		handle_jack_audio(chan, jack_data, NULL);
 	}
 
-	jack_data = destroy_jack_data(jack_data);
+	destroy_jack_data(jack_data);
 
 	return 0;
 }

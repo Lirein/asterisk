@@ -1528,7 +1528,7 @@ static struct ast_channel *wait_for_answer(struct ast_channel *in,
 						ast_channel_early_bridge(in, c);
 					}
 					if (!ast_test_flag64(outgoing, OPT_RINGBACK)) {
-						if (single || (!single && !pa->sentringing)) {
+						if (single || pa->sentringing) {
 							ast_indicate(in, AST_CONTROL_PROGRESS);
 						}
 					}
@@ -3005,7 +3005,7 @@ static int dial_exec_full(struct ast_channel *chan, const char *data, struct ast
 			ast_channel_clear_flag(peer, AST_FLAG_END_DTMF_ONLY);
 		}
 
-		if (chan && peer && ast_test_flag64(&opts, OPT_GOTO) && !ast_strlen_zero(opt_args[OPT_ARG_GOTO])) {
+		if (chan && ast_test_flag64(&opts, OPT_GOTO) && !ast_strlen_zero(opt_args[OPT_ARG_GOTO])) {
 			/* chan and peer are going into the PBX; as such neither are considered
 			 * outgoing channels any longer */
 			ast_channel_clear_flag(chan, AST_FLAG_OUTGOING);
@@ -3021,7 +3021,7 @@ static int dial_exec_full(struct ast_channel *chan, const char *data, struct ast
 			ast_channel_priority_set(peer, ast_channel_priority(chan) + 2);
 			ast_channel_stage_snapshot_done(peer);
 			ast_channel_unlock(peer);
-			if (ast_pbx_start(peer)) {
+			if (ast_pbx_start(peer) != AST_PBX_SUCCESS) {
 				ast_autoservice_chan_hangup_peer(chan, peer);
 			}
 			if (continue_exec)
@@ -3170,10 +3170,8 @@ static int dial_exec_full(struct ast_channel *chan, const char *data, struct ast
 				}
 				if (gosub_res) {
 					res = gosub_res;
-					if (!dial_end_raised) {
-						ast_channel_publish_dial(chan, peer, NULL, gosub_result);
-						dial_end_raised = 1;
-					}
+					ast_channel_publish_dial(chan, peer, NULL, gosub_result);
+					dial_end_raised = 1;
 				}
 			} else {
 				ast_channel_unlock(peer);
@@ -3213,7 +3211,7 @@ static int dial_exec_full(struct ast_channel *chan, const char *data, struct ast
 			}
 			setup_peer_after_bridge_goto(chan, peer, &opts, opt_args);
 			if (ast_bridge_setup_after_goto(peer)
-				|| ast_pbx_start(peer)) {
+				|| (ast_pbx_start(peer) != AST_PBX_SUCCESS) ) {
 				ast_autoservice_chan_hangup_peer(chan, peer);
 			}
 			res = -1;
@@ -3394,7 +3392,7 @@ static int retrydial_exec(struct ast_channel *chan, const char *data)
 					} else
 						ast_log(LOG_WARNING, "Announce file \"%s\" specified in Retrydial does not exist\n", args.announce);
 				}
-				if (!res && sleepms) {
+				if (!res) {
 					if (!ast_test_flag(ast_channel_flags(chan), AST_FLAG_MOH))
 						ast_moh_start(chan, NULL, NULL);
 					res = ast_waitfordigit(chan, sleepms);
@@ -3407,12 +3405,10 @@ static int retrydial_exec(struct ast_channel *chan, const char *data)
 					} else
 						ast_log(LOG_WARNING, "Announce file \"%s\" specified in Retrydial does not exist\n", args.announce);
 				}
-				if (sleepms) {
-					if (!ast_test_flag(ast_channel_flags(chan), AST_FLAG_MOH))
-						ast_moh_start(chan, NULL, NULL);
-					if (!res)
-						res = ast_waitfordigit(chan, sleepms);
-				}
+				if (!ast_test_flag(ast_channel_flags(chan), AST_FLAG_MOH))
+					ast_moh_start(chan, NULL, NULL);
+				if (!res)
+					res = ast_waitfordigit(chan, sleepms);
 			}
 		}
 

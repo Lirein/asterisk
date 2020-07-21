@@ -1222,6 +1222,7 @@ int analog_call(struct analog_pvt *p, struct ast_channel *ast, const char *rdest
 
 		if (p->echotraining && (strlen(p->dop.dialstr) > 4)) {
 			memset(p->echorest, 'w', sizeof(p->echorest) - 1);
+			p->echorest[sizeof(p->echorest) - 1] = '\0';
 			strcpy(p->echorest + (p->echotraining / 400) + 1, p->dop.dialstr + strlen(p->dop.dialstr) - 2);
 			p->echorest[sizeof(p->echorest) - 1] = '\0';
 			p->echobreak = 1;
@@ -2983,6 +2984,7 @@ static struct ast_frame *__analog_handle_event(struct analog_pvt *p, struct ast_
 
 			if (strlen(p->dop.dialstr) > 4) {
 				memset(p->echorest, 'w', sizeof(p->echorest) - 1);
+				p->echorest[sizeof(p->echorest) - 1] = '\0';
 				strcpy(p->echorest + (p->echotraining / 401) + 1, p->dop.dialstr + strlen(p->dop.dialstr) - 2);
 				p->echorest[sizeof(p->echorest) - 1] = '\0';
 				p->echobreak = 1;

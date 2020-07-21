@@ -1158,6 +1158,12 @@ int func_confbridge_helper(struct ast_channel *chan, const char *cmd, char *data
 	} else {
 		b_data = datastore->data;
 	}
+	if (!b_data) {
+		ast_channel_datastore_remove(chan, datastore);
+		ast_channel_unlock(chan);
+		ast_datastore_free(datastore);
+		return 0;
+	}
 	ast_channel_unlock(chan);
 
 	/* SET(CONFBRIDGE(type,option)=value) */
@@ -1187,7 +1193,7 @@ int func_confbridge_helper(struct ast_channel *chan, const char *cmd, char *data
 			aco_process_var(&bridge_type, "dialplan", &template, &b_data->b_profile);
 		}
 
-		if (!aco_process_var(&bridge_type, "dialplan", &tmpvar, &b_data->b_profile)) {
+		if (b_data && !aco_process_var(&bridge_type, "dialplan", &tmpvar, &b_data->b_profile)) {
 			b_data->b_usable = 1;
 			return 0;
 		}

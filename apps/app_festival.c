@@ -301,7 +301,7 @@ static int festival_exec(struct ast_channel *chan, const char *vdata)
 	int i;
 	struct MD5Context md5ctx;
 	unsigned char MD5Res[16];
-	char MD5Hex[33] = "";
+	char MD5Hex[33];
 	char koko[4] = "";
 	char cachefile[MAXFESTLEN]="";
 	int readcache = 0;
@@ -493,8 +493,12 @@ static int festival_exec(struct ast_channel *chan, const char *vdata)
 	if (writecache == 1) {
 		ast_debug(1, "Writing result to cache...\n");
 		while ((strln = read(fd, buffer, 16384)) != 0) {
-			if (write(fdesc,buffer,strln) < 0) {
-				ast_log(LOG_WARNING, "write() failed: %s\n", strerror(errno));
+			if(strln > 0) {
+				if (write(fdesc,buffer,strln) < 0) {
+					ast_log(LOG_WARNING, "write() failed: %s\n", strerror(errno));
+				}
+			} else {
+				if(strln == -1) ast_log(LOG_WARNING, "read() failed: %s\n", strerror(errno));
 			}
 		}
 		close(fd);

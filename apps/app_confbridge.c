@@ -3068,9 +3068,11 @@ static int action_kick_last(struct confbridge_conference *conference,
 		ao2_unlock(conference);
 		play_file(bridge_channel, NULL,
 			conf_get_sound(CONF_SOUND_ERROR_MENU, conference->b_profile.sounds));
- 	} else if (last_user && !last_user->kicked) {
+ 	} else if (!last_user->kicked) {
 		pbx_builtin_setvar_helper(last_user->chan, "CONFBRIDGE_RESULT", "KICKED");
 		last_user->kicked = (ast_bridge_remove(conference->bridge, last_user->chan)==0)?1:0;
+		ao2_unlock(conference);
+	} else {
 		ao2_unlock(conference);
 	}
 
@@ -3324,9 +3326,7 @@ static int safeleave_conference_participant(struct confbridge_conference *confer
 			pbx_builtin_setvar_helper(user->chan, "CONFBRIDGE_RESULT", "LEAVE");
 			ast_bridge_remove(conference->bridge, user->chan);
 			res = 0;
-			if (match) {
-				return res;
-			}
+			return res;
 		}
 	}
 	AST_LIST_TRAVERSE(&conference->waiting_list, user, list) {
@@ -3347,9 +3347,7 @@ static int safeleave_conference_participant(struct confbridge_conference *confer
 			pbx_builtin_setvar_helper(user->chan, "CONFBRIDGE_RESULT", "LEAVE");
 			ast_bridge_remove(conference->bridge, user->chan);
 			res = 0;
-			if (match) {
-				return res;
-			}
+			return res;
 		}
 	}
 

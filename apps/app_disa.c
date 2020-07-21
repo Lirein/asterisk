@@ -332,7 +332,7 @@ static int disa_exec(struct ast_channel *chan, const char *data)
 			}
 
 			exten[i++] = j;  /* save digit */
-			exten[i] = 0;
+			if (i < AST_MAX_EXTENSION) exten[i] = 0;
 			if (!(k&1))
 				continue; /* if getting password, continue doing it */
 			/* if this exists */

@@ -465,10 +465,7 @@ static int packsms8(unsigned char *o, int udhl, unsigned char *udh, int udl, uns
 	}
 	while (udl--) {
 		long u;
-		u = *ud++;
-		if (u < 0 || u > 0xFF) {
-			return -1;                      /* not valid */
-		}
+		u = (*ud++) & 0xFF;
 		o[p++] = u;
 		if (p >= SMSLEN_8) {
 			return p;
@@ -703,7 +700,7 @@ static void unpacksms16(unsigned char *i, unsigned char l, unsigned char *udh, i
 	}
 	while (l--) {
 		int v = *i++;
-		if (l && l--) {
+		if ((l != 0) && l--) {
 			v = (v << 8) + *i++;
 		}
 		*o++ = v;
@@ -1610,15 +1607,15 @@ static int sms_generate(struct ast_channel *chan, void *data, int len, int sampl
 #define MAXSAMPLES (800)
 	output_t *buf;
 	sms_t *h = data;
-	int i, res;
+	int i, res, dlen;
 
 	if (samples > MAXSAMPLES) {
 		ast_log(LOG_WARNING, "Only doing %d samples (%d requested)\n",
 			 MAXSAMPLES, samples);
 		samples = MAXSAMPLES;
 	}
-	len = samples * sizeof(*buf) + AST_FRIENDLY_OFFSET;
-	buf = ast_alloca(len);
+	dlen = samples * sizeof(*buf) + AST_FRIENDLY_OFFSET;
+	buf = ast_alloca(dlen);
 
 	f.frametype = AST_FRAME_VOICE;
 	f.subclass.format = __OUT_FMT;

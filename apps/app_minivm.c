@@ -1124,15 +1124,18 @@ static struct minivm_account *find_user_realtime(const char *domain, const char 
 	if (username)
 		ast_copy_string(retval->username, username, sizeof(retval->username));
 
+	if (domain)
+		ast_copy_string(retval->domain, domain, sizeof(retval->username));
+
 	populate_defaults(retval);
-	var = ast_load_realtime("minivm", "username", username, "domain", domain, SENTINEL);
+	var = ast_load_realtime("minivm", "username", retval->username, "domain", retval->domain, SENTINEL);
 
 	if (!var) {
 		ast_free(retval);
 		return NULL;
 	}
 
-	snprintf(name, sizeof(name), "%s@%s", username, domain);
+	snprintf(name, sizeof(name), "%s@%s", retval->username, retval->domain);
 	create_vmaccount(name, var, TRUE);
 
 	ast_variables_destroy(var);
@@ -1984,12 +1987,10 @@ static int leave_voicemail(struct ast_channel *chan, char *username, struct leav
 		return res;
 	}
 
-	if (res >= 0) {
-		/* Unless we're *really* silent, try to send the beep */
-		res = ast_streamfile(chan, "beep", ast_channel_language(chan));
-		if (!res)
-			res = ast_waitstream(chan, "");
-	}
+	/* Unless we're *really* silent, try to send the beep */
+	res = ast_streamfile(chan, "beep", ast_channel_language(chan));
+	if (!res)
+		res = ast_waitstream(chan, "");
 
 	/* OEJ XXX Maybe this can be turned into a log file? Hmm. */
 	/* Store information */
@@ -2547,7 +2548,7 @@ static int minivm_accmess_exec(struct ast_channel *chan, const char *data)
 		*domain = '\0';
 		domain++;
 	}
-	if (ast_strlen_zero(domain) || ast_strlen_zero(username)) {
+	if ((argc > 0) && ast_strlen_zero(domain) || ast_strlen_zero(username)) {
 		ast_log(LOG_ERROR, "Need username@domain as argument. Sorry. Argument 0 %s\n", argv[0]);
 		pbx_builtin_setvar_helper(chan, "MVM_ACCMESS_STATUS", "FAILED");
 		return -1;
@@ -3522,11 +3523,11 @@ static int load_module(void)
 	int res;
 
 	res = ast_register_application_xml(app_minivm_record, minivm_record_exec);
-	res = ast_register_application_xml(app_minivm_greet, minivm_greet_exec);
-	res = ast_register_application_xml(app_minivm_notify, minivm_notify_exec);
-	res = ast_register_application_xml(app_minivm_delete, minivm_delete_exec);
-	res = ast_register_application_xml(app_minivm_accmess, minivm_accmess_exec);
-	res = ast_register_application_xml(app_minivm_mwi, minivm_mwi_exec);
+	res |= ast_register_application_xml(app_minivm_greet, minivm_greet_exec);
+	res |= ast_register_application_xml(app_minivm_notify, minivm_notify_exec);
+	res |= ast_register_application_xml(app_minivm_delete, minivm_delete_exec);
+	res |= ast_register_application_xml(app_minivm_accmess, minivm_accmess_exec);
+	res |= ast_register_application_xml(app_minivm_mwi, minivm_mwi_exec);
 
 	ast_custom_function_register(&minivm_account_function);
 	ast_custom_function_register(&minivm_counter_function);

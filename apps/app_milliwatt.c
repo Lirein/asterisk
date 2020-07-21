@@ -81,7 +81,7 @@ static int milliwatt_generate(struct ast_channel *chan, void *data, int len, int
 {
 	unsigned char buf[AST_FRIENDLY_OFFSET + 640];
 	const int maxsamples = ARRAY_LEN(buf) - (AST_FRIENDLY_OFFSET / sizeof(buf[0]));
-	int i, *indexp = (int *) data, res;
+	int i, *indexp = (int *) data, res, dlen;
 	struct ast_frame wf = {
 		.frametype = AST_FRAME_VOICE,
 		.offset = AST_FRIENDLY_OFFSET,
@@ -101,8 +101,8 @@ static int milliwatt_generate(struct ast_channel *chan, void *data, int len, int
 		samples = maxsamples;
 	}
 
-	len = samples * sizeof (buf[0]);
-	wf.datalen = len;
+	dlen = samples * sizeof (buf[0]);
+	wf.datalen = dlen;
 	wf.samples = samples;
 
 	/* create a buffer containing the digital milliwatt pattern */

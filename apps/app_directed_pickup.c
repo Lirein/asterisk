@@ -151,6 +151,7 @@ static int find_by_name(void *obj, void *arg, void *data, int flags)
 	if (!strncasecmp(ast_channel_name(target), args->name, args->len)
 		&& ast_can_pickup(target)) {
 		/* Return with the channel still locked on purpose */
+		ast_channel_unlock(target);
 		return CMP_MATCH | CMP_STOP;
 	}
 	ast_channel_unlock(target);
@@ -172,6 +173,7 @@ static int find_by_uniqueid(void *obj, void *arg, void *data, int flags)
 	if (!strcasecmp(ast_channel_uniqueid(target), args->name)
 		&& ast_can_pickup(target)) {
 		/* Return with the channel still locked on purpose */
+		ast_channel_unlock(target);
 		return CMP_MATCH | CMP_STOP;
 	}
 	ast_channel_unlock(target);
@@ -251,6 +253,9 @@ static int pickup_by_exten(struct ast_channel *chan, const char *exten, const ch
 		ast_channel_lock(target);
 		if ((chan != target) && ast_can_pickup(target)) {
 			ast_log(LOG_NOTICE, "%s pickup by %s\n", ast_channel_name(target), ast_channel_name(chan));
+			res = ast_do_pickup(chan, target);
+			ast_channel_unlock(target);
+			target = ast_channel_unref(target);
 			break;
 		}
 		ast_channel_unlock(target);
@@ -258,12 +263,6 @@ static int pickup_by_exten(struct ast_channel *chan, const char *exten, const ch
 	}
 
 	ast_channel_iterator_destroy(iter);
-
-	if (target) {
-		res = ast_do_pickup(chan, target);
-		ast_channel_unlock(target);
-		target = ast_channel_unref(target);
-	}
 
 	return res;
 }

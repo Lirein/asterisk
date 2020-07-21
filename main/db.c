@@ -107,7 +107,7 @@
 	</manager>
  ***/
 
-#define MAX_DB_FIELD 256
+#define MAX_DB_FIELD 1024*4
 AST_MUTEX_DEFINE_STATIC(dblock);
 static ast_cond_t dbcond;
 static sqlite3 *astdb;
@@ -128,7 +128,7 @@ DEFINE_SQL_STATEMENT(deltree_all_stmt, "DELETE FROM astdb")
 DEFINE_SQL_STATEMENT(gettree_stmt, "SELECT key, value FROM astdb WHERE key || '/' LIKE ? || '/' || '%' ORDER BY key")
 DEFINE_SQL_STATEMENT(gettree_all_stmt, "SELECT key, value FROM astdb ORDER BY key")
 DEFINE_SQL_STATEMENT(showkey_stmt, "SELECT key, value FROM astdb WHERE key LIKE '%' || '/' || ? ORDER BY key")
-DEFINE_SQL_STATEMENT(create_astdb_stmt, "CREATE TABLE IF NOT EXISTS astdb(key VARCHAR(256), value VARCHAR(256), PRIMARY KEY(key))")
+DEFINE_SQL_STATEMENT(create_astdb_stmt, "CREATE TABLE IF NOT EXISTS astdb(key VARCHAR(1024), value VARCHAR(1024), PRIMARY KEY(key))")
 
 /* This query begs an explanation:
  *
@@ -479,10 +479,8 @@ int ast_db_deltree(const char *family, const char *keytree)
 	ast_mutex_lock(&dblock);
 	if (!ast_strlen_zero(prefix) && (sqlite3_bind_text(stmt, 1, prefix, -1, SQLITE_STATIC) != SQLITE_OK)) {
 		ast_log(LOG_WARNING, "Could bind %s to stmt: %s\n", prefix, sqlite3_errmsg(astdb));
-		res = -1;
 	} else if (sqlite3_step(stmt) != SQLITE_DONE) {
 		ast_log(LOG_WARNING, "Couldn't execute stmt: %s\n", sqlite3_errmsg(astdb));
-		res = -1;
 	}
 	res = sqlite3_changes(astdb);
 	sqlite3_reset(stmt);
@@ -1042,7 +1040,6 @@ static void *db_sync_thread(void *data)
 			ast_db_rollback_transaction();
 		}
 		if (doexit) {
-			ast_mutex_unlock(&dblock);
 			break;
 		}
 		ast_db_begin_transaction();
@@ -1051,6 +1048,7 @@ static void *db_sync_thread(void *data)
 		ast_mutex_lock(&dblock);
 	}
 
+	ast_mutex_unlock(&dblock);
 	return NULL;
 }
 

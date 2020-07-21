@@ -469,6 +469,7 @@ void conf_send_event_to_participants(struct confbridge_conference *conference,
 				if (!json_channels) {
 					ast_log(LOG_ERROR, "Unable to allocate json array\n");
 					ast_json_unref(target_json_channel);
+					ao2_unlock(conference);
 					return;
 				}
 			}

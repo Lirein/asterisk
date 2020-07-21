@@ -103,6 +103,7 @@ static int privacy_exec(struct ast_channel *chan, const char *data)
 		AST_APP_ARG(checkcontext);
 	);
 
+    phone[0] = 0;
 	if (ast_channel_caller(chan)->id.number.valid
 		&& !ast_strlen_zero(ast_channel_caller(chan)->id.number.str)) {
 		ast_verb(3, "CallerID number present: Skipping\n");

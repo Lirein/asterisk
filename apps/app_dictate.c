@@ -275,15 +275,12 @@ static int dictate_exec(struct ast_channel *chan, const char *data)
 								break;
 							}
 						}
-						if (lastop != DFLAG_PLAY) {
-							lastop = DFLAG_PLAY;
-							ast_closestream(fs);
-							if (!(fs = ast_openstream(chan, path, ast_channel_language(chan))))
-								break;
-							ast_seekstream(fs, samples, SEEK_SET);
-							ast_channel_stream_set(chan, NULL);
-						}
 						lastop = DMODE_PLAY;
+						ast_closestream(fs);
+						if (!(fs = ast_openstream(chan, path, ast_channel_language(chan))))
+							break;
+						ast_seekstream(fs, samples, SEEK_SET);
+						ast_channel_stream_set(chan, NULL);
 					}
 
 					if (!ast_test_flag(&flags, DFLAG_PAUSE)) {

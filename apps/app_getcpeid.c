@@ -126,6 +126,8 @@ static int cpeid_exec(struct ast_channel *chan, const char *idata)
 			ast_adsi_unload_session(chan);
 		}
 	}
+	for (x = 0; x < 4; x++)
+		ast_free(data[x]);
 
 	return res;
 }

@@ -324,7 +324,8 @@ db_reconnect:
 					}
 
 					if (!ast_strlen_zero(workspace)) {
-						value = workspace;
+						ast_free(value);
+						value = ast_strdupa(workspace);
 					}
 				}
 
@@ -339,7 +340,8 @@ db_reconnect:
 						(double) (ast_tvdiff_us(cdr->end, cdr->start) / 1000000.0));
 
 					if (!ast_strlen_zero(workspace)) {
-						value = workspace;
+						ast_free(value);
+						value = ast_strdupa(workspace);
 					}
 				}
 
@@ -535,32 +537,38 @@ static int my_connect_db(struct ast_config *cfg)
 
 	while ((row = mysql_fetch_row(result))) {
 		struct column *entry;
-		char *cdrvar = "", *staticvalue = "";
+		char *cdrvar = NULL, *staticvalue = NULL;
 
 		ast_debug(1, "Got a field '%s' of type '%s'\n", row[0], row[1]);
 		/* Check for an alias or a static value */
 		for (var = ast_variable_browse(cfg, "columns"); var; var = var->next) {
 			if (strncmp(var->name, "alias", 5) == 0 && strcasecmp(var->value, row[0]) == 0 ) {
 				char *alias = ast_strdupa(var->name + 5);
-				cdrvar = ast_strip(alias);
+				cdrvar = ast_strdup(ast_strip(alias));
 				ast_verb(3, "Found alias %s for column %s\n", cdrvar, row[0]);
+				ast_free(alias);
 				break;
 			} else if (strncmp(var->name, "static", 6) == 0 && strcasecmp(var->value, row[0]) == 0) {
-				char *item = ast_strdupa(var->name + 6);
-				item = ast_strip(item);
+				char *origitem = ast_strdupa(var->name + 6), *item;
+				item = ast_strip(origitem);
 				if (item[0] == '"' && item[strlen(item) - 1] == '"') {
 					/* Remove surrounding quotes */
 					item[strlen(item) - 1] = '\0';
 					item++;
 				}
-				staticvalue = item;
+				staticvalue = ast_strdup(item);
+				ast_free(origitem);
 			}
 		}
+		if(cdrvar==NULL) cdrvar = ast_strdup("");
+		if(staticvalue==NULL) staticvalue = ast_strdup("");
 
 		entry = ast_calloc(sizeof(char), sizeof(*entry) + strlen(row[0]) + 1 + strlen(cdrvar) + 1 + strlen(staticvalue) + 1 + strlen(row[1]) + 1);
 		if (!entry) {
 			ast_log(LOG_ERROR, "Out of memory creating entry for column '%s'\n", row[0]);
 			mysql_free_result(result);
+			ast_free(cdrvar);
+			ast_free(staticvalue);
 			return AST_MODULE_LOAD_DECLINE;
 		}
 
@@ -583,6 +591,8 @@ static int my_connect_db(struct ast_config *cfg)
 			entry->type = entry->cdrname + strlen(entry->cdrname) + 1;
 		}
 		strcpy(entry->type, row[1]);
+		ast_free(cdrvar);
+		ast_free(staticvalue);
 
 		ast_debug(1, "Entry name '%s'\n", entry->name);
 		ast_debug(1, "   cdrname '%s'\n", entry->cdrname);

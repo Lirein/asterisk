@@ -7302,7 +7302,7 @@ static void dump_queue_members(struct call_queue *pm_queue)
 	}
 	ao2_iterator_destroy(&mem_iter);
 
-	if (ast_str_strlen(value) && !cur_member) {
+	if (ast_str_strlen(value)) {
 		if (ast_db_put(pm_family, pm_queue->name, ast_str_buffer(value))) {
 			ast_log(LOG_WARNING, "failed to create persistent dynamic entry!\n");
 		}
@@ -8447,7 +8447,6 @@ check_turns:
 				record_abandoned(&qe);
 				reason = QUEUE_LEAVEEMPTY;
 				ast_queue_log(args.queuename, ast_channel_uniqueid(chan), "NONE", "EXITEMPTY", "%d|%d|%ld", qe.pos, qe.opos, (long)(time(NULL) - qe.start));
-				res = 0;
 				break;
 			}
 		}
@@ -8459,7 +8458,6 @@ check_turns:
 				"%d|%d|%ld", qe.pos, qe.opos, (long) (time(NULL) - qe.start));
 			record_abandoned(&qe);
 			reason = QUEUE_TIMEOUT;
-			res = 0;
 			break;
 		}
 
@@ -8468,7 +8466,6 @@ check_turns:
 		if (qe.expire && (time(NULL) >= qe.expire)) {
 			record_abandoned(&qe);
 			reason = QUEUE_TIMEOUT;
-			res = 0;
 			ast_queue_log(qe.parent->name, ast_channel_uniqueid(qe.chan),"NONE", "EXITWITHTIMEOUT", "%d|%d|%ld", qe.pos, qe.opos, (long) (time(NULL) - qe.start));
 			break;
 		}
@@ -8713,8 +8710,8 @@ static int queue_function_mem_read(struct ast_channel *chan, const char *cmd, ch
 				count = m->paused;
 				ao2_ref(m, -1);
 			}
-		} else if ((!strcasecmp(args.option, "ignorebusy") /* ignorebusy is legacy */
-			|| !strcasecmp(args.option, "ringinuse"))) {
+		} else if (!strcasecmp(args.option, "ignorebusy") /* ignorebusy is legacy */
+			|| !strcasecmp(args.option, "ringinuse")) {
 			m = get_interface_helper(q, args.interface);
 			if (m) {
 				count = m->ringinuse;

@@ -301,7 +301,7 @@
 
  ***/
 
-#define get_volfactor(x) x ? ((x > 0) ? (1 << x) : ((1 << abs(x)) * -1)) : 0
+#define get_volfactor(x) (x ? ((x > 0) ? (1 << x) : ((1 << abs(x)) * -1)) : 0)
 
 static const char * const app = "MixMonitor";
 
@@ -739,7 +739,7 @@ static void *mixmonitor_thread(void *obj)
 				}
 			}
 
-			if ((*fs) && (fr)) {
+			if (*fs) {
 				struct ast_frame *cur;
 
 				for (cur = fr; cur; cur = AST_LIST_NEXT(cur, frame_list)) {
@@ -749,9 +749,7 @@ static void *mixmonitor_thread(void *obj)
 			ast_mutex_unlock(&mixmonitor->mixmonitor_ds->lock);
 		}
 		/* All done! free it. */
-		if (fr) {
-			ast_frame_free(fr, 0);
-		}
+		ast_frame_free(fr, 0);
 		if (fr_read) {
 			ast_frame_free(fr_read, 0);
 		}
@@ -876,7 +874,7 @@ static int launch_monitor_thread(struct ast_channel *chan, const char *filename,
 {
 	pthread_t thread;
 	struct mixmonitor *mixmonitor;
-	char postprocess2[1024] = "";
+	char postprocess2[1024];
 	char *datastore_id = NULL;
 
 	postprocess2[0] = 0;

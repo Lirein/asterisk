@@ -1328,6 +1328,7 @@ static int softmix_bridge_write(struct ast_bridge *bridge, struct ast_bridge_cha
 		break;
 	case AST_FRAME_DTMF_BEGIN:
 	case AST_FRAME_DTMF_END:
+	case AST_FRAME_BRIDGE_ACTION:
 		res = ast_bridge_queue_everyone_else(bridge, bridge_channel, frame);
 		break;
 	case AST_FRAME_VOICE:
@@ -1345,9 +1346,6 @@ static int softmix_bridge_write(struct ast_bridge *bridge, struct ast_bridge_cha
 		break;
 	case AST_FRAME_RTCP:
 		softmix_bridge_write_rtcp(bridge, bridge_channel, frame);
-		break;
-	case AST_FRAME_BRIDGE_ACTION:
-		res = ast_bridge_queue_everyone_else(bridge, bridge_channel, frame);
 		break;
 	case AST_FRAME_BRIDGE_ACTION_SYNC:
 		ast_log(LOG_ERROR, "Synchronous bridge action written to a softmix bridge.\n");
@@ -1407,7 +1405,7 @@ static void remb_collect_report(struct ast_bridge *bridge, struct ast_bridge_cha
 	/* We evenly divide the available maximum bitrate across the video sources
 	 * to this receiver so each source gets an equal slice.
 	 */
-	bitrate = (sc->remb.br_mantissa << sc->remb.br_exp) / AST_VECTOR_SIZE(&sc->video_sources);
+	bitrate = (float)(sc->remb.br_mantissa << sc->remb.br_exp) / AST_VECTOR_SIZE(&sc->video_sources);
 
 	/* If this receiver has no bitrate yet ignore it */
 	if (!bitrate) {
@@ -1632,7 +1630,7 @@ static unsigned int analyse_softmix_stats(struct softmix_stats *stats,
 		int best_index = -1;
 
 		for (i = 0; i < ARRAY_LEN(stats->num_channels); i++) {
-			if (stats->num_channels[i]) {
+			if (!stats->num_channels[i]) {
 				break;
 			}
 			if (2 <= stats->num_channels[i]) {
@@ -1990,9 +1988,7 @@ static void *softmix_mixing_thread(void *data)
 			/* Wait for something to happen to the bridge. */
 			ast_bridge_unlock(bridge);
 			ast_mutex_lock(&softmix_data->lock);
-			if (!softmix_data->stop) {
-				ast_cond_wait(&softmix_data->cond, &softmix_data->lock);
-			}
+			ast_cond_wait(&softmix_data->cond, &softmix_data->lock);
 			ast_mutex_unlock(&softmix_data->lock);
 			ast_bridge_lock(bridge);
 			continue;
