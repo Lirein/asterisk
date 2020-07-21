@@ -1,0 +1,15 @@
+Package: asterisk-doc
+Source: asterisk
+Version: 1:13.21.3~dfsg-1.1ubuntu1.4
+Architecture: all
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 947
+Recommends: asterisk
+Section: doc
+Priority: extra
+Homepage: http://www.asterisk.org/
+Description: Source code documentation for Asterisk
+ Asterisk is an Open Source PBX and telephony toolkit.
+ .
+ This package contains the documentation for configuring an Asterisk system.
+Original-Maintainer: Debian VoIP Team <pkg-voip-maintainers@lists.alioth.debian.org>

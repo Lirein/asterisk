@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 /*
  * Asterisk -- An open source telephony toolkit.
  *
@@ -44,6 +47,7 @@ struct confbridge_state STATE_MULTI = {
 	.join_unmarked = join_unmarked,
 	.join_waitmarked = conf_default_join_waitmarked,
 	.join_marked = join_marked,
+	.leave_marked = leave_unmarked,
 	.leave_unmarked = leave_unmarked,
 	.leave_waitmarked = conf_default_leave_waitmarked,
 };

@@ -1,0 +1,7 @@
+d1c052e649fcba3fa2085e4d741a00f1  usr/lib/asterisk/modules/app_flash.so
+243387d62a88d5b3dca3908fb6ceaff3  usr/lib/asterisk/modules/chan_dahdi.so
+968f2498a7125868aa8f3cd04b36bef9  usr/lib/asterisk/modules/codec_dahdi.so
+ded90412839c1cc04ffb09c35cfa9596  usr/lib/asterisk/modules/res_timing_dahdi.so
+efa5890f58abc7033941ab859ba0b5be  usr/share/doc/asterisk-dahdi/NEWS.Debian.gz
+bc2f4ffdf90289f4ef0f04d056bd5104  usr/share/doc/asterisk-dahdi/changelog.Debian.gz
+8d091cf42dcb251a486c4150f67efdb8  usr/share/doc/asterisk-dahdi/copyright

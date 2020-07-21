@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 /*
  * Asterisk -- An open source telephony toolkit.
  *
@@ -35,7 +38,6 @@
 
 /*** MODULEINFO
 	<depend>mysqlclient</depend>
-	<defaultenabled>no</defaultenabled>
 	<support_level>deprecated</support_level>
 	<replacement>cdr_adaptive_odbc</replacement>
  ***/
@@ -200,13 +202,13 @@ db_reconnect:
 			ast_log(LOG_ERROR, "mysql_options returned (%d) %s\n", mysql_errno(&mysql), mysql_error(&mysql));
 		}
 #endif
-		if (ssl_ca || ssl_cert || ssl_key) {
+		if ((ssl_ca && ast_str_strlen(ssl_ca)) || (ssl_cert && ast_str_strlen(ssl_cert)) || (ssl_key && ast_str_strlen(ssl_key))) {
 			mysql_ssl_set(&mysql, ssl_key ? ast_str_buffer(ssl_key) : NULL, ssl_cert ? ast_str_buffer(ssl_cert) : NULL, ssl_ca ? ast_str_buffer(ssl_ca) : NULL, NULL, NULL);
 		}
 
 		configure_connection_charset();
 
-		if (mysql_real_connect(&mysql, ast_str_buffer(hostname), ast_str_buffer(dbuser), ast_str_buffer(password), ast_str_buffer(dbname), dbport, dbsock && ast_str_strlen(dbsock) ? ast_str_buffer(dbsock) : NULL, ssl_ca ? CLIENT_SSL : 0)) {
+		if (mysql_real_connect(&mysql, ast_str_buffer(hostname), ast_str_buffer(dbuser), ast_str_buffer(password), ast_str_buffer(dbname), dbport, dbsock && ast_str_strlen(dbsock) ? ast_str_buffer(dbsock) : NULL, ssl_ca && ast_str_strlen(ssl_ca) ? CLIENT_SSL : 0)) {
 			connected = 1;
 			connect_time = time(NULL);
 			records = 0;

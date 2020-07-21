@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 /*
  * Asterisk -- An open source telephony toolkit.
  *
@@ -190,6 +193,43 @@
 			alter the behavior of how the CDR operates for that channel.</para>
 		</description>
 	</function>
+	<manager name="CDRSet" language="en_US">
+		<synopsis>
+			Set CDR record field for specific channel.
+		</synopsis>
+		<syntax>
+			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
+			<parameter name="Channel" required="true">
+				<para>Channel name to set CDR field.</para>
+			</parameter>
+			<parameter name="Variable" required="true">
+				<para>Field name of CDR record</para>
+			</parameter>
+			<parameter name="Value" required="true">
+				<para>Field value to set for CDR record</para>
+			</parameter>
+		</syntax>
+		<description>
+			<para>Set CDR record field value of the specified channel.</para>
+		</description>
+	</manager>
+	<manager name="CDRGet" language="en_US">
+		<synopsis>
+			Get CDR record field of specific channel.
+		</synopsis>
+		<syntax>
+			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
+			<parameter name="Channel" required="true">
+				<para>Channel name from get CDR field.</para>
+			</parameter>
+			<parameter name="Variable" required="true">
+				<para>Field name of CDR record</para>
+			</parameter>
+		</syntax>
+		<description>
+			<para>Get CDR record field of the specified channel. Returns Value field</para>
+		</description>
+	</manager>
  ***/
 
 enum cdr_option_flags {
@@ -645,6 +685,91 @@ static int cdr_prop_write(struct ast_channel *chan, const char *cmd, char *parse
 	return 0;
 }
 
+static int action_setcdr(struct mansession *s, const struct message *m)
+{
+	const char *cdr_var = astman_get_header(m, "Variable");
+	const char *cdr_val = astman_get_header(m, "Value");
+	const char *channel = astman_get_header(m, "Channel");
+	struct ast_channel *chan;
+
+	if (ast_strlen_zero(cdr_var)) {
+		astman_send_error(s, m, "No Variable specified");
+		return 0;
+	}
+
+	if (ast_strlen_zero(cdr_val)) {
+		astman_send_error(s, m, "No Value specified");
+		return 0;
+	}
+
+	if (!(chan = ast_channel_get_by_name(channel))) {
+		astman_send_error(s, m, "Channel not found");
+		return 0;
+	}
+
+	if (!cdr_write_message_type()) {
+		ast_channel_unref(chan);
+		astman_send_error(s, m, "Failed to manipulate CDR: message type not available");
+		return 0;
+	}
+
+	ast_cdr_setvar(ast_channel_name(chan), cdr_var, cdr_val);
+
+	astman_send_ack(s, m, "CDR Updated");
+	ast_channel_unref(chan);
+	return 0;
+}
+
+static int action_getcdr(struct mansession *s, const struct message *m)
+{
+	const char *cdr_var = astman_get_header(m, "Variable");
+	const char *channel = astman_get_header(m, "Channel");
+	const char *action_id = astman_get_header(m, "ActionID");
+	struct ast_channel *chan;
+	char tempbuf[512];
+
+	char id_text[256] = "";
+
+	if (ast_strlen_zero(cdr_var)) {
+		astman_send_error(s, m, "No Variable specified");
+		return 0;
+	}
+
+	if (!(chan = ast_channel_get_by_name(channel))) {
+		astman_send_error(s, m, "Channel not found");
+		return 0;
+	}
+
+	if (!cdr_read_message_type()) {
+		ast_channel_unref(chan);
+		astman_send_error(s, m, "Failed to manipulate CDR: message type not available");
+		return 0;
+	}
+
+	if (ast_cdr_getvar(ast_channel_name(chan), cdr_var, tempbuf, sizeof(tempbuf))) {
+		ast_channel_unref(chan);
+		astman_send_error(s, m, "Failed to manipulate CDR: can't read variable");
+		return 0;
+	}
+
+	astman_send_ack(s, m, "CDR Data will follow");
+
+	if (!ast_strlen_zero(action_id)) {
+		snprintf(id_text, sizeof(id_text), "ActionID: %s\r\n", action_id);
+	}
+
+	astman_append(s, "Event: CDRData\r\n"
+		"%s"
+		"Variable: %s\r\n"
+		"Value: %s\r\n"
+		"\r\n",
+		id_text,
+		cdr_var, tempbuf);
+
+	ast_channel_unref(chan);
+	return 0;
+}
+
 static struct ast_custom_function cdr_function = {
 	.name = "CDR",
 	.read = cdr_read,
@@ -672,6 +797,8 @@ static int unload_module(void)
 	STASIS_MESSAGE_TYPE_CLEANUP(cdr_prop_write_message_type);
 	res |= ast_custom_function_unregister(&cdr_function);
 	res |= ast_custom_function_unregister(&cdr_prop_function);
+	res |= ast_manager_unregister("CDRSet");
+	res |= ast_manager_unregister("CDRGet");
 
 	return res;
 }
@@ -696,6 +823,9 @@ static int load_module(void)
 	                                 cdr_write_callback, NULL);
 	res |= stasis_message_router_add(router, cdr_read_message_type(),
 	                                 cdr_read_callback, NULL);
+
+	res |= ast_manager_register_xml("CDRSet", EVENT_FLAG_CALL, action_setcdr);
+	res |= ast_manager_register_xml("CDRGet", EVENT_FLAG_CALL, action_getcdr);
 
 	if (res) {
 		unload_module();

@@ -1,0 +1,20 @@
+Package: asterisk-mysql
+Source: asterisk
+Version: 1:13.21.3~dfsg-1.1ubuntu1.4
+Architecture: amd64
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 183
+Depends: asterisk (= 1:13.21.3~dfsg-1.1ubuntu1.4), libc6 (>= 2.14), libmysqlclient20 (>= 5.7.11)
+Section: comm
+Priority: optional
+Homepage: http://www.asterisk.org/
+Description: MySQL database protocol support for the Asterisk PBX
+ Asterisk is an Open Source PBX and telephony toolkit.
+ .
+ This package provides support for using a MySQL database to store
+ configuration, call detail records, and also provides generic access to
+ it from the dialplan.
+ .
+ For more information about the Asterisk PBX, have a look at the Asterisk
+ package.
+Original-Maintainer: Debian VoIP Team <pkg-voip-maintainers@lists.alioth.debian.org>

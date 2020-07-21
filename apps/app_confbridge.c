@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 /*
  * Asterisk -- An open source telephony toolkit.
  *
@@ -118,6 +121,7 @@
 					<value name="FAILED">The channel encountered an error and could not enter the conference.</value>
 					<value name="HANGUP">The channel exited the conference by hanging up.</value>
 					<value name="KICKED">The channel was kicked from the conference.</value>
+					<value name="LEAVE">The channel has safely leaved the conference.</value>
 					<value name="ENDMARKED">The channel left the conference as a result of the last marked user leaving.</value>
 					<value name="DTMF">The channel pressed a DTMF sequence to exit the conference.</value>
 					<value name="TIMEOUT">The channel reached its configured timeout.</value>
@@ -348,6 +352,18 @@
 				<para>If this parameter is "all", all channels will be kicked from the conference.</para>
 				<para>If this parameter is "participants", all non-admin channels will be kicked from the conference.</para>
 			</parameter>
+		</syntax>
+		<description>
+		</description>
+	</manager>
+	<manager name="ConfbridgeSafeLeave" language="en_US">
+		<synopsis>
+			Safely leaves user from Confbridge.
+		</synopsis>
+		<syntax>
+			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
+			<parameter name="Conference" required="true" />
+			<parameter name="Channel" required="true" />
 		</syntax>
 		<description>
 		</description>
@@ -773,6 +789,25 @@ static int conf_is_recording(struct confbridge_conference *conference)
 	return conference->record_chan != NULL;
 }
 
+static struct ast_str* get_rec_filename(struct confbridge_conference *conference) {
+	char *ext;
+	char *filename;
+	struct ast_str* realname = NULL;
+	if(conf_is_recording(conference)) {
+		realname = ast_str_create(RECORD_FILENAME_INITIAL_SPACE);
+		if(realname) {
+			filename = ast_str_buffer(conference->record_filename);
+			ext = strrchr(filename, ',');
+			if (ext) {
+				ast_str_set_substr(&realname, 0, filename, ext - filename);
+			} else {
+				ast_str_set(&realname, 0, "%s", filename);
+			}
+		}
+	}
+	return realname;
+}
+
 /*!
  * \internal
  * \brief Stop recording a conference bridge
@@ -822,6 +857,8 @@ static int conf_start_record(struct confbridge_conference *conference)
 	struct ast_channel *chan;
 	struct ast_format_cap *cap;
 	struct ast_bridge_features *features;
+	struct confbridge_user *user = NULL;
+	struct ast_str *realname = NULL;
 
 	if (conf_is_recording(conference)) {
 		return -1;
@@ -869,6 +906,14 @@ static int conf_start_record(struct confbridge_conference *conference)
 		ast_channel_unref(chan);
 		conference->record_chan = NULL;
 		return -1;
+	}
+
+	realname = get_rec_filename(conference);
+	if(realname) {
+		AST_LIST_TRAVERSE(&conference->active_list, user, list) {
+			pbx_builtin_setvar_helper(user->chan, "MIXMONITOR_FILENAME", ast_str_buffer(realname));
+		}
+		ast_free(realname);
 	}
 
 	ast_test_suite_event_notify("CONF_START_RECORD", "Message: started conference recording channel\r\nConference: %s", conference->b_profile.name);
@@ -1649,6 +1694,7 @@ static struct confbridge_conference *join_conference_bridge(const char *conferen
 	struct confbridge_conference *conference;
 	struct post_join_action *action;
 	int max_members_reached = 0;
+	struct ast_str *realname = NULL;
 
 	/* We explictly lock the conference bridges container ourselves so that other callers can not create duplicate conferences at the same */
 	ao2_lock(conference_bridges);
@@ -1788,6 +1834,15 @@ static struct confbridge_conference *join_conference_bridge(const char *conferen
 	user->conference = conference;
 
 	ao2_lock(conference);
+
+        if(conf_is_recording(conference)) {
+		realname = get_rec_filename(conference);
+		if(realname) {
+			pbx_builtin_setvar_helper(user->chan, "MIXMONITOR_FILENAME", ast_str_buffer(realname));
+			ast_free(realname);
+		}
+
+        }
 
 	/* Determine if the new user should join the conference muted. */
 	if (ast_test_flag(&user->u_profile, USER_OPT_STARTMUTED)
@@ -2768,6 +2823,9 @@ static int confbridge_exec(struct ast_channel *chan, const char *data)
 		pbx_builtin_setvar_helper(chan, "CONFBRIDGE_RESULT", "HANGUP");
 	}
 
+	/*If safelly quit conference - not announce anything*/
+	quiet = ast_test_flag(&user.u_profile, USER_OPT_QUIET);
+
 	/* if we're shutting down, don't attempt to do further processing */
 	if (ast_shutting_down()) {
 		/*
@@ -3010,10 +3068,9 @@ static int action_kick_last(struct confbridge_conference *conference,
 		ao2_unlock(conference);
 		play_file(bridge_channel, NULL,
 			conf_get_sound(CONF_SOUND_ERROR_MENU, conference->b_profile.sounds));
-	} else if (!last_user->kicked) {
-		last_user->kicked = 1;
+ 	} else if (last_user && !last_user->kicked) {
 		pbx_builtin_setvar_helper(last_user->chan, "CONFBRIDGE_RESULT", "KICKED");
-		ast_bridge_remove(conference->bridge, last_user->chan);
+		last_user->kicked = (ast_bridge_remove(conference->bridge, last_user->chan)==0)?1:0;
 		ao2_unlock(conference);
 	}
 
@@ -3212,10 +3269,9 @@ static int kick_conference_participant(struct confbridge_conference *conference,
 		match = !strcasecmp(channel, ast_channel_name(user->chan));
 		if (match || all
 				|| (participants && !ast_test_flag(&user->u_profile, USER_OPT_ADMIN))) {
-			user->kicked = 1;
 			pbx_builtin_setvar_helper(user->chan, "CONFBRIDGE_RESULT", "KICKED");
-			ast_bridge_remove(conference->bridge, user->chan);
-			res = 0;
+                        user->kicked = (ast_bridge_remove(conference->bridge, user->chan)==0)?1:0;
+			res = user->kicked?0:-1;
 			if (match) {
 				return res;
 			}
@@ -3228,8 +3284,67 @@ static int kick_conference_participant(struct confbridge_conference *conference,
 		match = !strcasecmp(channel, ast_channel_name(user->chan));
 		if (match || all
 				|| (participants && !ast_test_flag(&user->u_profile, USER_OPT_ADMIN))) {
-			user->kicked = 1;
 			pbx_builtin_setvar_helper(user->chan, "CONFBRIDGE_RESULT", "KICKED");
+                        user->kicked = (ast_bridge_remove(conference->bridge, user->chan)==0)?1:0;
+			res = user->kicked?0:-1;
+			if (match) {
+				return res;
+			}
+		}
+	}
+
+	return res;
+}
+
+static int safeleave_conference_participant(struct confbridge_conference *conference,
+	const char *channel)
+{
+	int res = -1;
+	int match;
+	struct confbridge_user *user = NULL;
+
+	SCOPED_AO2LOCK(bridge_lock, conference);
+
+	AST_LIST_TRAVERSE(&conference->active_list, user, list) {
+		if (user->kicked) {
+			continue;
+		}
+		match = !strcasecmp(channel, ast_channel_name(user->chan));
+		if (match) {
+			ao2_lock(user->conference);
+			ast_set_flag(&user->u_profile, USER_OPT_QUIET);
+			if(ast_test_flag(&user->u_profile, USER_OPT_MARKEDUSER)) {
+				ast_clear_flag(&user->u_profile, USER_OPT_MARKEDUSER);
+				conference->markedusers--;
+			}
+			if(ast_test_flag(&user->u_profile, USER_OPT_WAITMARKED)) {
+				ast_clear_flag(&user->u_profile, USER_OPT_WAITMARKED);
+			}
+			ao2_unlock(user->conference);
+			pbx_builtin_setvar_helper(user->chan, "CONFBRIDGE_RESULT", "LEAVE");
+			ast_bridge_remove(conference->bridge, user->chan);
+			res = 0;
+			if (match) {
+				return res;
+			}
+		}
+	}
+	AST_LIST_TRAVERSE(&conference->waiting_list, user, list) {
+		if (user->kicked) {
+			continue;
+		}
+		match = !strcasecmp(channel, ast_channel_name(user->chan));
+		if (match) {
+			ao2_lock(user->conference);
+			ast_set_flag(&user->u_profile, USER_OPT_QUIET);
+			if(ast_test_flag(&user->u_profile, USER_OPT_MARKEDUSER)) {
+				ast_clear_flag(&user->u_profile, USER_OPT_MARKEDUSER);
+			}
+			if(ast_test_flag(&user->u_profile, USER_OPT_WAITMARKED)) {
+				ast_clear_flag(&user->u_profile, USER_OPT_WAITMARKED);
+			}
+			ao2_unlock(user->conference);
+			pbx_builtin_setvar_helper(user->chan, "CONFBRIDGE_RESULT", "LEAVE");
 			ast_bridge_remove(conference->bridge, user->chan);
 			res = 0;
 			if (match) {
@@ -4031,6 +4146,39 @@ static int action_confbridgekick(struct mansession *s, const struct message *m)
 	return 0;
 }
 
+static int action_confbridgesafeleave(struct mansession *s, const struct message *m)
+{
+	const char *conference_name = astman_get_header(m, "Conference");
+	const char *channel = astman_get_header(m, "Channel");
+	struct confbridge_conference *conference;
+	int found;
+
+	if (ast_strlen_zero(conference_name)) {
+		astman_send_error(s, m, "No Conference name provided.");
+		return 0;
+	}
+	if (!ao2_container_count(conference_bridges)) {
+		astman_send_error(s, m, "No active conferences.");
+		return 0;
+	}
+
+	conference = ao2_find(conference_bridges, conference_name, OBJ_KEY);
+	if (!conference) {
+		astman_send_error(s, m, "No Conference by that name found.");
+		return 0;
+	}
+
+	found = !safeleave_conference_participant(conference, channel);
+	ao2_ref(conference, -1);
+
+	if (found) {
+		astman_send_ack(s, m, "User leaved");
+	} else {
+		astman_send_error(s, m, "No Channel by that name found in Conference.");
+	}
+	return 0;
+}
+
 static int action_confbridgestartrecord(struct mansession *s, const struct message *m)
 {
 	const char *conference_name = astman_get_header(m, "Conference");
@@ -4233,6 +4381,7 @@ void conf_add_user_marked(struct confbridge_conference *conference, struct confb
 void conf_add_user_waiting(struct confbridge_conference *conference, struct confbridge_user *user)
 {
 	AST_LIST_INSERT_TAIL(&conference->waiting_list, user, list);
+	conf_moh_start(user);
 	conference->waitingusers++;
 }
 
@@ -4263,6 +4412,7 @@ void conf_mute_only_active(struct confbridge_conference *conference)
 void conf_remove_user_waiting(struct confbridge_conference *conference, struct confbridge_user *user)
 {
 	AST_LIST_REMOVE(&conference->waiting_list, user, list);
+	conf_moh_stop(user);
 	conference->waitingusers--;
 }
 
@@ -4321,6 +4471,7 @@ static int unload_module(void)
 	ast_manager_unregister("ConfbridgeMute");
 	ast_manager_unregister("ConfbridgeUnmute");
 	ast_manager_unregister("ConfbridgeKick");
+	ast_manager_unregister("ConfbridgeSafeLeave");
 	ast_manager_unregister("ConfbridgeUnlock");
 	ast_manager_unregister("ConfbridgeLock");
 	ast_manager_unregister("ConfbridgeStartRecord");
@@ -4391,6 +4542,7 @@ static int load_module(void)
 	res |= ast_manager_register_xml("ConfbridgeMute", EVENT_FLAG_CALL, action_confbridgemute);
 	res |= ast_manager_register_xml("ConfbridgeUnmute", EVENT_FLAG_CALL, action_confbridgeunmute);
 	res |= ast_manager_register_xml("ConfbridgeKick", EVENT_FLAG_CALL, action_confbridgekick);
+	res |= ast_manager_register_xml("ConfbridgeSafeLeave", EVENT_FLAG_CALL, action_confbridgesafeleave);
 	res |= ast_manager_register_xml("ConfbridgeUnlock", EVENT_FLAG_CALL, action_confbridgeunlock);
 	res |= ast_manager_register_xml("ConfbridgeLock", EVENT_FLAG_CALL, action_confbridgelock);
 	res |= ast_manager_register_xml("ConfbridgeStartRecord", EVENT_FLAG_SYSTEM, action_confbridgestartrecord);

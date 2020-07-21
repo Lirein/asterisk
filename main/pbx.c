@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 /*
  * Asterisk -- An open source telephony toolkit.
  *
@@ -7973,7 +7976,7 @@ int ast_pbx_outgoing_exten_predial(const char *type, struct ast_format_cap *cap,
 		 * one originate fails at a time.
 		 */
 		failed = ast_channel_alloc(0, AST_STATE_DOWN, cid_num, cid_name, account,
-			"failed", context, NULL, NULL, 0, "OutgoingSpoolFailed");
+			"failed", context, NULL, NULL, 0, "%s/%s", type, addr);
 		if (failed) {
 			char failed_reason[12];
 

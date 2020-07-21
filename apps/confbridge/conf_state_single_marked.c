@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 /*
  * Asterisk -- An open source telephony toolkit.
  *
@@ -38,6 +41,7 @@
 static void join_active(struct confbridge_user *user);
 static void join_marked(struct confbridge_user *user);
 static void leave_marked(struct confbridge_user *user);
+static void leave_unmarked(struct confbridge_user *user);
 static void transition_to_single_marked(struct confbridge_user *user);
 
 struct confbridge_state STATE_SINGLE_MARKED = {
@@ -46,6 +50,8 @@ struct confbridge_state STATE_SINGLE_MARKED = {
 	.join_waitmarked = join_active,
 	.join_marked = join_marked,
 	.leave_marked = leave_marked,
+	.leave_unmarked = leave_unmarked,
+	.leave_waitmarked = leave_unmarked,
 	.entry = transition_to_single_marked,
 };
 struct confbridge_state *CONF_STATE_SINGLE_MARKED = &STATE_SINGLE_MARKED;
@@ -76,6 +82,20 @@ static void leave_marked(struct confbridge_user *user)
 	}
 
 	conf_change_state(user, CONF_STATE_EMPTY);
+}
+
+static void leave_unmarked(struct confbridge_user *user)
+{
+	conf_remove_user_active(user->conference, user);
+	if (user->playing_moh) {
+		conf_moh_stop(user);
+	}
+
+	if (user->conference->waitingusers) {
+		conf_change_state(user, CONF_STATE_INACTIVE);
+	} else {
+		conf_change_state(user, CONF_STATE_EMPTY);
+	}
 }
 
 static void transition_to_single_marked(struct confbridge_user *user)

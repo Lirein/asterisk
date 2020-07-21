@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 /*
  * Asterisk -- An open source telephony toolkit.
  *
@@ -2601,6 +2604,9 @@ static void handle_parking_bridge_enter_message(struct cdr_object *cdr,
 			res &= it_cdr->fn_table->process_parking_bridge_enter(it_cdr, bridge, channel);
 		}
 		if (it_cdr->fn_table->process_party_a) {
+			if(ast_tvdiff_ms(ast_tvzero(it_cdr->answer) ? ast_tvnow() : it_cdr->answer, it_cdr->start)<=25) {
+				it_cdr->answer = ast_tvnow();
+			}
 			CDR_DEBUG("%p - Updating Party A %s snapshot\n", it_cdr,
 				channel->base->name);
 			it_cdr->fn_table->process_party_a(it_cdr, channel);
@@ -2670,6 +2676,7 @@ try_again:
 					handled_cdr = it_cdr;
 				}
 				cdr_object_finalize(cdr);
+				memset(&cdr->end, 0, sizeof(cdr->end));
 				break;
 			}
 		}

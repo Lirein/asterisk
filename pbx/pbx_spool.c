@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 /*
  * Asterisk -- An open source telephony toolkit.
  *
@@ -339,7 +342,7 @@ static int apply_outgoing(struct outgoing *o, FILE *f)
 static void safe_append(struct outgoing *o, time_t now, char *s)
 {
 	FILE *f;
-	struct utimbuf tbuf = { .actime = now, .modtime = now + o->retrytime };
+//	struct utimbuf tbuf = { .actime = now, .modtime = now + o->retrytime };
 
 	ast_debug(1, "Outgoing %s/%s: %s\n", o->tech, o->dest, s);
 
@@ -349,9 +352,9 @@ static void safe_append(struct outgoing *o, time_t now, char *s)
 	}
 
 	/* Update the file time */
-	if (utime(o->fn, &tbuf)) {
-		ast_log(LOG_WARNING, "Unable to set utime on %s: %s\n", o->fn, strerror(errno));
-	}
+//	if (utime(o->fn, &tbuf)) {
+//		ast_log(LOG_WARNING, "Unable to set utime on %s: %s\n", o->fn, strerror(errno));
+//	}
 }
 
 /*!
@@ -481,6 +484,7 @@ static void launch_service(struct outgoing *o)
 /* Called from scan_thread or queue_file */
 static int scan_service(const char *fn, time_t now)
 {
+	struct stat st;
 	struct outgoing *o;
 	FILE *f;
 	int res;
@@ -505,9 +509,19 @@ static int scan_service(const char *fn, time_t now)
 			ast_log(LOG_WARNING, "Unable to open %s: '%s'(%d), deleting\n",
 				o->fn, strerror(errno), (int) errno);
 		}
-		remove_from_queue(o, "Failed");
+//		remove_from_queue(o, "Failed");
 		free_outgoing(o);
 		return -1;
+	}
+
+	if(!stat(o->fn, &st)) {
+		if(st.st_mtime > now) {
+			ast_log(LOG_NOTICE, "Filename in the future %s, rescheduling\n", o->fn);
+			free_outgoing(o);
+			return -1;
+		}
+	} else {
+		ast_log(LOG_WARNING, "Unable to stat %s: %s\n", o->fn, strerror(errno));
 	}
 
 	/* Read in and verify the contents */

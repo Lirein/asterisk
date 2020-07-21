@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 /*
  * Asterisk -- An open source telephony toolkit.
  *
@@ -34,7 +37,6 @@
 
 /*** MODULEINFO
 	<depend>mysqlclient</depend>
-	<defaultenabled>no</defaultenabled>
 	<support_level>deprecated</support_level>
 	<replacement>func_odbc</replacement>
  ***/

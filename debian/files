@@ -1,0 +1,13 @@
+asterisk-config_13.21.3~dfsg-1.1ubuntu1.4_all.deb comm optional
+asterisk-dahdi_13.21.3~dfsg-1.1ubuntu1.4_amd64.deb comm optional
+asterisk-dbg_13.21.3~dfsg-1.1ubuntu1.4_amd64.deb debug extra
+asterisk-dev_13.21.3~dfsg-1.1ubuntu1.4_all.deb devel extra
+asterisk-doc_13.21.3~dfsg-1.1ubuntu1.4_all.deb doc extra
+asterisk-mobile_13.21.3~dfsg-1.1ubuntu1.4_amd64.deb comm optional
+asterisk-modules_13.21.3~dfsg-1.1ubuntu1.4_amd64.deb libs optional
+asterisk-mp3_13.21.3~dfsg-1.1ubuntu1.4_amd64.deb comm optional
+asterisk-mysql_13.21.3~dfsg-1.1ubuntu1.4_amd64.deb comm optional
+asterisk-ooh323_13.21.3~dfsg-1.1ubuntu1.4_amd64.deb comm optional
+asterisk-voicemail-odbcstorage_13.21.3~dfsg-1.1ubuntu1.4_amd64.deb comm optional
+asterisk-voicemail_13.21.3~dfsg-1.1ubuntu1.4_amd64.deb comm optional
+asterisk_13.21.3~dfsg-1.1ubuntu1.4_amd64.deb comm optional

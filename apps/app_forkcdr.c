@@ -1,3 +1,6 @@
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// PVS-Studio Static Code Analyzer for C, C++, C#, and Java: http://www.viva64.com
+
 /*
  * Asterisk -- An open source telephony toolkit.
  *
@@ -91,6 +94,23 @@
 			<ref type="application">ResetCDR</ref>
 		</see-also>
 	</application>
+	<manager name="CDRFork" language="en_US">
+		<synopsis>
+			Fork CDR record of specific channel.
+		</synopsis>
+		<syntax>
+			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
+			<parameter name="Channel" required="true">
+				<para>Channel name to fork CDR record.</para>
+			</parameter>
+			<parameter name="Flags" required="true">
+				<para>Flags similar to ForkCDR application</para>
+			</parameter>
+		</syntax>
+		<description>
+			<para>Fork CDR record of the specified channel.</para>
+		</description>
+	</manager>
  ***/
 
 static char *app = "ForkCDR";
@@ -181,6 +201,69 @@ static int forkcdr_exec(struct ast_channel *chan, const char *data)
 	return 0;
 }
 
+static int action_forkcdr(struct mansession *s, const struct message *m)
+{
+	RAII_VAR(struct stasis_message *, message, NULL, ao2_cleanup);
+	RAII_VAR(struct fork_cdr_message_payload *, payload, NULL, ao2_cleanup);
+	RAII_VAR(struct stasis_message_router *, router, ast_cdr_message_router(), ao2_cleanup);
+
+	const char *fork_flags = astman_get_header(m, "Flags");
+	const char *channel = astman_get_header(m, "Channel");
+	struct ast_channel *chan;
+
+	char *parse;
+	struct ast_flags flags = { 0, };
+	AST_DECLARE_APP_ARGS(args,
+		AST_APP_ARG(options);
+	);
+
+	if (!(chan = ast_channel_get_by_name(channel))) {
+		astman_send_error(s, m, "Channel not found");
+		return 0;
+	}
+
+	parse = ast_strdupa(fork_flags);
+
+	AST_STANDARD_APP_ARGS(args, parse);
+
+	if (!ast_strlen_zero(args.options)) {
+		ast_app_parse_options(forkcdr_exec_options, &flags, NULL, args.options);
+	}
+
+	if (!forkcdr_message_type()) {
+		ast_channel_unref(chan);
+		astman_send_error(s, m, "Failed to manipulate CDR: no message type");
+		return 0;
+	}
+
+	payload = ao2_alloc(sizeof(*payload), NULL);
+	if (!payload) {
+		ast_channel_unref(chan);
+		astman_send_error(s, m, "Failed to manipulate CDR: no free memory");
+		return 0;
+	}
+
+	if (!router) {
+		ast_channel_unref(chan);
+		astman_send_error(s, m, "Failed to manipulate CDR: no message router");
+		return 0;
+	}
+
+	payload->channel_name = ast_channel_name(chan);
+	payload->flags = &flags;
+	message = stasis_message_create(forkcdr_message_type(), payload);
+	if (!message) {
+		ast_channel_unref(chan);
+		astman_send_error(s, m, "Failed to fork CDR: unable to create message");
+		return 0;
+	}
+	stasis_message_router_publish_sync(router, message);
+
+	astman_send_ack(s, m, "CDR Forked");
+	ast_channel_unref(chan);
+	return 0;
+}
+
 static int unload_module(void)
 {
 	RAII_VAR(struct stasis_message_router *, router, ast_cdr_message_router(), ao2_cleanup);
@@ -190,6 +273,7 @@ static int unload_module(void)
 	}
 	STASIS_MESSAGE_TYPE_CLEANUP(forkcdr_message_type);
 	ast_unregister_application(app);
+	ast_manager_unregister("CDRFork");
 	return 0;
 }
 
@@ -206,6 +290,8 @@ static int load_module(void)
 	res |= ast_register_application_xml(app, forkcdr_exec);
 	res |= stasis_message_router_add(router, forkcdr_message_type(),
 	                                 forkcdr_callback, NULL);
+
+	res |= ast_manager_register_xml("CDRFork", EVENT_FLAG_CALL, action_forkcdr);
 
 	if (res) {
 		unload_module();

@@ -1,0 +1,19 @@
+Package: asterisk-mp3
+Source: asterisk
+Version: 1:13.21.3~dfsg-1.1ubuntu1.4
+Architecture: amd64
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 121
+Depends: asterisk (= 1:13.21.3~dfsg-1.1ubuntu1.4), libc6 (>= 2.14)
+Section: comm
+Priority: optional
+Homepage: http://www.asterisk.org/
+Description: MP3 playback support for the Asterisk PBX
+ Asterisk is an Open Source PBX and telephony toolkit.
+ .
+ This package provides support for playing MP3-encoded files in
+ Asterisk.
+ .
+ For more information about the Asterisk PBX, have a look at the Asterisk
+ package.
+Original-Maintainer: Debian VoIP Team <pkg-voip-maintainers@lists.alioth.debian.org>

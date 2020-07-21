@@ -1,0 +1,36 @@
+Package: asterisk
+Version: 1:13.21.3~dfsg-1.1ubuntu1.4
+Architecture: amd64
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 5002
+Depends: libc6 (>= 2.16), libcap2 (>= 1:2.10), libedit2 (>= 2.11-20080614), libjansson4 (>= 2.3), libpopt0 (>= 1.14), libsqlite3-0 (>= 3.5.9), libssl1.0.0 (>= 1.0.0), liburiparser1 (>= 0.6.0), libuuid1 (>= 2.16), libxml2 (>= 2.7.4), libxslt1.1 (>= 1.1.25), asterisk-config (= 1:13.21.3~dfsg-1.1ubuntu1.4) | asterisk-config-custom, asterisk-modules (= 1:13.21.3~dfsg-1.1ubuntu1.4), adduser, asterisk-core-sounds-en-gsm | asterisk-prompt-en
+Recommends: sox, asterisk-voicemail | asterisk-voicemail-storage, asterisk-moh-opsound-gsm
+Suggests: asterisk-doc, asterisk-dev, asterisk-ooh323, asterisk-dahdi
+Provides: asterisk-da6642af068ee5e6490c5b1d2cc1d238
+Section: comm
+Priority: optional
+Homepage: http://www.asterisk.org/
+Description: Open Source Private Branch Exchange (PBX)
+ Asterisk is an Open Source PBX and telephony toolkit.  It is, in a
+ sense, middleware between Internet and telephony channels on the bottom,
+ and Internet and telephony applications at the top.
+ .
+ Asterisk can be used with Voice over IP (SIP, H.323, IAX and more) standards,
+ or the Public Switched Telephone Network (PSTN) through supported hardware.
+ .
+ Supported hardware:
+ .
+  * All Wildcard (tm) ISDN PRI cards from Digium (http://www.digium.com)
+  * HFC-S/HFC-4S-based ISDN BRI cards (Junghanns.NET, beroNet, Digium etc.)
+  * All TDM (FXO/FXS) cards from Digium
+  * Various clones of Digium cards such as those by OpenVox
+  * Xorcom Astribank USB telephony adapter (http://www.xorcom.com)
+  * Voicetronix OpenPCI, OpenLine and OpenSwitch cards
+  * CAPI-compatible ISDN cards (using the add-on package chan-capi)
+  * Full Duplex Sound Card (ALSA or OSS) supported by Linux
+  * Tormenta T1/E1 card (http://www.zapatatelephony.org)
+  * QuickNet Internet PhoneJack and LineJack (http://www.quicknet.net)
+ .
+ This is the main package that includes the Asterisk daemon and most channel
+ drivers and applications.
+Original-Maintainer: Debian VoIP Team <pkg-voip-maintainers@lists.alioth.debian.org>

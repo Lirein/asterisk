@@ -1,0 +1,6 @@
+694897fe8e1c4c0a50e896ba7984a9a7  usr/lib/asterisk/modules/app_mysql.so
+ba327cc2413c1eccf85c32e69bc755f9  usr/lib/asterisk/modules/cdr_mysql.so
+40d73e3870ea05818c67fe8b5e0c7b43  usr/lib/asterisk/modules/res_config_mysql.so
+efa5890f58abc7033941ab859ba0b5be  usr/share/doc/asterisk-mysql/NEWS.Debian.gz
+bc2f4ffdf90289f4ef0f04d056bd5104  usr/share/doc/asterisk-mysql/changelog.Debian.gz
+8d091cf42dcb251a486c4150f67efdb8  usr/share/doc/asterisk-mysql/copyright

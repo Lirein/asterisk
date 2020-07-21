@@ -27,7 +27,6 @@ LIBLPC10 := $(SUB_LPC10)/liblpc10.a
 
 SUB_DIRS := \
 	$(SUB_GSM) \
-	$(SUB_ILBC) \
 	$(SUB_LPC10) \
 
 all: _all
