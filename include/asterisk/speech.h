@@ -32,7 +32,9 @@ enum ast_speech_flags {
 	AST_SPEECH_QUIET = (1 << 0),        /* Quiet down output... they are talking */
 	AST_SPEECH_SPOKE = (1 << 1),        /* Speaker spoke! */
 	AST_SPEECH_HAVE_RESULTS = (1 << 2), /* Results are present */
+	AST_SPEECH_HAS_STREAM = (1 << 3),       /* Stream are playing to oouput */
 };
+#define AST_SPEECH_STREAM AST_SPEECH_HAS_STREAM
 
 /* Speech structure states - in order of expected change */
 enum ast_speech_states {

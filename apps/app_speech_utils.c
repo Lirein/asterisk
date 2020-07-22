@@ -767,6 +767,7 @@ static int speech_background(struct ast_channel *chan, const char *data)
 	}
 	ast_channel_unlock(chan);
 
+	ast_clear_flag(speech, AST_SPEECH_STREAM);
 	/* Before we go into waiting for stuff... make sure the structure is ready, if not - start it again */
 	if (speech->state == AST_SPEECH_STATE_NOT_READY || speech->state == AST_SPEECH_STATE_DONE) {
 		ast_speech_change_state(speech, AST_SPEECH_STATE_NOT_READY);
@@ -784,6 +785,7 @@ static int speech_background(struct ast_channel *chan, const char *data)
 			ast_stopstream(chan);
 			/* Start new stream */
 			speech_streamfile(chan, filename, ast_channel_language(chan));
+			ast_set_flag(speech, AST_SPEECH_STREAM);
 		}
 
 		/* Run scheduled stuff */
@@ -830,6 +832,7 @@ static int speech_background(struct ast_channel *chan, const char *data)
 			if (ast_channel_streamid(chan) == -1 && ast_channel_timingfunc(chan) == NULL)
 				ast_stopstream(chan);
 			if (!quieted && ast_channel_stream(chan) == NULL && timeout && started == 0 && !filename_tmp) {
+				ast_clear_flag(speech, AST_SPEECH_STREAM);
 				if (timeout == -1) {
 					done = 1;
 					if (f)
@@ -846,6 +849,7 @@ static int speech_background(struct ast_channel *chan, const char *data)
 			break;
 		case AST_SPEECH_STATE_WAIT:
 			/* Cue up waiting sound if not already playing */
+			ast_clear_flag(speech, AST_SPEECH_STREAM);
 			if (!strlen(dtmf)) {
 				if (ast_channel_stream(chan) == NULL) {
 					if (speech->processing_sound != NULL) {
@@ -874,6 +878,7 @@ static int speech_background(struct ast_channel *chan, const char *data)
 				/* Stop audio playback */
 				if (ast_channel_stream(chan) != NULL) {
 					ast_stopstream(chan);
+					ast_clear_flag(speech, AST_SPEECH_STREAM);
 				}
 			}
 			break;
@@ -925,12 +930,14 @@ static int speech_background(struct ast_channel *chan, const char *data)
 
 	if (!ast_strlen_zero(dtmf)) {
 		/* We sort of make a results entry */
-		speech->results = ast_calloc(1, sizeof(*speech->results));
-		if (speech->results != NULL) {
+		struct ast_speech_result *current_result = ast_calloc(sizeof(struct ast_speech_result), 1);
+		if (current_result != NULL) {
 			ast_speech_dtmf(speech, dtmf);
-			speech->results->score = 1000;
-			speech->results->text = ast_strdup(dtmf);
-			speech->results->grammar = ast_strdup("dtmf");
+			current_result->score = 1000;
+			current_result->text = ast_strdup(dtmf);
+			current_result->grammar = ast_strdup("dtmf");
+			current_result->list.next = speech->results;
+			speech->results = current_result;
 		}
 		ast_speech_change_state(speech, AST_SPEECH_STATE_NOT_READY);
 	}
