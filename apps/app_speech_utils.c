@@ -548,19 +548,26 @@ static int speech_create(struct ast_channel *chan, const char *data)
 	struct ast_speech *speech = NULL;
 	struct ast_datastore *datastore = NULL;
 
+	speech = find_speech(chan);
+	if(speech!=NULL) {
+		/* Already used */
+		pbx_builtin_setvar_helper(chan, "ERROR", "2");
+		return -1;
+	}
+
 	/* Request a speech object */
 	speech = ast_speech_new(data, ast_channel_nativeformats(chan));
 	if (speech == NULL) {
 		/* Not available */
 		pbx_builtin_setvar_helper(chan, "ERROR", "1");
-		return 0;
+		return -1;
 	}
 
 	datastore = ast_datastore_alloc(&speech_datastore, NULL);
 	if (datastore == NULL) {
 		ast_speech_destroy(speech);
 		pbx_builtin_setvar_helper(chan, "ERROR", "1");
-		return 0;
+		return -1;
 	}
 	pbx_builtin_setvar_helper(chan, "ERROR", NULL);
 	datastore->data = speech;
@@ -582,17 +589,20 @@ static int speech_load(struct ast_channel *chan, const char *vdata)
 		AST_APP_ARG(path);
 	);
 
+	if (speech == NULL) 
+		return -1;
+
 	data = ast_strdupa(vdata);
 	AST_STANDARD_APP_ARGS(args, data);
 
-	if (speech == NULL)
+	if (args.argc != 2) {
+   		ast_free(data);
 		return -1;
-
-	if (args.argc != 2)
-		return -1;
+	}
 
 	/* Load the grammar locally on the object */
 	res = ast_speech_grammar_load(speech, args.grammar, args.path);
+	ast_free(data);
 
 	return res;
 }
@@ -950,6 +960,7 @@ static int speech_background(struct ast_channel *chan, const char *data)
 		ast_set_read_format(chan, oldreadformat);
 	}
 
+	ast_free(data);
 	return 0;
 }
 

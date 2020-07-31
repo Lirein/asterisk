@@ -209,7 +209,7 @@ struct ast_speech *ast_speech_new(const char *engine_name, const struct ast_form
 	}
 
 	/* Allocate our own speech structure, and try to allocate a structure from the engine too */
-	if (!(new_speech = ast_calloc(1, sizeof(*new_speech)))) {
+	if (!(new_speech = ast_calloc(1, sizeof(struct ast_speech)))) {
 		return NULL;
 	}
 
