@@ -315,14 +315,16 @@ static int realtime_exec(struct ast_channel *chan, const char *context, const ch
 	struct ast_variable *var = realtime_common(context, exten, priority, data, MODE_MATCH);
 
 	if (var) {
-		char *appdata_tmp = "";
+		char *appdata_tmp = ast_strdup("");
 		char *app = NULL;
 		struct ast_variable *v;
 
 		for (v = var; v ; v = v->next) {
-			if (!strcasecmp(v->name, "app"))
+			if (!strcasecmp(v->name, "app")) {
+				if(app) ast_free(app);
 				app = ast_strdupa(v->value);
-			else if (!strcasecmp(v->name, "appdata")) {
+			} else if (!strcasecmp(v->name, "appdata")) {
+				if(appdata_tmp) ast_free(appdata_tmp);
 				appdata_tmp = ast_strdupa(v->value);
 			}
 		}
@@ -372,6 +374,8 @@ static int realtime_exec(struct ast_channel *chan, const char *context, const ch
 		} else {
 			ast_log(LOG_WARNING, "No application specified for realtime extension '%s' in context '%s'\n", exten, context);
 		}
+		if(app) ast_free(app);
+		if(appdata_tmp) ast_free(appdata_tmp);
 	}
 	return res;
 }

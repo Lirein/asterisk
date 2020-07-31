@@ -542,7 +542,7 @@ static void tps_report_taskprocessor_list_helper(int fd, struct ast_taskprocesso
 static int tps_report_taskprocessor_list(int fd, const char *like)
 {
 	int tps_count = 0;
-	int word_len;
+	int word_len = 0;
 	struct ao2_container *sorted_tps;
 	struct ast_taskprocessor *tps;
 	struct ao2_iterator iter;
@@ -555,8 +555,8 @@ static int tps_report_taskprocessor_list(int fd, const char *like)
 		ao2_cleanup(sorted_tps);
 		return 0;
 	}
-
-	word_len = strlen(like);
+    
+	if(like) word_len = strlen(like);
 	iter = ao2_iterator_init(sorted_tps, AO2_ITERATOR_UNLINK);
 	while ((tps = ao2_iterator_next(&iter))) {
 		if (like) {

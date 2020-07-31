@@ -1391,6 +1391,10 @@ static void set_bridge_peer_vars_multiparty(struct ast_bridge *bridge)
 		ast_bridge_vars_set(bridge_channel->chan, buf, NULL);
 		ast_channel_unlock(bridge_channel->chan);
 	}
+	for (idx = 0; idx < num_names; ++idx) {
+		ast_free(names[idx]);
+	}
+	ast_free(names);
 }
 
 /*!
@@ -4181,6 +4185,8 @@ static enum ast_transfer_result blind_transfer_bridge(int is_external,
 
 	transfer_message->replace_channel = ast_channel_snapshot_get_latest(ast_channel_uniqueid(local));
 	if (!transfer_message->replace_channel) {
+		ast_channel_unlock(local);
+		ast_channel_unlock(transferer);
 		ast_hangup(local);
 		return AST_BRIDGE_TRANSFER_FAIL;
 	}

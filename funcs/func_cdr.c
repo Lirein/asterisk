@@ -55,6 +55,9 @@
 					<enum name="clid">
 						<para>Caller ID.</para>
 					</enum>
+					<enum name="dclid">
+						<para>ConnectedLine ID.</para>
+					</enum>
 					<enum name="lastdata">
 						<para>Last application arguments.</para>
 					</enum>

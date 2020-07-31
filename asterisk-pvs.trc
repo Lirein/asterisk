@@ -16,6 +16,7 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/addons/format_mp3.c	223	warn	V547 Expression 'p->dbuflen >= (320 - p->buflen)' is always false.
 /home/voip/packages/asterisk-16.12/addons/format_mp3.c	23	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/addons/mp3/common.c	110	warn	V519 The 'fr->bitrate_index' variable is assigned values twice successively. Perhaps this is a mistake. Check lines: 108, 110.
+/home/voip/packages/asterisk-16.12/addons/mp3/interface.c	113	err	V595 The 'mp->tail' pointer was utilized before it was verified against nullptr. Check lines: 113, 114.
 /home/voip/packages/asterisk-16.12/addons/chan_mobile.c	1333	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 1333, 1324.
 /home/voip/packages/asterisk-16.12/addons/chan_mobile.c	1353	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 1353, 1341.
 /home/voip/packages/asterisk-16.12/addons/chan_mobile.c	1407	warn	V641 The size of the '& addr' buffer is not a multiple of the element size of the type 'struct sockaddr'.
@@ -39,7 +40,15 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/addons/chan_mobile.c	3764	warn	V768 The expression 'ast_pbx_start(chan)' is of enum type. It is odd that it is used as an expression of a Boolean-type.
 /home/voip/packages/asterisk-16.12/addons/chan_mobile.c	4216	warn	V768 The expression 'ast_pbx_start(chan)' is of enum type. It is odd that it is used as an expression of a Boolean-type.
 /home/voip/packages/asterisk-16.12/addons/chan_mobile.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/addons/mp3/interface.c	113	err	V595 The 'mp->tail' pointer was utilized before it was verified against nullptr. Check lines: 113, 114.
+/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	191	warn	V1048 The 'stat' variable was assigned the same value.
+/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	223	warn	V614 Potentially uninitialized variable 'i' used.
+/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	407	warn	V1048 The 'stat' variable was assigned the same value.
+/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	584	warn	V614 Potentially uninitialized variable 'extbit' used. Consider checking the second actual argument of the 'getSizeConstraint' function.
+/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	614	warn	V614 Potentially uninitialized variable 'bitValue' used.
+/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	805	warn	V1048 The 'stat' variable was assigned the same value.
+/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	916	warn	V614 Potentially uninitialized variable 'bitValue' used.
+/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	948	warn	V1048 The 'stat' variable was assigned the same value.
+/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	982	warn	V1048 The 'stat' variable was assigned the same value.
 /home/voip/packages/asterisk-16.12/addons/chan_ooh323.c	403	warn	V707 Giving short names to global variables is considered to be bad practice. It is suggested to rename 'io' variable.
 /home/voip/packages/asterisk-16.12/addons/chan_ooh323.c	534	warn	V768 The expression 'ast_pbx_start(ch)' is of enum type. It is odd that it is used as an expression of a Boolean-type.
 /home/voip/packages/asterisk-16.12/addons/chan_ooh323.c	553	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 553, 439.
@@ -80,22 +89,13 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/addons/chan_ooh323.c	5045	warn	V560 A part of conditional expression is always true: !p->faxmode.
 /home/voip/packages/asterisk-16.12/addons/chan_ooh323.c	5102	warn	V560 A part of conditional expression is always true: p->owner.
 /home/voip/packages/asterisk-16.12/addons/chan_ooh323.c	5106	warn	V547 Expression '!p->owner' is always false.
-/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	191	warn	V1048 The 'stat' variable was assigned the same value.
-/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	223	warn	V614 Potentially uninitialized variable 'i' used.
-/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	407	warn	V1048 The 'stat' variable was assigned the same value.
-/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	584	warn	V614 Potentially uninitialized variable 'extbit' used. Consider checking the second actual argument of the 'getSizeConstraint' function.
-/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	614	warn	V614 Potentially uninitialized variable 'bitValue' used.
-/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	805	warn	V1048 The 'stat' variable was assigned the same value.
-/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	916	warn	V614 Potentially uninitialized variable 'bitValue' used.
-/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	948	warn	V1048 The 'stat' variable was assigned the same value.
-/home/voip/packages/asterisk-16.12/addons/ooh323c/src/decode.c	982	warn	V1048 The 'stat' variable was assigned the same value.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/dlist.c	192	warn	V547 Expression 'pList->head != 0' is always true.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/dlist.c	239	warn	V547 Expression '0 != pList->tail' is always true.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/encode.c	311	warn	V560 A part of conditional expression is always false: range_value == 0.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/encode.c	902	warn	V1048 The 'stat' variable was assigned the same value.
+/home/voip/packages/asterisk-16.12/addons/ooh323c/src/h323/H235-SECURITY-MESSAGESDec.c	1420	warn	V785 Constant expression in switch statement.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/h323/H235-SECURITY-MESSAGESEnc.c	288	warn	V614 Potentially uninitialized variable 'openType.numocts' used. Consider checking the second actual argument of the 'encodeOpenType' function.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/h323/H235-SECURITY-MESSAGESEnc.c	288	err	V614 Potentially uninitialized pointer 'openType.data' used. Consider checking the third actual argument of the 'encodeOpenType' function.
-/home/voip/packages/asterisk-16.12/addons/ooh323c/src/h323/H235-SECURITY-MESSAGESDec.c	1420	warn	V785 Constant expression in switch statement.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/h323/MULTIMEDIA-SYSTEM-CONTROLEnc.c	393	warn	V614 Potentially uninitialized variable 'openType.numocts' used. Consider checking the second actual argument of the 'encodeOpenType' function.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/h323/MULTIMEDIA-SYSTEM-CONTROLEnc.c	393	err	V614 Potentially uninitialized pointer 'openType.data' used. Consider checking the third actual argument of the 'encodeOpenType' function.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/h323/MULTIMEDIA-SYSTEM-CONTROLEnc.c	2795	warn	V614 Potentially uninitialized variable 'openType.numocts' used. Consider checking the second actual argument of the 'encodeOpenType' function.
@@ -263,8 +263,8 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/ooh245.c	4580	warn	V1051 Consider checking for misprints. It's possible that the 'pUniIp6Addrs' should be checked here.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/ooh245.c	4620	warn	V547 Expression 'call->versionIP == 6' is always false.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/ooh245.c	4696	warn	V1048 Variable was assigned the same value.
-/home/voip/packages/asterisk-16.12/addons/ooh323c/src/ooports.c	93	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 93, 74.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/perutil.c	190	warn	V614 Potentially uninitialized variable 'extbit' used. Consider checking the second actual argument of the 'getSizeConstraint' function.
+/home/voip/packages/asterisk-16.12/addons/ooh323c/src/ooports.c	93	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 93, 74.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/ooq931.c	510	err	V610 Undefined behavior. Check the shift operator '>>'. The right operand ('((i - 8 + 1) * 8)' = [8..64]) is greater than or equal to the length in bits of the promoted left operand.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/ooq931.c	966	err	V547 Expression 'dir & (1 << 0)' is always true.
 /home/voip/packages/asterisk-16.12/addons/ooh323c/src/ooq931.c	2483	err	V614 Uninitialized variable 'ts.tv_sec' used.
@@ -282,7 +282,6 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/apps/app_adsiprog.c	1240	warn	V512 A call of the 'memcpy' function will lead to overflow of the buffer 'disp->data + disp->datalen'.
 /home/voip/packages/asterisk-16.12/apps/app_adsiprog.c	1240	err	V575 The 'memcpy' function doesn't copy the whole string. Use 'strcpy / strcpy_s' function to preserve terminal null.
 /home/voip/packages/asterisk-16.12/apps/app_adsiprog.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_agent_pool.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/apps/app_agent_pool.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/addons/res_config_mysql.c	300	warn	V576 Incorrect format. Consider checking the third actual argument of the 'sscanf' function. A pointer to the unsigned char type is expected.
 /home/voip/packages/asterisk-16.12/addons/res_config_mysql.c	535	warn	V560 A part of conditional expression is always true: chunk.
 /home/voip/packages/asterisk-16.12/addons/res_config_mysql.c	1341	warn	V1048 The 'conn->connected' variable was assigned the same value.
@@ -291,63 +290,64 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/addons/res_config_mysql.c	1495	err	V575 The 'strncasecmp' function processes '0' elements. Inspect the third argument.
 /home/voip/packages/asterisk-16.12/addons/res_config_mysql.c	1510	warn	V560 A part of conditional expression is always true: a->argc == 3.
 /home/voip/packages/asterisk-16.12/addons/res_config_mysql.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_attended_transfer.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_alarmreceiver.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_audiosocket.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_attended_transfer.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_amd.c	291	warn	V547 Expression 'res >= 0' is always true.
 /home/voip/packages/asterisk-16.12/apps/app_amd.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_audiosocket.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_authenticate.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_blind_transfer.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_bridgeaddchan.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_bridgewait.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_cdr.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_bridgewait.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_celgenuserevent.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_chanisavail.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_channelredirect.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_controlplayback.c	179	warn	V1009 Check the array initialization. Only the first element is initialized explicitly. The rest elements are initialized with the value by default.
 /home/voip/packages/asterisk-16.12/apps/app_controlplayback.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_dahdiras.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_confbridge.c	3354	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 3354, 3308.
 /home/voip/packages/asterisk-16.12/apps/app_confbridge.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_db.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_dahdiras.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_chanspy.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_db.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_dictate.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_directed_pickup.c	286	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 286, 282.
 /home/voip/packages/asterisk-16.12/apps/app_directed_pickup.c	417	warn	V1009 Check the array initialization. Only the first element is initialized explicitly. The rest elements are initialized with the value by default.
 /home/voip/packages/asterisk-16.12/apps/app_directed_pickup.c	21	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_dictate.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_directory.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_disa.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_dumpchan.c	94	warn	V681 The language standard does not define an order in which the 'ast_channel_writetrans' functions will be called during evaluation of arguments.
 /home/voip/packages/asterisk-16.12/apps/app_dumpchan.c	21	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_disa.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_echo.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_externalivr.c	21	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_festival.c	501	err	V547 Expression 'strln == - 1' is always true.
 /home/voip/packages/asterisk-16.12/apps/app_festival.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_externalivr.c	21	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_flash.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_getcpeid.c	81	warn	V505 The 'alloca' function is used inside the loop. This can quickly overflow stack.
-/home/voip/packages/asterisk-16.12/apps/app_getcpeid.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_forkcdr.c	17	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_dial.c	3084	warn	V560 A part of conditional expression is always true: !dial_end_raised.
 /home/voip/packages/asterisk-16.12/apps/app_dial.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_image.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_flash.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_forkcdr.c	17	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_getcpeid.c	81	warn	V505 The 'alloca' function is used inside the loop. This can quickly overflow stack.
+/home/voip/packages/asterisk-16.12/apps/app_getcpeid.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_ices.c	200	warn	V560 A part of conditional expression is always true: (res < 0).
 /home/voip/packages/asterisk-16.12/apps/app_ices.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_image.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_jack.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_milliwatt.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_macro.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_agent_pool.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/apps/app_agent_pool.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/apps/app_mixmonitor.c	23	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_mp3.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_minivm.c	1701	warn	V519 The 'cmd' variable is assigned values twice successively. Perhaps this is a mistake. Check lines: 1694, 1701.
 /home/voip/packages/asterisk-16.12/apps/app_minivm.c	1999	warn	V519 The 'res' variable is assigned values twice successively. Perhaps this is a mistake. Check lines: 1993, 1999.
 /home/voip/packages/asterisk-16.12/apps/app_minivm.c	2544	err	V614 Potentially uninitialized pointer 'argv[0]' used. Consider checking the second actual argument of the 'ast_copy_string' function.
 /home/voip/packages/asterisk-16.12/apps/app_minivm.c	3104	warn	V560 A part of conditional expression is always true: (a->argc == 5).
 /home/voip/packages/asterisk-16.12/apps/app_minivm.c	3537	warn	V1048 The 'res' variable was assigned the same value.
 /home/voip/packages/asterisk-16.12/apps/app_minivm.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_mp3.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_nbscat.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_originate.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/app_playtones.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_page.c	11	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_playback.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/app_playtones.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_privacy.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_read.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_readexten.c	17	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -453,7 +453,6 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/apps/app_voicemail.c	12686	warn	V666 Consider inspecting third argument of the function 'strncasecmp'. It is possible that the value does not correspond with the length of a string which was passed with the second argument.
 /home/voip/packages/asterisk-16.12/apps/app_voicemail.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/confbridge/conf_chan_record.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/confbridge/conf_state.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_odbcstorage.c	1698	warn	V764 Possible incorrect order of arguments passed to 'find_user' function: 'search_mailbox' and 'search_context'.
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_odbcstorage.c	5461	warn	V612 An unconditional 'break' within a loop.
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_odbcstorage.c	6924	warn	V547 Expression 'res >= 0' is always true.
@@ -508,8 +507,7 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_odbcstorage.c	16554	warn	V560 A part of conditional expression is always true: vmu.
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_odbcstorage.c	12686	warn	V666 Consider inspecting third argument of the function 'strncasecmp'. It is possible that the value does not correspond with the length of a string which was passed with the second argument.
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_odbcstorage.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/confbridge/conf_state_empty.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/apps/confbridge/conf_state_inactive.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/confbridge/conf_state.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_imapstorage.c	1700	warn	V764 Possible incorrect order of arguments passed to 'find_user' function: 'search_mailbox' and 'search_context'.
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_imapstorage.c	2465	warn	V547 Expression 'vmu->imapuser[0] == '\\0'' is always false.
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_imapstorage.c	2968	warn	V560 A part of conditional expression is always false: !vms->mailstream.
@@ -584,6 +582,8 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_imapstorage.c	16561	warn	V547 Expression 'vmu' is always true.
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_imapstorage.c	12688	warn	V666 Consider inspecting third argument of the function 'strncasecmp'. It is possible that the value does not correspond with the length of a string which was passed with the second argument.
 /home/voip/packages/asterisk-16.12/apps/app_voicemail_imapstorage.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/confbridge/conf_state_empty.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/apps/confbridge/conf_state_inactive.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/apps/confbridge/conf_config_parser.c	1191	warn	V560 A part of conditional expression is always true: b_data.
 /home/voip/packages/asterisk-16.12/apps/confbridge/conf_config_parser.c	1196	warn	V560 A part of conditional expression is always true: b_data.
 /home/voip/packages/asterisk-16.12/apps/confbridge/conf_config_parser.c	1208	warn	V560 A part of conditional expression is always true: b_data.
@@ -651,15 +651,14 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/cel/cel_pgsql.c	203	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 203, 165.
 /home/voip/packages/asterisk-16.12/cel/cel_pgsql.c	26	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/cel/cel_tds.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/channels/chan_audiosocket.c	137	warn	V1009 Check the array initialization. Only the first element is initialized explicitly. The rest elements are initialized with the value by default.
+/home/voip/packages/asterisk-16.12/channels/chan_audiosocket.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/channels/chan_alsa.c	254	err	V523 The 'then' statement is equivalent to the 'else' statement.
 /home/voip/packages/asterisk-16.12/channels/chan_alsa.c	325	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 325, 324.
 /home/voip/packages/asterisk-16.12/channels/chan_alsa.c	526	warn	V1048 The 'f.mallocd' variable was assigned the same value.
 /home/voip/packages/asterisk-16.12/channels/chan_alsa.c	613	warn	V768 The expression 'ast_pbx_start(tmp)' is of enum type. It is odd that it is used as an expression of a Boolean-type.
 /home/voip/packages/asterisk-16.12/channels/chan_alsa.c	841	warn	V547 Expression 'alsa.owner' is always true.
 /home/voip/packages/asterisk-16.12/channels/chan_alsa.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/channels/chan_audiosocket.c	137	warn	V1009 Check the array initialization. Only the first element is initialized explicitly. The rest elements are initialized with the value by default.
-/home/voip/packages/asterisk-16.12/channels/chan_audiosocket.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/channels/chan_bridge_media.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/cel/cel_odbc.c	198	warn	V505 The 'alloca' function is used inside the loop. This can quickly overflow stack.
 /home/voip/packages/asterisk-16.12/cel/cel_odbc.c	233	warn	V505 The 'alloca' function is used inside the loop. This can quickly overflow stack.
 /home/voip/packages/asterisk-16.12/cel/cel_odbc.c	238	warn	V505 The 'alloca' function is used inside the loop. This can quickly overflow stack.
@@ -669,6 +668,7 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/cel/cel_odbc.c	716	warn	V576 Incorrect format. Consider checking the third actual argument of the 'sscanf' function. Buffer overflow is possible. Maximum width possible: 1. Current width: 30.
 /home/voip/packages/asterisk-16.12/cel/cel_odbc.c	729	warn	V576 Incorrect format. Consider checking the third actual argument of the 'sscanf' function. Buffer overflow is possible. Maximum width possible: 1. Current width: 30.
 /home/voip/packages/asterisk-16.12/cel/cel_odbc.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/channels/chan_bridge_media.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/channels/chan_console.c	463	warn	V768 The expression 'ast_pbx_start(chan)' is of enum type. It is odd that it is used as an expression of a Boolean-type.
 /home/voip/packages/asterisk-16.12/channels/chan_console.c	1397	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 1397, 1378.
 /home/voip/packages/asterisk-16.12/channels/chan_console.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -887,46 +887,27 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/codecs/codec_speex.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/codecs/g722/g722_encode.c	15	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/codecs/lpc10/pitsyn.c	490	warn	V636 The 'ip / 2' expression was implicitly cast from 'int' type to 'float' type. Consider utilizing an explicit type cast to avoid the loss of a fractional part. An example: double A = (double)(X) / Y;.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	1400	warn	V728 An excessive check can be simplified. The '||' operator is surrounded by opposite expressions '!checkaftercid' and 'checkaftercid'. 
 /home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	1741	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: .
 /home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	3477	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 3477, 3480.
 /home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	3473	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 3473, 3480.
 /home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	3505	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 3505, 3498.
 /home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	3502	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 3502, 3498.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	4000	warn	V560 A part of conditional expression is always true: (p->mfcr2_dnis_matched = 1).
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	4000	warn	V560 A part of conditional expression is always false: (p->mfcr2_dnis_matched == 1).
 /home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	5679	err	V712 Be advised that compiler may delete this cycle or make it infinity. Use volatile variable(s) or synchronization primitives to avoid this.
 /home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	5721	warn	V1044 Loop break conditions do not depend on the number of iterations.
 /home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	5921	warn	V547 Expression 'p->mfcr2_call_accepted' is always false.
 /home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	6249	err	V547 Expression 'idx == 2' is always true.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7110	warn	V519 The 'x' variable is assigned values twice successively. Perhaps this is a mistake. Check lines: 7109, 7110.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7680	warn	V547 Expression '!p->subs[2].owner' is always false.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7689	warn	V547 Expression 'p->subs[2].owner' is always true.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7717	warn	V547 Expression 'p->subs[2].owner' is always true.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7776	err	V512 A call of the 'memset' function will lead to underflow of the buffer 'p->echorest'.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	8281	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 8281, 7670.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7735	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 7735, 7670.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7682	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 7682, 7670.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7677	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 7677, 7670.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	9393	warn	V768 The expression 'ast_pbx_start(tmp)' is of enum type. It is odd that it is used as an expression of a Boolean-type.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	9895	warn	V519 The 'res' variable is assigned values twice successively. Perhaps this is a mistake. Check lines: 9892, 9895.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	9915	warn	V519 The 'res' variable is assigned values twice successively. Perhaps this is a mistake. Check lines: 9899, 9915.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	10281	warn	V764 Possible incorrect order of arguments passed to 'callerid_get' function: 'name' and 'number'.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	10563	warn	V764 Possible incorrect order of arguments passed to 'callerid_get' function: 'name' and 'number'.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	10854	warn	V764 Possible incorrect order of arguments passed to 'callerid_get' function: 'name' and 'number'.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	11602	warn	V547 Expression 'last' is always true.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	11676	warn	V512 A call of the 'memcpy' function will lead to overflow of the buffer 'mtd->buf'.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	12005	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 12005, 11974.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	12271	warn	V547 Expression '!r2_link' is always false.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	14898	err	V610 Undefined behavior. Check the shift operator '<<'. The right operand ('targetnum' = [0..63]) is greater than or equal to the length in bits of the promoted left operand.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	14978	warn	V547 Expression is always false.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	14970	warn	V547 Expression is always false.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	15285	warn	V547 Expression '!found_link' is always true.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	17760	warn	V580 An odd explicit type casting: (char * *) & param. Consider verifying it.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	18239	warn	V547 Expression 'y < 0' is always false.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	18336	err	V517 The use of 'if (A) {...} else if (A) {...}' pattern was detected. There is a probability of logical error presence. Check lines: 18336, 18346.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	18421	err	V517 The use of 'if (A) {...} else if (A) {...}' pattern was detected. There is a probability of logical error presence. Check lines: 18421, 18431.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	19100	warn	V547 Expression is always false.
-/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	19621	warn	V1020 The function exited without calling the '__ast_pthread_mutex_unlock' function. Check lines: 19621, 19615.
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7679	warn	V547 Expression '!p->subs[2].owner' is always false.
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7688	warn	V547 Expression 'p->subs[2].owner' is always true.
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7716	warn	V547 Expression 'p->subs[2].owner' is always true.
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	8281	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 8281, 7669.
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7734	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 7734, 7669.
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7681	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 7681, 7669.
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	7676	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 7676, 7669.
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	14899	err	V629 Consider inspecting the '1 << targetnum' expression. Bit shifting of the 32-bit value with a subsequent expansion to the 64-bit type.
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	14979	warn	V547 Expression is always false.
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	14971	warn	V547 Expression is always false.
+/home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	19092	warn	V547 Expression is always false.
 /home/voip/packages/asterisk-16.12/channels/chan_dahdi.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/codecs/speex/resample.c	371	err	V610 Unspecified behavior. Check the shift operator '>>'. The left operand is negative ('....' = [-1073692671..1073725439]).
 /home/voip/packages/asterisk-16.12/codecs/speex/resample.c	482	err	V610 Unspecified behavior. Check the shift operator '>>'. The left operand is negative ('....' = [-1073692671..1073725439]).
@@ -957,22 +938,22 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/formats/format_wav.c	398	warn	V547 Expression 'res' is always false.
 /home/voip/packages/asterisk-16.12/formats/format_wav.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_aes.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/formats/format_wav_gsm.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_base64.c	108	warn	V1051 Consider checking for misprints. It's possible that the 'decoded_len' should be checked here.
 /home/voip/packages/asterisk-16.12/funcs/func_base64.c	17	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/formats/format_wav_gsm.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_blacklist.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_callcompletion.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_cdr.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_callerid.c	464	warn	V1009 Check the array initialization. Only the first element is initialized explicitly. The rest elements are initialized with the value by default.
 /home/voip/packages/asterisk-16.12/funcs/func_callerid.c	478	warn	V1009 Check the array initialization. Only the first element is initialized explicitly. The rest elements are initialized with the value by default.
 /home/voip/packages/asterisk-16.12/funcs/func_callerid.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/funcs/func_config.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_channel.c	552	warn	V576 Incorrect format. Consider checking the third actual argument of the 'sscanf' function. Buffer overflow is possible. Maximum width possible: 1. Current width: 4.
 /home/voip/packages/asterisk-16.12/funcs/func_channel.c	555	warn	V576 Incorrect format. Consider checking the third actual argument of the 'sscanf' function. Buffer overflow is possible. Maximum width possible: 1. Current width: 4.
 /home/voip/packages/asterisk-16.12/funcs/func_channel.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/funcs/func_config.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/funcs/func_db.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_devstate.c	145	warn	V1009 Check the array initialization. Only the first element is initialized explicitly. The rest elements are initialized with the value by default.
 /home/voip/packages/asterisk-16.12/funcs/func_devstate.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/funcs/func_db.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_dialgroup.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_dialplan.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_enum.c	21	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -983,8 +964,8 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/funcs/func_env.c	466	warn	V560 A part of conditional expression is always true: first_cr.
 /home/voip/packages/asterisk-16.12/funcs/func_env.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_global.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/funcs/func_groupcount.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_hangupcause.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/funcs/func_groupcount.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_holdintercept.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_iconv.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/funcs/func_jitterbuffer.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -1027,8 +1008,8 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/funcs/func_volume.c	85	warn	V1009 Check the array initialization. Only the first element is initialized explicitly. The rest elements are initialized with the value by default.
 /home/voip/packages/asterisk-16.12/funcs/func_volume.c	144	warn	V560 A part of conditional expression is always false.
 /home/voip/packages/asterisk-16.12/funcs/func_volume.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/alaw.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/adsi.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/alaw.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/abstract_jb.c	1136	warn	V1037 Two or more case-branches perform the same actions. Check lines: 1136, 1156
 /home/voip/packages/asterisk-16.12/main/abstract_jb.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/acl.c	426	warn	V512 A call of the 'memcpy' function will lead to underflow of the buffer '& addr->ss'.
@@ -1050,7 +1031,6 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/ast_expr2.c	82	err	V011 Presence of #line directives may cause some diagnostic messages to have incorrect file name and line number.
 /home/voip/packages/asterisk-16.12/main/ast_expr2.c	13	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/ast_expr2.c	1	err	V002 Some diagnostic messages may contain incorrect line number in this file.
-/home/voip/packages/asterisk-16.12/main/astfd.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/ast_expr2.fl	162	warn	V1037 Two or more case-branches perform the same actions. Check lines: 162, 187, 216
 /home/voip/packages/asterisk-16.12/main/ast_expr2.fl	167	warn	V1037 Two or more case-branches perform the same actions. Check lines: 167, 170
 /home/voip/packages/asterisk-16.12/main/ast_expr2f.c	1429	warn	V1004 The 'b->yy_ch_buf' pointer was used unsafely after it was verified against nullptr. Check lines: 1425, 1429.
@@ -1077,6 +1057,7 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/app.c	2661	warn	V560 A part of conditional expression is always true: (maxretries > 0).
 /home/voip/packages/asterisk-16.12/main/app.c	2795	warn	V560 A part of conditional expression is always true: quote.
 /home/voip/packages/asterisk-16.12/main/app.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/astfd.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/astmm.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/astobj2_container.c	797	warn	V1004 The 'self' pointer was used unsafely after it was verified against nullptr.
 /home/voip/packages/asterisk-16.12/main/astobj2_container.c	824	warn	V1004 The 'self' pointer was used unsafely after it was verified against nullptr.
@@ -1088,11 +1069,11 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/astobj2.c	612	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 612, 528.
 /home/voip/packages/asterisk-16.12/main/astobj2.c	597	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 597, 528.
 /home/voip/packages/asterisk-16.12/main/astobj2.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/astobj2_global.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/asterisk.c	342	warn	V707 Giving short names to global variables is considered to be bad practice. It is suggested to rename 'el' variable.
 /home/voip/packages/asterisk-16.12/main/asterisk.c	1992	warn	V519 The 'shuttingdown' variable is assigned values twice successively. Perhaps this is a mistake. Check lines: 1982, 1992.
 /home/voip/packages/asterisk-16.12/main/asterisk.c	3443	warn	V560 A part of conditional expression is always false: cfg == (void *) 0.
 /home/voip/packages/asterisk-16.12/main/asterisk.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/astobj2_global.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/astobj2_hash.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/astobj2_rbtree.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/autochan.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -1106,6 +1087,10 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/bridge_after.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/bridge_basic.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/bridge_basic.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/main/bridge_roles.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/bridge_channel.c	229	warn	V1020 The function exited without calling the '_ast_bridge_unlock' function. Check lines: 229, 226.
+/home/voip/packages/asterisk-16.12/main/bridge_channel.c	2591	warn	V1037 Two or more case-branches perform the same actions. Check lines: 2591, 2601
+/home/voip/packages/asterisk-16.12/main/bridge_channel.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/buildinfo.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/bridge.c	1370	warn	V505 The 'alloca' function is used inside the loop. This can quickly overflow stack.
 /home/voip/packages/asterisk-16.12/main/bridge.c	2534	warn	V1051 Consider checking for misprints. It's possible that the 'bridge_channel' should be used inside 'bridge_move_locked' function.
 /home/voip/packages/asterisk-16.12/main/bridge.c	4185	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 4185, 4179.
@@ -1118,19 +1103,15 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/bridge.c	4575	warn	V1048 The 'transfer_result' variable was assigned the same value.
 /home/voip/packages/asterisk-16.12/main/bridge.c	4886	warn	V1020 The function exited without calling the '_ast_bridge_unlock' function. Check lines: 4886, 4825.
 /home/voip/packages/asterisk-16.12/main/bridge.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/bridge_channel.c	229	warn	V1020 The function exited without calling the '_ast_bridge_unlock' function. Check lines: 229, 226.
-/home/voip/packages/asterisk-16.12/main/bridge_channel.c	2591	warn	V1037 Two or more case-branches perform the same actions. Check lines: 2591, 2601
-/home/voip/packages/asterisk-16.12/main/bridge_channel.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/bucket.c	288	warn	V686 A pattern was detected: (!bucket->create) || ((!bucket->create) && ...). The expression is excessive or contains a logical error.
 /home/voip/packages/asterisk-16.12/main/bucket.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/buildinfo.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/cel.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/ccss.c	879	warn	V1016 Expression 'value < AST_CC_AGENT_NEVER' is always false.
 /home/voip/packages/asterisk-16.12/main/ccss.c	896	warn	V1016 Expression 'value < AST_CC_MONITOR_NEVER' is always false.
 /home/voip/packages/asterisk-16.12/main/ccss.c	896	warn	V1016 Expression 'value > AST_CC_MONITOR_ALWAYS' is always false.
 /home/voip/packages/asterisk-16.12/main/ccss.c	2888	warn	V768 The expression 'ast_pbx_start(chan)' is of enum type. It is odd that it is used as an expression of a Boolean-type.
 /home/voip/packages/asterisk-16.12/main/ccss.c	3034	warn	V1037 Two or more case-branches perform the same actions. Check lines: 3034, 3039
 /home/voip/packages/asterisk-16.12/main/ccss.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/cel.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/cdr.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/cdr.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/main/callerid.c	353	warn	V547 Expression 'b > 0xff' is always false.
 /home/voip/packages/asterisk-16.12/main/callerid.c	402	warn	V547 Expression '(cid->len + 2) >= sizeof (cid->rawdata)' is always false.
@@ -1169,6 +1150,15 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/core_unreal.c	871	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 871, 863.
 /home/voip/packages/asterisk-16.12/main/core_unreal.c	866	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 866, 863.
 /home/voip/packages/asterisk-16.12/main/core_unreal.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/channel.c	4530	warn	V1048 The 'res' variable was assigned the same value.
+/home/voip/packages/asterisk-16.12/main/channel.c	5151	warn	V519 The 'res' variable is assigned values twice successively. Perhaps this is a mistake. Check lines: 5139, 5151.
+/home/voip/packages/asterisk-16.12/main/channel.c	6066	warn	V1037 Two or more case-branches perform the same actions. Check lines: 6066, 6076, 6081
+/home/voip/packages/asterisk-16.12/main/channel.c	7459	warn	V519 The 'ts->v2_1' variable is assigned values twice successively. Perhaps this is a mistake. Check lines: 7457, 7459.
+/home/voip/packages/asterisk-16.12/main/channel.c	7479	err	V763 Parameter 'len' is always rewritten in function body before being used.
+/home/voip/packages/asterisk-16.12/main/channel.c	8090	err	V597 The compiler could delete the 'memset' function call, which is used to flush 'buf' buffer. The memset_s() function should be used to erase the private data.
+/home/voip/packages/asterisk-16.12/main/channel.c	11023	err	V579 The indicate function receives the pointer and its size as arguments. It is possibly a mistake. Inspect the fourth argument.
+/home/voip/packages/asterisk-16.12/main/channel.c	11037	err	V579 The indicate function receives the pointer and its size as arguments. It is possibly a mistake. Inspect the fourth argument.
+/home/voip/packages/asterisk-16.12/main/channel.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/config.c	638	warn	V560 A part of conditional expression is always true: p->next != NULL.
 /home/voip/packages/asterisk-16.12/main/config.c	2130	err	V696 The 'continue' operator will terminate 'do { ... } while (FALSE)' loop because the condition is always false. Check lines: 2130, 2360.
 /home/voip/packages/asterisk-16.12/main/config.c	2138	err	V696 The 'continue' operator will terminate 'do { ... } while (FALSE)' loop because the condition is always false. Check lines: 2138, 2360.
@@ -1185,27 +1175,18 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/config.c	3879	err	V597 The compiler could delete the 'memset' function call, which is used to flush '_sa_buf' object. The memset_s() function should be used to erase the private data.
 /home/voip/packages/asterisk-16.12/main/config.c	4011	warn	V505 The 'alloca' function is used inside the loop. This can quickly overflow stack.
 /home/voip/packages/asterisk-16.12/main/config.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/channel.c	4530	warn	V1048 The 'res' variable was assigned the same value.
-/home/voip/packages/asterisk-16.12/main/channel.c	5151	warn	V519 The 'res' variable is assigned values twice successively. Perhaps this is a mistake. Check lines: 5139, 5151.
-/home/voip/packages/asterisk-16.12/main/channel.c	6066	warn	V1037 Two or more case-branches perform the same actions. Check lines: 6066, 6076, 6081
-/home/voip/packages/asterisk-16.12/main/channel.c	7459	warn	V519 The 'ts->v2_1' variable is assigned values twice successively. Perhaps this is a mistake. Check lines: 7457, 7459.
-/home/voip/packages/asterisk-16.12/main/channel.c	7479	err	V763 Parameter 'len' is always rewritten in function body before being used.
-/home/voip/packages/asterisk-16.12/main/channel.c	8090	err	V597 The compiler could delete the 'memset' function call, which is used to flush 'buf' buffer. The memset_s() function should be used to erase the private data.
-/home/voip/packages/asterisk-16.12/main/channel.c	11023	err	V579 The indicate function receives the pointer and its size as arguments. It is possibly a mistake. Inspect the fourth argument.
-/home/voip/packages/asterisk-16.12/main/channel.c	11037	err	V579 The indicate function receives the pointer and its size as arguments. It is possibly a mistake. Inspect the fourth argument.
-/home/voip/packages/asterisk-16.12/main/channel.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/crypt.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/datastore.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/data_buffer.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/datastore.c	16	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/db.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/devicestate.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/dns.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/dial.c	837	warn	V547 Expression 'dial->thread == (pthread_t) - 2' is always false.
 /home/voip/packages/asterisk-16.12/main/dial.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/dns_naptr.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/dns_core.c	418	warn	V512 A call of the 'memcpy' function will lead to underflow of the buffer '& address->ss'.
 /home/voip/packages/asterisk-16.12/main/dns_core.c	428	warn	V512 A call of the 'memcpy' function will lead to underflow of the buffer '& address->ss'.
 /home/voip/packages/asterisk-16.12/main/dns_core.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/dns_naptr.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/dns_query_set.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/dns_recurring.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/dns_system_resolver.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -1219,14 +1200,14 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/endpoints.c	242	warn	V547 Expression '((void *)(endpoint)) != NULL' is always true.
 /home/voip/packages/asterisk-16.12/main/endpoints.c	467	warn	V547 Expression '((void *)(snapshot)) != NULL' is always true.
 /home/voip/packages/asterisk-16.12/main/endpoints.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/event.c	283	warn	V547 Expression 'str_payload' is always true.
-/home/voip/packages/asterisk-16.12/main/event.c	434	warn	V1037 Two or more case-branches perform the same actions. Check lines: 434, 438
-/home/voip/packages/asterisk-16.12/main/event.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/dsp.c	1371	warn	V557 Array overrun is possible. The value of 'x + 1' index could reach 15.
 /home/voip/packages/asterisk-16.12/main/dsp.c	1381	warn	V557 Array overrun is possible. The value of 'x + 1' index could reach 15.
 /home/voip/packages/asterisk-16.12/main/dsp.c	1448	warn	V768 The expression is of enum type. It is odd that it is used as an expression of a Boolean-type.
 /home/voip/packages/asterisk-16.12/main/dsp.c	1453	warn	V768 The expression is of enum type. It is odd that it is used as an expression of a Boolean-type.
 /home/voip/packages/asterisk-16.12/main/dsp.c	21	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/event.c	283	warn	V547 Expression 'str_payload' is always true.
+/home/voip/packages/asterisk-16.12/main/event.c	434	warn	V1037 Two or more case-branches perform the same actions. Check lines: 434, 438
+/home/voip/packages/asterisk-16.12/main/event.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/enum.c	138	warn	V560 A part of conditional expression is always false: cc <= 41.
 /home/voip/packages/asterisk-16.12/main/enum.c	182	warn	V547 Expression 'i >= sizeof (c->txt)' is always false.
 /home/voip/packages/asterisk-16.12/main/enum.c	367	warn	V560 A part of conditional expression is always true: (ret >= 0).
@@ -1235,13 +1216,13 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/enum.c	703	warn	V507 Pointer to local array 'naptrinput' is stored outside the scope of this array. Such a pointer will become invalid.
 /home/voip/packages/asterisk-16.12/main/enum.c	1047	warn	V547 Expression 'cfg' is always true.
 /home/voip/packages/asterisk-16.12/main/enum.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/fixedjitterbuf.c	262	err	V1051 Consider checking for misprints. It's possible that the 'frame->next' should be checked here.
-/home/voip/packages/asterisk-16.12/main/fixedjitterbuf.c	17	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/features.c	533	warn	V768 The expression 'ast_pbx_start(peer)' is of enum type. It is odd that it is used as an expression of a Boolean-type.
 /home/voip/packages/asterisk-16.12/main/features.c	904	warn	V1048 The 'config->timelimit' variable was assigned the same value.
 /home/voip/packages/asterisk-16.12/main/features.c	966	warn	V560 A part of conditional expression is always true: config->timelimit.
 /home/voip/packages/asterisk-16.12/main/features.c	974	warn	V1048 The 'config->play_warning' variable was assigned the same value.
 /home/voip/packages/asterisk-16.12/main/features.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/fixedjitterbuf.c	262	err	V1051 Consider checking for misprints. It's possible that the 'frame->next' should be checked here.
+/home/voip/packages/asterisk-16.12/main/fixedjitterbuf.c	17	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/features_config.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/file.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/file.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/main/format.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -1276,13 +1257,13 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/indications.c	17	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/jitterbuf.c	314	warn	V547 Expression 'idx > (500 * 4 / 100 - 1)' is always false.
 /home/voip/packages/asterisk-16.12/main/jitterbuf.c	22	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/iostream.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/libasteriskpj.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/json.c	123	warn	V560 A part of conditional expression is always true: 0x80 <= ch.
 /home/voip/packages/asterisk-16.12/main/json.c	675	warn	V768 The variable 'transport_type' is of enum type. It is odd that it is used as a variable of a Boolean-type.
 /home/voip/packages/asterisk-16.12/main/json.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/libasteriskssl.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/iostream.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/lock.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/libasteriskssl.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/logger.c	1562	warn	V560 A part of conditional expression is always true: res <= 0.
 /home/voip/packages/asterisk-16.12/main/logger.c	1977	warn	V560 A part of conditional expression is always true: !close_logger_thread.
 /home/voip/packages/asterisk-16.12/main/logger.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -1291,8 +1272,8 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/loader.c	1250	warn	V768 The variable 'force' is of enum type. It is odd that it is used as a variable of a Boolean-type.
 /home/voip/packages/asterisk-16.12/main/loader.c	1954	err	V561 It's probably better to assign value to 'res' variable than to declare it anew. Previous declaration: loader.c, line 1913.
 /home/voip/packages/asterisk-16.12/main/loader.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/manager_channels.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/manager_channels.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/main/manager.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/manager.c' file with exit code 139
+/home/voip/packages/asterisk-16.12/main/manager_channels.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/manager_channels.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/main/manager_endpoints.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/manager_mwi.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/md5.c	6	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -1304,8 +1285,8 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/media_index.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/mixmonitor.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/message.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/mwi.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/named_acl.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/mwi.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/named_locks.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/netsock2.c	53	warn	V641 The size of the '& addr->ss' buffer is not a multiple of the element size of the type 'const struct sockaddr_in6'.
 /home/voip/packages/asterisk-16.12/main/netsock2.c	374	warn	V641 The size of the '& addr->ss' buffer is not a multiple of the element size of the type 'struct sockaddr_in6'.
@@ -1328,8 +1309,8 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/pbx_hangup_handler.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/pbx_functions.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/pbx_ignorepat.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/pbx_sw.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/pbx_include.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/pbx_sw.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/pbx_switch.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/pbx_timing.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/pickup.c	192	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 192, 177.
@@ -1351,22 +1332,23 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/pbx.c	8165	warn	V614 Potentially uninitialized buffer 'cidmatch' used. Consider checking the fourth actual argument of the 'ast_context_remove_extension_callerid2' function.
 /home/voip/packages/asterisk-16.12/main/pbx.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/plc.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/presencestate.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/privacy.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/presencestate.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/sdp_srtp.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/sched.c	147	warn	V547 Expression 'con->sched_thread->stop' is always false.
 /home/voip/packages/asterisk-16.12/main/sched.c	648	warn	V560 A part of conditional expression is always true: con->currently_executing.
 /home/voip/packages/asterisk-16.12/main/sched.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/rtp_engine.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/rtp_engine.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/main/sem.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/security_events.c	1017	err	V1051 Consider checking for misprints. It's possible that the 'addr' should be checked here.
 /home/voip/packages/asterisk-16.12/main/security_events.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/serializer.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/rtp_engine.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/rtp_engine.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/main/sip_api.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/serializer.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/slinfactory.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/smoother.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/sounds.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/sorcery.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/sorcery.c' file with exit code 139
+/home/voip/packages/asterisk-16.12/main/srv.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/say.c	158	warn	V560 A part of conditional expression is always true: fn.
 /home/voip/packages/asterisk-16.12/main/say.c	159	warn	V560 A part of conditional expression is always true: (fn = asciibuf).
 /home/voip/packages/asterisk-16.12/main/say.c	242	warn	V560 A part of conditional expression is always true: fn.
@@ -1453,11 +1435,10 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/say.c	9272	warn	V547 Expression '!res' is always true.
 /home/voip/packages/asterisk-16.12/main/say.c	9285	warn	V547 Expression '!res' is always true.
 /home/voip/packages/asterisk-16.12/main/say.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/srv.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/stasis_cache_pattern.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/stasis.c	986	err	V1051 Consider checking for misprints. It's possible that the 'topic' should be used inside 'topic_remove_subscription' function.
 /home/voip/packages/asterisk-16.12/main/stasis.c	1602	err	V561 It's probably better to assign value to 'res' variable than to declare it anew. Previous declaration: stasis.c, line 1580.
 /home/voip/packages/asterisk-16.12/main/stasis.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/stasis_cache_pattern.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/stasis_cache.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/stasis_bridges.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/stasis_endpoints.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -1465,11 +1446,11 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/stasis_message_router.c	114	err	V561 It's probably better to assign value to 'res' variable than to declare it anew. Previous declaration: stasis_message_router.c, line 105.
 /home/voip/packages/asterisk-16.12/main/stasis_message_router.c	225	warn	V547 Expression 'res' is always false.
 /home/voip/packages/asterisk-16.12/main/stasis_message_router.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/stasis_system.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/stasis_channels.c	177	warn	V796 It is possible that 'break' statement is missing in switch statement.
 /home/voip/packages/asterisk-16.12/main/stasis_channels.c	230	warn	V796 It is possible that 'break' statement is missing in switch statement.
 /home/voip/packages/asterisk-16.12/main/stasis_channels.c	832	warn	V796 It is possible that 'break' statement is missing in switch statement.
 /home/voip/packages/asterisk-16.12/main/stasis_channels.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/stasis_system.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/stasis_state.c	697	err	V561 It's probably better to assign value to 'res' variable than to declare it anew. Previous declaration: stasis_state.c, line 694.
 /home/voip/packages/asterisk-16.12/main/stasis_state.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/stdtime/localtime.c	870	warn	V560 A part of conditional expression is always false: (name = "localtime") == NULL.
@@ -1505,8 +1486,8 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/main/ulaw.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/tdd.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/udptl.c	22	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/main/translate.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/translate.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/main/uri.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/main/translate.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/translate.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/main/uuid.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/main/utils.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/main/utils.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/menuselect/menuselect_stub.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -1662,8 +1643,7 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/res/res_ari_sounds.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_audiosocket.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_calendar_caldav.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_calendar_exchange.c	124	warn	V1001 The 'event' variable is assigned but is not used by the end of the function.
-/home/voip/packages/asterisk-16.12/res/res_calendar_exchange.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_calendar_ews.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_calendar.c	399	warn	V1001 The 'cal' variable is assigned but is not used by the end of the function.
 /home/voip/packages/asterisk-16.12/res/res_calendar.c	425	warn	V1001 The 'cal' variable is assigned but is not used by the end of the function.
 /home/voip/packages/asterisk-16.12/res/res_calendar.c	431	warn	V1001 The 'cal' variable is assigned but is not used by the end of the function.
@@ -1679,10 +1659,11 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/res/res_calendar.c	1298	warn	V1001 The 'cal' variable is assigned but is not used by the end of the function.
 /home/voip/packages/asterisk-16.12/res/res_calendar.c	1687	warn	V1001 The 'cal' variable is assigned but is not used by the end of the function.
 /home/voip/packages/asterisk-16.12/res/res_calendar.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_calendar_ews.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_calendar_exchange.c	124	warn	V1001 The 'event' variable is assigned but is not used by the end of the function.
+/home/voip/packages/asterisk-16.12/res/res_calendar_exchange.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_clialiases.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_calendar_icalendar.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_clioriginate.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_calendar_icalendar.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_config_curl.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_config_odbc.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_config_sqlite.c	447	warn	V707 Giving short names to global variables is considered to be bad practice. It is suggested to rename 'db' variable.
@@ -1697,18 +1678,18 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/res/res_config_pgsql.c	1266	err	V547 Expression 'type == RQ_FLOAT' is always true.
 /home/voip/packages/asterisk-16.12/res/res_config_pgsql.c	1228	err	V763 Parameter 'database' is always rewritten in function body before being used.
 /home/voip/packages/asterisk-16.12/res/res_config_pgsql.c	1360	err	V763 Parameter 'database' is always rewritten in function body before being used.
+/home/voip/packages/asterisk-16.12/res/res_convert.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_config_sqlite3.c	338	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 338, 316.
 /home/voip/packages/asterisk-16.12/res/res_config_sqlite3.c	338	warn	V1020 The function exited without calling the '__ao2_unlock' function. Check lines: 338, 333.
 /home/voip/packages/asterisk-16.12/res/res_config_sqlite3.c	823	err	V595 The 'field->name' pointer was utilized before it was verified against nullptr. Check lines: 823, 827.
 /home/voip/packages/asterisk-16.12/res/res_config_sqlite3.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_convert.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_config_ldap.c	1055	err	V595 The 'initfield' pointer was utilized before it was verified against nullptr. Check lines: 1055, 1074.
 /home/voip/packages/asterisk-16.12/res/res_config_ldap.c	20	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_curl.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_crypto.c	277	err	V523 The 'then' statement is equivalent to the 'else' statement.
 /home/voip/packages/asterisk-16.12/res/res_crypto.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_curl.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_format_attr_g729.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_format_attr_celt.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_format_attr_g729.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_fax_spandsp.c	283	warn	V1037 Two or more case-branches perform the same actions. Check lines: 283, 363
 /home/voip/packages/asterisk-16.12/res/res_fax_spandsp.c	309	warn	V1037 Two or more case-branches perform the same actions. Check lines: 309, 326
 /home/voip/packages/asterisk-16.12/res/res_fax_spandsp.c	629	warn	V1032 The pointer 'buffer' is cast to a more strictly aligned pointer type.
@@ -1716,8 +1697,8 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/res/res_format_attr_h263.c	98	warn	V560 A part of conditional expression is always true: attr2.
 /home/voip/packages/asterisk-16.12/res/res_format_attr_h263.c	98	warn	V728 An excessive check can be simplified. The '||' operator is surrounded by opposite expressions '!attr1' and 'attr1'. 
 /home/voip/packages/asterisk-16.12/res/res_format_attr_h263.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_format_attr_h264.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_format_attr_ilbc.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_format_attr_h264.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_format_attr_opus.c	199	warn	V560 A part of conditional expression is always false: attr->maxbitrate > 0.
 /home/voip/packages/asterisk-16.12/res/res_format_attr_opus.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_format_attr_siren14.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -1805,13 +1786,13 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/res/res_pjsip/config_auth.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_pjsip/config_auth.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/res/res_pjsip/config_global.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip/config_system.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_pjsip/pjsip_cli.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip/config_transport.c	580	err	V512 A call of the 'memcpy' function will lead to underflow of the buffer '& transport->external_address'.
 /home/voip/packages/asterisk-16.12/res/res_pjsip/config_transport.c	580	err	V512 A call of the 'memcpy' function will lead to a buffer underflow.
 /home/voip/packages/asterisk-16.12/res/res_pjsip/config_transport.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_pjsip/pjsip_cli.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip/location.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_pjsip/location.c' file with exit code 139
-/home/voip/packages/asterisk-16.12/res/res_pjsip/pjsip_global_headers.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip/pjsip_configuration.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_pjsip/pjsip_configuration.c' file with exit code 139
+/home/voip/packages/asterisk-16.12/res/res_pjsip/pjsip_global_headers.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip/pjsip_message_filter.c	551	warn	V1048 The 'rc' variable was assigned the same value.
 /home/voip/packages/asterisk-16.12/res/res_pjsip/pjsip_message_filter.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip/pjsip_distributor.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -1838,8 +1819,8 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/res/res_pjsip_endpoint_identifier_anonymous.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_endpoint_identifier_ip.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_endpoint_identifier_user.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_pjsip_header_funcs.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_exten_state.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_pjsip_header_funcs.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_logger.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_history.c	828	warn	V505 The 'alloca' function is used inside the loop. This can quickly overflow stack.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_history.c	972	err	V561 It's probably better to assign value to 'res' variable than to declare it anew. Previous declaration: res_pjsip_history.c, line 968.
@@ -1852,31 +1833,31 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/res/res_pjsip_mwi.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_mwi_body_generator.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_nat.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_pjsip_outbound_authenticator_digest.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_pjsip_one_touch_record_info.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_notify.c	1130	warn	V1037 Two or more case-branches perform the same actions. Check lines: 1130, 1134
 /home/voip/packages/asterisk-16.12/res/res_pjsip_notify.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_pjsip_outbound_authenticator_digest.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_pjsip_one_touch_record_info.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_outbound_publish.c	505	warn	V560 A part of conditional expression is always true: state->client->started.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_outbound_publish.c	986	warn	V764 Possible incorrect order of arguments passed to 'sip_outbound_publisher_set_uris' function: 'from_uri' and 'to_uri'.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_outbound_publish.c	1503	warn	V728 An excessive check can be simplified. The '(A && !B) || (!A && B)' expression is equivalent to the 'bool(A) != bool(B)' expression.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_outbound_publish.c	1530	warn	V1048 The 'current_state->client->publish' variable was assigned the same value.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_outbound_publish.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_pjsip_path.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_phoneprov_provider.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_pjsip_pidf_body_generator.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_pjsip_path.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_outbound_registration.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_pjsip_pidf_body_generator.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_pidf_digium_body_supplement.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_pidf_eyebeam_body_supplement.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_publish_asterisk.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_refer.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_registrar.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_pjsip_registrar.c' file with exit code 139
+/home/voip/packages/asterisk-16.12/res/res_pjsip_rfc3326.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_pubsub.c	690	warn	V547 Expression 'contact_hdr' is always true.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_pubsub.c	690	err	V571 Recurring check. The 'if (contact_hdr)' condition was already verified in line 689.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_pubsub.c	1492	err	V763 Parameter 'persistence' is always rewritten in function body before being used.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_pubsub.c	3110	warn	V1051 Consider checking for misprints. It's possible that the 'expires_hdr' should be checked here.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_pubsub.c	3610	warn	V576 Incorrect format. Consider checking the third actual argument of the 'sscanf' function. It's dangerous to use string specifier without width specification. Buffer overflow is possible.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_pubsub.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_pjsip_rfc3326.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_send_to_voicemail.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_session/pjsip_session_caps.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_sdp_rtp.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_pjsip_sdp_rtp.c' file with exit code 139
@@ -1889,19 +1870,19 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/res/res_pjsip_xpidf_body_generator.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_pjsip_transport_websocket.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_prometheus.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_realtime.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_resolver_unbound.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_realtime.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_rtp_multicast.c	19	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_security_log.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_snmp.c	9	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_smdi.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_smdi.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/res/res_sorcery_astdb.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_sorcery_astdb.c' file with exit code 139
+/home/voip/packages/asterisk-16.12/res/res_smdi.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_smdi.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/res/res_sorcery_config.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_sorcery_config.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/res/res_sorcery_memory.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_rtp_asterisk.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_rtp_asterisk.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/res/res_sorcery_memory_cache.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_speech.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_sorcery_realtime.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_sorcery_realtime.c' file with exit code 139
+/home/voip/packages/asterisk-16.12/res/res_speech.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_srtp.c	406	warn	V547 Expression 'srtp->session' is always true.
 /home/voip/packages/asterisk-16.12/res/res_srtp.c	793	warn	V547 Expression 'local_policy' is always true.
 /home/voip/packages/asterisk-16.12/res/res_srtp.c	1059	warn	V547 Expression is always false.
@@ -1909,8 +1890,8 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/res/res_srtp.c	1167	err	V547 Expression is always false.
 /home/voip/packages/asterisk-16.12/res/res_srtp.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_stasis_answer.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/res_stasis.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_stasis.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/res/res_stasis_device_state.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/res_stasis.c	1	err	V003 Analyzer exited unexpectedly when trying to analyze '/home/voip/packages/asterisk-16.12/res/res_stasis.c' file with exit code 139
 /home/voip/packages/asterisk-16.12/res/res_stasis_playback.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_statsd.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/res_stasis_recording.c	560	warn	V786 It is odd that value '1' is assigned to the 'recording->muted' variable. The value range of 'recording->muted' variable: [-1, 0].
@@ -1930,13 +1911,13 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/res/res_stir_shaken/curl.c	149	err	V568 It's odd that 'sizeof()' operator evaluates the size of a pointer to a class, but not the size of the 'data' class object.
 /home/voip/packages/asterisk-16.12/res/res_stir_shaken/curl.c	181	err	V568 It's odd that 'sizeof()' operator evaluates the size of a pointer to a class, but not the size of the 'public_key_file' class object.
 /home/voip/packages/asterisk-16.12/res/res_stir_shaken/curl.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/res/stasis/command.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/snmp/agent.c	711	warn	V1001 The 'tz' variable is assigned but is not used by the end of the function.
 /home/voip/packages/asterisk-16.12/res/snmp/agent.c	903	warn	V641 The size of the 'asterisk_vars' buffer is not a multiple of the element size of the type 'const struct variable'.
 /home/voip/packages/asterisk-16.12/res/snmp/agent.c	9	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/stasis/app.c	702	warn	V560 A part of conditional expression is always true: update->new_snapshot.
 /home/voip/packages/asterisk-16.12/res/stasis/app.c	702	warn	V560 A part of conditional expression is always true: update->old_snapshot.
 /home/voip/packages/asterisk-16.12/res/stasis/app.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/res/stasis/command.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/stasis/messaging.c	232	err	V501 There are identical sub-expressions '!strncasecmp(sub->token, buf, strlen(sub->token))' to the left and to the right of the '||' operator.
 /home/voip/packages/asterisk-16.12/res/stasis/messaging.c	430	warn	V601 The value of 'char' type is implicitly cast to a char pointer. Inspect the second argument.
 /home/voip/packages/asterisk-16.12/res/stasis/messaging.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
@@ -1954,10 +1935,10 @@ www.viva64.com/en/w	1	err	Help: The documentation for all analyzer warnings is a
 /home/voip/packages/asterisk-16.12/res/stasis/control.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/res/stasis_recording/stored.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/utils/astcanary.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
-/home/voip/packages/asterisk-16.12/utils/astdb2sqlite3.c	231	warn	V779 Unreachable code detected. It is possible that an error is present.
-/home/voip/packages/asterisk-16.12/utils/astdb2sqlite3.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/utils/astdb2bdb.c	129	warn	V779 Unreachable code detected. It is possible that an error is present.
 /home/voip/packages/asterisk-16.12/utils/astdb2bdb.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
+/home/voip/packages/asterisk-16.12/utils/astdb2sqlite3.c	231	warn	V779 Unreachable code detected. It is possible that an error is present.
+/home/voip/packages/asterisk-16.12/utils/astdb2sqlite3.c	18	err	V1042 This file is marked with copyleft license, which requires you to open the derived source code.
 /home/voip/packages/asterisk-16.12/utils/db1-ast/btree/bt_conv.c	223	warn	V1001 The 'p' variable is assigned but is not used by the end of the function.
 /home/voip/packages/asterisk-16.12/utils/db1-ast/btree/bt_open.c	410	warn	V547 Expression 'envtmp' is always true.
 /home/voip/packages/asterisk-16.12/utils/db1-ast/btree/bt_seq.c	397	err	V522 Dereferencing of the null pointer 'h' might take place.

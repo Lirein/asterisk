@@ -1397,7 +1397,7 @@ static int my_distinctive_ring(struct ast_channel *chan, void *pvt, int idx, int
 	}
 
 	/* We must have a ring by now so lets try to listen for distinctive ringing */
-	if ((checkaftercid && distinctiveringaftercid) || !checkaftercid) {
+	if (distinctiveringaftercid || !checkaftercid) {
 		/* Clear the current ring data array so we don't have old data in it. */
 		for (receivedRingT = 0; receivedRingT < RING_PATTERNS; receivedRingT++)
 			ringdata[receivedRingT] = 0;
@@ -3997,7 +3997,7 @@ static int dahdi_r2_on_dnis_digit_received(openr2_chan_t *r2chan, char digit)
 	p->rdnis[p->mfcr2_dnis_index] = 0;
 	/* if the DNIS is a match and cannot match more, stop requesting DNIS */
 	if ((p->mfcr2_dnis_matched ||
-	    (ast_exists_extension(NULL, p->context, p->exten, 1, p->cid_num) && (p->mfcr2_dnis_matched = 1))) &&
+	    (ast_exists_extension(NULL, p->context, p->exten, 1, p->cid_num) && (p->mfcr2_dnis_matched == 1))) &&
 	    !ast_matchmore_extension(NULL, p->context, p->exten, 1, p->cid_num)) {
 		return 0;
 	}
@@ -7106,7 +7106,6 @@ static int dahdi_ring_phone(struct dahdi_pvt *p)
 	int x;
 	int res;
 	/* Make sure our transmit state is on hook */
-	x = 0;
 	x = DAHDI_ONHOOK;
 	res = ioctl(p->subs[SUB_REAL].dfd, DAHDI_HOOK, &x);
 	do {
@@ -7774,6 +7773,7 @@ static struct ast_frame *dahdi_handle_event(struct ast_channel *ast)
 
 			if (strlen(p->dop.dialstr) > 4) {
 				memset(p->echorest, 'w', sizeof(p->echorest) - 1);
+				p->echorest[sizeof(p->echorest)-1] = '\0';
 				strcpy(p->echorest + (p->echotraining / 401) + 1, p->dop.dialstr + strlen(p->dop.dialstr) - 2);
 				p->echorest[sizeof(p->echorest) - 1] = '\0';
 				p->echobreak = 1;
@@ -9390,7 +9390,7 @@ static struct ast_channel *dahdi_new(struct dahdi_pvt *i, int state, int startpb
 			pbx_builtin_setvar_helper(tmp, "MFCR2_CATEGORY", openr2_proto_get_category_string(i->mfcr2_recvd_category));
 		}
 #endif
-		if (ast_pbx_start(tmp)) {
+		if (ast_pbx_start(tmp) != AST_PBX_SUCCESS) {
 			ast_log(LOG_WARNING, "Unable to start PBX on %s\n", ast_channel_name(tmp));
 			ast_hangup(tmp);
 			return NULL;
@@ -9889,14 +9889,14 @@ static void *analog_ss_thread(void *data)
 						if (res)
 							break;
 						usleep(500000);
-						res = tone_zone_play_tone(p->subs[idx].dfd, -1);
+						tone_zone_play_tone(p->subs[idx].dfd, -1);
 						sleep(1);
 						memset(exten, 0, sizeof(exten));
 						res = tone_zone_play_tone(p->subs[idx].dfd, DAHDI_TONE_DIALTONE);
 						len = 0;
 						getforward = 0;
 					} else {
-						res = tone_zone_play_tone(p->subs[idx].dfd, -1);
+						tone_zone_play_tone(p->subs[idx].dfd, -1);
 						ast_channel_lock(chan);
 						ast_channel_exten_set(chan, exten);
 						if (!ast_strlen_zero(p->cid_num)) {
@@ -10278,7 +10278,7 @@ static void *analog_ss_thread(void *data)
 						}
 					}
 					if (res == 1) {
-						callerid_get(cs, &name, &number, &flags);
+						callerid_get(cs, &number, &name, &flags);
 						ast_log(LOG_NOTICE, "CallerID number: %s, name: %s, flags=%d\n", number, name, flags);
 					}
 
@@ -10560,7 +10560,7 @@ static void *analog_ss_thread(void *data)
 						}
 					}
 					if (res == 1) {
-						callerid_get(cs, &name, &number, &flags);
+						callerid_get(cs, &number, &name, &flags);
 						ast_debug(1, "CallerID number: %s, name: %s, flags=%d\n", number, name, flags);
 					}
 					if (distinctiveringaftercid == 1) {
@@ -10851,7 +10851,7 @@ static void *mwi_thread(void *data)
 	}
 
 	if (spill_result == 1) {
-		callerid_get(cs, &name, &number, &flags);
+		callerid_get(cs, &number, &name, &flags);
 		if (flags & CID_MSGWAITING) {
 			ast_log(LOG_NOTICE, "mwi: Have Messages on channel %d\n", mtd->pvt->channel);
 			notify_message(mtd->pvt->mailbox, 1);
@@ -11599,34 +11599,32 @@ static void *do_monitor(void *data)
 			if (thispass != lastpass) {
 				if (!found && ((i == last) || ((i == iflist) && !last))) {
 					last = i;
-					if (last) {
-						struct analog_pvt *analog_p = last->sig_pvt;
-						/* Only allow MWI to be initiated on a quiescent fxs port */
-						if (analog_p
-							&& !last->mwisendactive
-							&& (last->sig & __DAHDI_SIG_FXO)
-							&& !analog_p->fxsoffhookstate
-							&& !last->owner
-							&& !ast_strlen_zero(last->mailbox)
-							&& (thispass - analog_p->onhooktime > 3)) {
-							res = has_voicemail(last);
-							if (analog_p->msgstate != res) {
-								/* Set driver resources for signalling VMWI */
-								res2 = ioctl(last->subs[SUB_REAL].dfd, DAHDI_VMWI, &res);
-								if (res2) {
-									/* TODO: This message will ALWAYS be generated on some cards; any way to restrict it to those cards where it is interesting? */
-									ast_debug(3, "Unable to control message waiting led on channel %d: %s\n", last->channel, strerror(errno));
-								}
-								/* If enabled for FSK spill then initiate it */
-								if (mwi_send_init(last)) {
-									ast_log(LOG_WARNING, "Unable to initiate mwi send sequence on channel %d\n", last->channel);
-								}
-								analog_p->msgstate = res;
-								found ++;
+					struct analog_pvt *analog_p = last->sig_pvt;
+					/* Only allow MWI to be initiated on a quiescent fxs port */
+					if (analog_p
+						&& !last->mwisendactive
+						&& (last->sig & __DAHDI_SIG_FXO)
+						&& !analog_p->fxsoffhookstate
+						&& !last->owner
+						&& !ast_strlen_zero(last->mailbox)
+						&& (thispass - analog_p->onhooktime > 3)) {
+						res = has_voicemail(last);
+						if (analog_p->msgstate != res) {
+							/* Set driver resources for signalling VMWI */
+							res2 = ioctl(last->subs[SUB_REAL].dfd, DAHDI_VMWI, &res);
+							if (res2) {
+								/* TODO: This message will ALWAYS be generated on some cards; any way to restrict it to those cards where it is interesting? */
+								ast_debug(3, "Unable to control message waiting led on channel %d: %s\n", last->channel, strerror(errno));
 							}
+							/* If enabled for FSK spill then initiate it */
+							if (mwi_send_init(last)) {
+								ast_log(LOG_WARNING, "Unable to initiate mwi send sequence on channel %d\n", last->channel);
+							}
+							analog_p->msgstate = res;
+							found ++;
 						}
-						last = last->next;
 					}
+					last = last->next;
 				}
 			}
 			if ((i->subs[SUB_REAL].dfd > -1) && i->sig) {
@@ -11673,6 +11671,8 @@ static void *do_monitor(void *data)
 								ast_debug(1, "Maybe some MWI on port %d!\n", i->channel);
 								if ((mtd = ast_calloc(1, sizeof(*mtd)))) {
 									mtd->pvt = i;
+									//value may be truncated
+									if(res>sizeof(mtd->buf)) res = sizeof(mtd->buf);
 									memcpy(mtd->buf, buf, res);
 									mtd->len = res;
 									i->mwimonitoractive = 1;
@@ -12002,6 +12002,7 @@ static struct r2link_entry *dahdi_r2_get_link(const struct dahdi_chan_conf *conf
 		cur = ast_calloc(1, sizeof(*cur));
 		if (!cur) {
 			ast_log(LOG_ERROR, "Cannot allocate R2 link!\n");
+			AST_LIST_UNLOCK(&r2links);
 			return NULL;
 		}
 		cur->mfcr2.index = new_idx;
@@ -12267,12 +12268,12 @@ static struct dahdi_pvt *mkintf(int channel, const struct dahdi_chan_conf *conf,
 			if (chan_sig == SIG_MFCR2) {
 				struct dahdi_mfcr2 *r2_link;
 				struct r2link_entry *r2_le = dahdi_r2_get_link(conf);
-				r2_link = &r2_le->mfcr2;
-				if (!r2_link) {
+				if (!r2_le) {
 					ast_log(LOG_WARNING, "Cannot get another R2 DAHDI context!\n");
 					destroy_dahdi_pvt(tmp);
 					return NULL;
 				}
+				r2_link = &r2_le->mfcr2;
 				if (!r2_link->protocol_context && dahdi_r2_set_context(r2_link, conf)) {
 					ast_log(LOG_ERROR, "Cannot create OpenR2 protocol context.\n");
 					destroy_dahdi_pvt(tmp);
@@ -14869,7 +14870,7 @@ static char *handle_mfcr2_show_channels(struct ast_cli_entry *e, int cmd, struct
 {
 #define FORMAT "%4s %4s %-7.7s %-7.7s %-8.8s %-9.9s %-16.16s %-8.8s %-8.8s\n"
 	int filtertype = 0;
-	int targetnum = 0;
+	ast_group_t targetnum = 0;
 	char channo[5];
 	char linkno[5];
 	char anino[5];
@@ -15275,6 +15276,7 @@ static char *handle_mfcr2_destroy_link(struct ast_cli_entry *e, int cmd, struct 
 	AST_LIST_TRAVERSE_SAFE_BEGIN(&r2links, cur, list) {
 		struct dahdi_mfcr2 *mfcr2 = &cur->mfcr2;
 		if (wanted_link_index == mfcr2->index) {
+			found_link = mfcr2->index+1;
 			AST_LIST_MOVE_CURRENT(&nodev_r2links, list);
 			r2links_count--;
 			break;
@@ -17752,26 +17754,23 @@ static void process_echocancel(struct dahdi_chan_conf *confp, const char *data, 
 	/* now process any remaining parameters */
 
 	for (x = 1; x < param_count; x++) {
-		struct {
-			char *name;
-			char *value;
-		} param;
+		char* param[2];
 
-		if (ast_app_separate_args(params[x], '=', (char **) &param, 2) < 1) {
+		if (ast_app_separate_args(params[x], '=', &param, 2) < 1) {
 			ast_log(LOG_WARNING, "Invalid echocancel parameter supplied at line %u: '%s'\n", line, params[x]);
 			continue;
 		}
 
-		if (ast_strlen_zero(param.name) || (strlen(param.name) > sizeof(confp->chan.echocancel.params[0].name)-1)) {
-			ast_log(LOG_WARNING, "Invalid echocancel parameter supplied at line %u: '%s'\n", line, param.name);
+		if (ast_strlen_zero(param[0]) || (strlen(param[0]) > sizeof(confp->chan.echocancel.params[0].name)-1)) {
+			ast_log(LOG_WARNING, "Invalid echocancel parameter supplied at line %u: '%s'\n", line, param[0]);
 			continue;
 		}
 
-		strcpy(confp->chan.echocancel.params[confp->chan.echocancel.head.param_count].name, param.name);
+		strcpy(confp->chan.echocancel.params[confp->chan.echocancel.head.param_count].name, param[0]);
 
-		if (param.value) {
-			if (sscanf(param.value, "%30d", &confp->chan.echocancel.params[confp->chan.echocancel.head.param_count].value) != 1) {
-				ast_log(LOG_WARNING, "Invalid echocancel parameter value supplied at line %u: '%s'\n", line, param.value);
+		if (param[1]) {
+			if (sscanf(param[1], "%30d", &confp->chan.echocancel.params[confp->chan.echocancel.head.param_count].value) != 1) {
+				ast_log(LOG_WARNING, "Invalid echocancel parameter value supplied at line %u: '%s'\n", line, param[1]);
 				continue;
 			}
 		}
@@ -18236,10 +18235,7 @@ static int process_dahdi(struct dahdi_chan_conf *confp, const char *cat, struct 
 			ast_copy_string(confp->chan.accountcode, v->value, sizeof(confp->chan.accountcode));
 		} else if (!strcasecmp(v->name, "amaflags")) {
 			y = ast_channel_string2amaflag(v->value);
-			if (y < 0)
-				ast_log(LOG_WARNING, "Invalid AMA flags: %s at line %d.\n", v->value, v->lineno);
-			else
-				confp->chan.amaflags = y;
+			confp->chan.amaflags = y;
 		} else if (!strcasecmp(v->name, "polarityonanswerdelay")) {
 			confp->chan.polarityonanswerdelay = atoi(v->value);
 		} else if (!strcasecmp(v->name, "answeronpolarityswitch")) {
@@ -18343,8 +18339,6 @@ static int process_dahdi(struct dahdi_chan_conf *confp, const char *cat, struct 
 					confp->chan.sig = SIG_FEATDMF;
 				} else if (!strcasecmp(v->value, "sf_featb")) {
 					confp->chan.sig = SIG_SF_FEATB;
-				} else if (!strcasecmp(v->value, "sf")) {
-					confp->chan.sig = SIG_SF;
 				} else if (!strcasecmp(v->value, "sf_rx")) {
 					confp->chan.sig = SIG_SF;
 					confp->chan.radio = 1;
@@ -18428,8 +18422,6 @@ static int process_dahdi(struct dahdi_chan_conf *confp, const char *cat, struct 
 					confp->chan.outsigmod = SIG_FEATDMF;
 				} else if (!strcasecmp(v->value, "sf_featb")) {
 					confp->chan.outsigmod = SIG_SF_FEATB;
-				} else if (!strcasecmp(v->value, "sf")) {
-					confp->chan.outsigmod = SIG_SF;
 				} else if (!strcasecmp(v->value, "featd")) {
 					confp->chan.outsigmod = SIG_FEATD;
 				} else if (!strcasecmp(v->value, "featdmf")) {
@@ -19618,6 +19610,7 @@ static int setup_dahdi_int(int reload, struct dahdi_chan_conf *default_conf, str
 			if (r2->r2master == AST_PTHREADT_NULL) {
 				if (ast_pthread_create(&r2->r2master, NULL, mfcr2_monitor, r2)) {
 					ast_log(LOG_ERROR, "Unable to start R2 monitor on channel group %d\n", x + 1);
+					AST_LIST_UNLOCK(&r2links);
 					return -1;
 				} else {
 					ast_verb(2, "Starting R2 monitor on channel group %d\n", x + 1);

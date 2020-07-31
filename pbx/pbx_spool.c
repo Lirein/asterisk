@@ -778,7 +778,7 @@ static void *scan_thread(void *unused)
 			}
 			/* When a file arrives, add it to the queue, in mtime order. */
 			if ((res = poll(&pfd, 1, waittime)) > 0 && (stage = 1) &&
-				(res = read(inotify_fd, &buf, sizeof(buf))) >= sizeof(*iev)) {
+				(res = read(inotify_fd, &buf, sizeof(buf))) >= (long)sizeof(*iev)) {
 				ssize_t len = 0;
 				/* File(s) added to directory, add them to my list */
 				for (iev = (void *) buf; res >= sizeof(*iev); iev = (struct inotify_event *) (((char *) iev) + len)) {

@@ -1331,6 +1331,7 @@ static struct ast_cdr *cdr_object_create_public_records(struct cdr_object *cdr)
 		if (party_b) {
 			ast_copy_string(cdr_copy->dstchannel, party_b->base->name, sizeof(cdr_copy->dstchannel));
 			ast_copy_string(cdr_copy->peeraccount, party_b->base->accountcode, sizeof(cdr_copy->peeraccount));
+			ast_callerid_merge(cdr_copy->dclid, sizeof(cdr_copy->dclid), party_b->caller->name, party_b->caller->number, "");
 			if (!ast_strlen_zero(it_cdr->party_b.userfield)) {
 				snprintf(cdr_copy->userfield, sizeof(cdr_copy->userfield), "%s;%s", it_cdr->party_a.userfield, it_cdr->party_b.userfield);
 			}
@@ -3067,6 +3068,8 @@ void ast_cdr_format_var(struct ast_cdr *cdr, const char *name, char **ret, char 
 
 	if (!strcasecmp(name, "clid")) {
 		ast_copy_string(workspace, cdr->clid, workspacelen);
+	} else if (!strcasecmp(name, "dclid")) {
+		ast_copy_string(workspace, cdr->dclid, workspacelen);
 	} else if (!strcasecmp(name, "src")) {
 		ast_copy_string(workspace, cdr->src, workspacelen);
 	} else if (!strcasecmp(name, "dst")) {

@@ -276,6 +276,8 @@ struct ast_cdr_config {
 struct ast_cdr {
 	/*! Caller*ID with text */
 	char clid[AST_MAX_EXTENSION];
+	/*! ConnectedLine*ID with text */
+	char dclid[AST_MAX_EXTENSION];
 	/*! Caller*ID number */
 	char src[AST_MAX_EXTENSION];
 	/*! Destination extension */

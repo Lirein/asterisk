@@ -37,4 +37,6 @@ doxygen.log
 out/
 *.orig
 tests/CI/output
-
+asterisk-pvs.log
+asterisk-pvs.trc
+strace_out

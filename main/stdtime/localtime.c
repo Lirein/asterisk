@@ -1672,8 +1672,8 @@ static struct ast_tm *localsub(const struct timeval *timep, const long offset, s
 			tcycles = seconds / YEARSPERREPEAT / AVGSECSPERYEAR;
 			++tcycles;
 			icycles = tcycles;
-			if (tcycles - icycles >= 1 || icycles - tcycles >= 1)
-				return NULL;
+			// if (tcycles - icycles >= 1 || icycles - tcycles >= 1)
+			// 	return NULL;
 			seconds = icycles;
 			seconds *= YEARSPERREPEAT;
 			seconds *= AVGSECSPERYEAR;
@@ -1795,8 +1795,8 @@ void ast_get_dst_info(const time_t * const timep, int *dst_enabled, time_t *dst_
 		tcycles = seconds / YEARSPERREPEAT / AVGSECSPERYEAR;
 		++tcycles;
 		icycles = tcycles;
-		if (tcycles - icycles >= 1 || icycles - tcycles >= 1)
-			return;
+		// if (tcycles - icycles >= 1 || icycles - tcycles >= 1)
+		// 	return;
 		seconds = icycles;
 		seconds *= YEARSPERREPEAT;
 		seconds *= AVGSECSPERYEAR;
@@ -1935,7 +1935,7 @@ static struct ast_tm *timesub(const struct timeval *timep, const long offset, co
 		if (timep->tv_sec >= lp->ls_trans) {
 			if (timep->tv_sec == lp->ls_trans) {
 				hit = ((i == 0 && lp->ls_corr > 0) ||
-					lp->ls_corr > sp->lsis[i - 1].ls_corr);
+					((i > 0) && (lp->ls_corr > sp->lsis[i - 1].ls_corr)));
 				if (hit)
 					while (i > 0 &&
 						sp->lsis[i].ls_trans ==
@@ -2141,11 +2141,11 @@ static struct timeval time2sub(struct ast_tm *tmp, struct ast_tm * (* const func
 	while (yourtm.tm_mday <= 0) {
 		if (long_increment_overflow(&y, -1))
 			return WRONG;
-		li = y + (1 < yourtm.tm_mon);
+		li = y + (1 < yourtm.tm_mon)?1:0;
 		yourtm.tm_mday += year_lengths[isleap(li)];
 	}
 	while (yourtm.tm_mday > DAYSPERLYEAR) {
-		li = y + (1 < yourtm.tm_mon);
+		li = y + (1 < yourtm.tm_mon)?1:0;
 		yourtm.tm_mday -= year_lengths[isleap(li)];
 		if (long_increment_overflow(&y, 1))
 			return WRONG;
@@ -2534,6 +2534,7 @@ char *ast_strptime_locale(const char *s, const char *format, struct ast_tm *tm, 
 	struct tm tm2 = { 0, };
 	char *res;
 	const char *prevlocale;
+	size_t sz;
 
 	prevlocale = ast_setlocale(locale);
 	res = strptime(s, format, &tm2);
@@ -2542,7 +2543,10 @@ char *ast_strptime_locale(const char *s, const char *format, struct ast_tm *tm, 
 	 * ast_time.  Hence, the size of tm needs to be used for the
 	 * memcpy
 	 */
-	memcpy(tm, &tm2, sizeof(tm2));
+	sz = sizeof(struct tm);
+	if(sz>sizeof(struct ast_tm)) sz = sizeof(struct ast_tm);
+
+	memcpy(tm, &tm2, sz);
 	tm->tm_usec = 0;
 	/* strptime(3) doesn't set .tm_isdst correctly, so to force ast_mktime(3)
 	 * to deal with it correctly, we set it to -1. */
