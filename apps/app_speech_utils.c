@@ -540,8 +540,6 @@ static struct ast_custom_function speech_function = {
 	.write = NULL,
 };
 
-
-
 /*! \brief SpeechCreate() Dialplan Application */
 static int speech_create(struct ast_channel *chan, const char *data)
 {

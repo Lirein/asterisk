@@ -1,3 +1,9 @@
+asterisk (1:16.12.1~dfsg-1.1ubuntu1.0) xenial; urgency=medium
+
+  * Moved to the 16.12 branch with patches
+
+ -- Ivan Batalin <director@oas.su>  Sat, 01 Aug 2020 11:03:19 +0500
+
 asterisk (1:13.21.3~dfsg-1.1ubuntu1.4) bionic; urgency=medium
 
   * Fixed cdr_mysql module auto reconnection w/o SSL certificate
