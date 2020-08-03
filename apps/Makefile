@@ -15,29 +15,17 @@ MODULE_PREFIX=app
 MENUSELECT_CATEGORY=APPS
 MENUSELECT_DESCRIPTION=Applications
 
-MODS_C_ADDITIONAL=app_voicemail_imapstorage app_voicemail_odbcstorage
+MODS_C_ADDITIONAL=
 
 MENUSELECT_OPTS_app_directory:=$(MENUSELECT_OPTS_app_voicemail)
 
 all: _all
 
 add_depends_cmd = sed -i -e '/^\/\*\*\* MODULEINFO/a\\t<depend>$(1)<\/depend>'
-app_voicemail_imapstorage.c: app_voicemail.c
-	cp $< $@
-	$(call add_depends_cmd,imap_tk) $@
-	$(call add_depends_cmd,openssl) $@
-	cp app_voicemail.exports.in app_voicemail_imapstorage.exports.in
-app_voicemail_odbcstorage.c: app_voicemail.c
-	cp $< $@
-	$(call add_depends_cmd,generic_odbc) $@
-	cp app_voicemail.exports.in app_voicemail_odbcstorage.exports.in
 
 dist-clean::
 	rm -f app_voicemail_*.c
 	rm -f app_voicemail_*.exports.in
-
-app_voicemail_imapstorage.o: _ASTCFLAGS+=-DIMAP_STORAGE
-app_voicemail_odbcstorage.o: _ASTCFLAGS+=-DODBC_STORAGE
 
 include $(ASTTOPDIR)/Makefile.moddir_rules
 
@@ -73,8 +61,6 @@ app_confbridge.o: _ASTCFLAGS+=$(AST_NO_FORMAT_TRUNCATION)
 app_meetme.o: _ASTCFLAGS+=$(AST_NO_FORMAT_TRUNCATION)
 app_minivm.o: _ASTCFLAGS+=$(AST_NO_FORMAT_TRUNCATION)
 app_voicemail.o: _ASTCFLAGS+=$(AST_NO_FORMAT_TRUNCATION) -DFILE_STORAGE
-app_voicemail_odbc.o: _ASTCFLAGS+=$(AST_NO_FORMAT_TRUNCATION) -DODBC_STORAGE
-app_voicemail_imap.o: _ASTCFLAGS+=$(AST_NO_FORMAT_TRUNCATION) -DIMAP_STORAGE
 app_while.o: _ASTCFLAGS+=$(AST_NO_FORMAT_TRUNCATION)
 
 ifneq ($(findstring $(OSARCH), mingw32 cygwin ),)

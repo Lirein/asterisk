@@ -23,6 +23,9 @@
  * \author Jonathan Rose <jrose@digium.com>
  */
 
+#ifndef ASTERISK_PARKING_H
+#define ASTERISK_PARKING_H
+
 #include "asterisk/stringfields.h"
 #include "asterisk/bridge.h"
 
@@ -196,7 +199,7 @@ struct ast_parking_bridge_feature_fn_table {
 	int (* parking_park_bridge_channel)(struct ast_bridge_channel *parkee, const char *parkee_uuid, const char *parker_uuid, const char *app_data);
 
 	/*! \brief The module info for the module registering this parking provider */
-	const struct ast_module_info *module_info;
+	struct ast_module *module;
 };
 
 /*!
@@ -294,3 +297,5 @@ int ast_parking_unregister_bridge_features(const char *module_name);
  * \retval 1 if there is a parking provider regsistered
  */
 int ast_parking_provider_registered(void);
+
+#endif /* ASTERISK_PARKING_H */

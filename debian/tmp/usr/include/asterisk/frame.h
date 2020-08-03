@@ -140,6 +140,8 @@ enum {
 	AST_FRFLAG_HAS_TIMING_INFO = (1 << 0),
 	/*! This frame has been requeued */
 	AST_FRFLAG_REQUEUED = (1 << 1),
+	/*! This frame contains a valid sequence number */
+	AST_FRFLAG_HAS_SEQUENCE_NUMBER = (1 << 2),
 };
 
 struct ast_frame_subclass {
@@ -184,6 +186,8 @@ struct ast_frame {
 	long len;
 	/*! Sequence number */
 	int seqno;
+	/*! Stream number the frame originated from */
+	int stream_num;
 };
 
 /*!
@@ -298,6 +302,9 @@ enum ast_control_frame_type {
 	AST_CONTROL_UPDATE_RTP_PEER = 32, /*!< Interrupt the bridge and have it update the peer */
 	AST_CONTROL_PVT_CAUSE_CODE = 33, /*!< Contains an update to the protocol-specific cause-code stored for branching dials */
 	AST_CONTROL_MASQUERADE_NOTIFY = 34,	/*!< A masquerade is about to begin/end. (Never sent as a frame but directly with ast_indicate_data().) */
+	AST_CONTROL_STREAM_TOPOLOGY_REQUEST_CHANGE = 35,    /*!< Channel indication that a stream topology change has been requested */
+	AST_CONTROL_STREAM_TOPOLOGY_CHANGED = 36,           /*!< Channel indication that a stream topology change has occurred */
+	AST_CONTROL_STREAM_TOPOLOGY_SOURCE_CHANGED = 37,    /*!< Channel indication that one of the source streams has changed its source */
 
 	/*
 	 * WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
@@ -328,8 +335,16 @@ enum ast_control_frame_type {
 	AST_CONTROL_RECORD_MUTE = 1103,	/*!< Indicated to a channel in record to mute/unmute (i.e. write silence) recording */
 };
 
+/*!
+ * \brief Actions to indicate to, and be handled on channel read
+ *
+ * The subtype to specify for an AST_CONTROL_READ_ACTION frame. These
+ * frames are then to be enacted on within a channel's read thread.
+ */
 enum ast_frame_read_action {
 	AST_FRAME_READ_ACTION_CONNECTED_LINE_MACRO,
+	AST_FRAME_READ_ACTION_SEND_TEXT,
+	AST_FRAME_READ_ACTION_SEND_TEXT_DATA,
 };
 
 struct ast_control_read_action_payload {
@@ -552,14 +567,16 @@ void ast_frame_dtor(struct ast_frame *frame);
  * should be the last operation you do with that frame before freeing
  * it (or exiting the block, if the frame is on the stack.)
  */
-struct ast_frame *ast_frisolate(struct ast_frame *fr);
+#define ast_frisolate(fr) __ast_frisolate(fr, __FILE__, __LINE__, __PRETTY_FUNCTION__)
+struct ast_frame *__ast_frisolate(struct ast_frame *fr, const char *file, int line, const char *func);
 
 /*! \brief Copies a frame
  * \param fr frame to copy
  * Duplicates a frame -- should only rarely be used, typically frisolate is good enough
  * \return Returns a frame on success, NULL on error
  */
-struct ast_frame *ast_frdup(const struct ast_frame *fr);
+#define ast_frdup(fr) __ast_frdup(fr, __FILE__, __LINE__, __PRETTY_FUNCTION__)
+struct ast_frame *__ast_frdup(const struct ast_frame *fr, const char *file, int line, const char *func);
 
 void ast_swapcopy_samples(void *dst, const void *src, int samples);
 
@@ -587,6 +604,14 @@ struct ast_frame *ast_frame_enqueue(struct ast_frame *head, struct ast_frame *f,
 int ast_frame_adjust_volume(struct ast_frame *f, int adjustment);
 
 /*!
+  \brief Adjusts the volume of the audio samples contained in a frame.
+  \param f The frame containing the samples (must be AST_FRAME_VOICE and AST_FORMAT_SLINEAR)
+  \param adjustment The number of dB to adjust up or down.
+  \return 0 for success, non-zero for an error
+ */
+int ast_frame_adjust_volume_float(struct ast_frame *f, float adjustment);
+
+/*!
   \brief Sums two frames of audio samples.
   \param f1 The first frame (which will contain the result)
   \param f2 The second frame
@@ -610,9 +635,10 @@ int ast_frame_clear(struct ast_frame *frame);
  * \param slen Length of subclass buffer
  * \param moreinfo Buffer to fill with additional information
  * \param mlen Length of moreinfo buffer
+ * \return Pointer to subclass
  * \since 11
  */
-void ast_frame_subclass2str(struct ast_frame *f, char *subclass, size_t slen, char *moreinfo, size_t mlen);
+char *ast_frame_subclass2str(struct ast_frame *f, char *subclass, size_t slen, char *moreinfo, size_t mlen);
 
 /*!
  * \brief Copy the discription of a frame type into the provided string
@@ -620,9 +646,10 @@ void ast_frame_subclass2str(struct ast_frame *f, char *subclass, size_t slen, ch
  * \param frame_type The frame type to be described
  * \param ftype Buffer to fill with frame type description
  * \param len Length of subclass buffer
+ * \return Pointer to ftype
  * \since 11
  */
-void ast_frame_type2str(enum ast_frame_type frame_type, char *ftype, size_t len);
+char *ast_frame_type2str(enum ast_frame_type frame_type, char *ftype, size_t len);
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

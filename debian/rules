@@ -69,26 +69,14 @@ override_dh_autoreconf:
 	if [ ! -r configure.debian_sav ]; then cp -a configure configure.debian_sav; fi
 	[ -f .version.debian_sav ] || cp -a .version .version.debian_sav
 	echo $(DEB_NOEPOCH_VERSION) > .version
-	dh_autoreconf -- ./bootstrap.sh
+#	dh_autoreconf -- ./bootstrap.sh
 
 # Make sure the configure script gets an CFLAGS parameter. Otherwise
 # it will build with -march=native
 # Pass CPPFLAGS in the CFLAGS as otherwise the build system will
 # ignore them.
 override_dh_auto_configure:
-	chmod 755 $(CURDIR)/debian/dummyprogs/fetch
-	$(FETCH_ENV) ./configure			\
-		CFLAGS="-fgnu89-inline $(CFLAGS) $(CPPFLAGS)" LDFLAGS="$(LDFLAGS)" \
-		--host=$(DEB_HOST_GNU_TYPE)		\
-		--build=$(DEB_BUILD_GNU_TYPE)		\
-		--prefix=/usr				\
-		--mandir=\$${prefix}/share/man		\
-		--infodir=\$${prefix}/share/info	\
-		--disable-asteriskssl			\
-		--with-gsm				\
-		--without-pwlib				\
-		${ENABLE_DEBUG}
-
+	./configure --with-jansson-bundled --with-pjproject-bundled CFLAGS="" LDFLAGS="" --prefix=/usr --mandir=/usr/share/man --infodir=/usr/share/info ${ENABLE_DEBUG}
 #		--with-cap \
 
 override_dh_auto_build:
@@ -114,7 +102,7 @@ override_dh_clean:
 	GREP=grep AWK=awk $(MAKE) distclean
 	if [ -r debian/$(SND_FILE) ]; then mv debian/$(SND_FILE) sounds/; fi
 
-	-test -d configs && chmod -x configs/*.sample
+	-test -d configs && chmod -x configs/samples/*.sample
 
 	[ ! -f .version.debian_sav ] || mv .version.debian_sav .version
 	if [ -f configure.debian_sav ]; then mv configure.debian_sav configure; fi
@@ -135,7 +123,7 @@ SUBPACKS_EXTRA_DIRS = $(SUBPACKS_EXTRA:%=$(CURDIR)/debian/asterisk-%)
 SUBPACKS_EXTRA_DIRS_MOD = $(SUBPACKS_EXTRA_DIRS:%=%/usr/lib/asterisk/modules)
 
 override_dh_auto_install:
-	$(FETCH_ENV) dh_auto_install -- $(BUILDFLAGS) config samples
+	$(FETCH_ENV) dh_auto_install -- $(BUILDFLAGS) install-headers config samples
 	cp -a configs $(CURDIR)/debian/tmp/usr/share/asterisk/conf
 	mkdir -p $(CURDIR)/debian/tmp/usr/bin/
 	mkdir -p $(CURDIR)/debian/tmp/usr/share/man/man1
@@ -153,10 +141,6 @@ override_dh_install:
 	extra_packs=`find $(SUBPACKS_EXTRA_DIRS_MOD) -name '*.so' -printf '%f\n'`\
 		    ; cd $(CURDIR)/debian/asterisk-modules/usr/lib/asterisk/modules \
 		    && rm -f $$extra_packs
-
-	# Rename dh_install file for -odbcstorage.
-	mv $(CURDIR)/debian/asterisk-voicemail-odbcstorage/usr/lib/asterisk/modules/app_voicemail_odbcstorage.so \
-		$(CURDIR)/debian/asterisk-voicemail-odbcstorage/usr/lib/asterisk/modules/app_voicemail.so
 
 override_dh_fixperms:
 	dh_fixperms

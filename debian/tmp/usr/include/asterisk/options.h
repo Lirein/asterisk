@@ -66,30 +66,28 @@ enum ast_option_flags {
 	AST_OPT_FLAG_CACHE_RECORD_FILES = (1 << 13),
 	/*! Display timestamp in CLI verbose output */
 	AST_OPT_FLAG_TIMESTAMP = (1 << 14),
-	/*! Override config */
-	AST_OPT_FLAG_OVERRIDE_CONFIG = (1 << 15),
+	/*! Cache media frames for performance */
+	AST_OPT_FLAG_CACHE_MEDIA_FRAMES = (1 << 15),
 	/*! Reconnect */
 	AST_OPT_FLAG_RECONNECT = (1 << 16),
 	/*! Transmit Silence during Record() and DTMF Generation */
 	AST_OPT_FLAG_TRANSMIT_SILENCE = (1 << 17),
 	/*! Suppress some warnings */
 	AST_OPT_FLAG_DONT_WARN = (1 << 18),
-	/*! End CDRs before the 'h' extension */
-	AST_OPT_FLAG_END_CDR_BEFORE_H_EXTEN = (1 << 19),
-	/*! Cache media frames for performance */
-	AST_OPT_FLAG_CACHE_MEDIA_FRAMES = (1 << 20),
+	/*! Reference Debugging */
+	AST_OPT_FLAG_REF_DEBUG = (1 << 20),
 	/*! Always fork, even if verbose or debug settings are non-zero */
 	AST_OPT_FLAG_ALWAYS_FORK = (1 << 21),
 	/*! Disable log/verbose output to remote consoles */
 	AST_OPT_FLAG_MUTE = (1 << 22),
 	/*! There is a per-module debug setting */
 	AST_OPT_FLAG_DEBUG_MODULE = (1 << 23),
-	/*! There is a per-module verbose setting */
-	AST_OPT_FLAG_VERBOSE_MODULE = (1 << 24),
+	/*! There is a per-module trace setting */
+	AST_OPT_FLAG_TRACE_MODULE = (1 << 24),
 	/*! Terminal colors should be adjusted for a light-colored background */
 	AST_OPT_FLAG_LIGHT_BACKGROUND = (1 << 25),
-	/*! Count Initiated seconds in CDR's */
-	AST_OPT_FLAG_INITIATED_SECONDS = (1 << 26),
+	/*! Make the global Message channel an internal channel to suppress AMI events */
+	AST_OPT_FLAG_HIDE_MESSAGING_AMI_EVENTS = (1 << 26),
 	/*! Force black background */
 	AST_OPT_FLAG_FORCE_BLACK_BACKGROUND = (1 << 27),
 	/*! Hide remote console connect messages on console */
@@ -122,21 +120,21 @@ enum ast_option_flags {
 #define ast_opt_cache_record_files	ast_test_flag(&ast_options, AST_OPT_FLAG_CACHE_RECORD_FILES)
 #define ast_opt_cache_media_frames	ast_test_flag(&ast_options, AST_OPT_FLAG_CACHE_MEDIA_FRAMES)
 #define ast_opt_timestamp		ast_test_flag(&ast_options, AST_OPT_FLAG_TIMESTAMP)
-#define ast_opt_override_config		ast_test_flag(&ast_options, AST_OPT_FLAG_OVERRIDE_CONFIG)
 #define ast_opt_reconnect		ast_test_flag(&ast_options, AST_OPT_FLAG_RECONNECT)
 #define ast_opt_transmit_silence	ast_test_flag(&ast_options, AST_OPT_FLAG_TRANSMIT_SILENCE)
 #define ast_opt_dont_warn		ast_test_flag(&ast_options, AST_OPT_FLAG_DONT_WARN)
-#define ast_opt_end_cdr_before_h_exten	ast_test_flag(&ast_options, AST_OPT_FLAG_END_CDR_BEFORE_H_EXTEN)
 #define ast_opt_always_fork		ast_test_flag(&ast_options, AST_OPT_FLAG_ALWAYS_FORK)
 #define ast_opt_mute			ast_test_flag(&ast_options, AST_OPT_FLAG_MUTE)
 #define ast_opt_dbg_module		ast_test_flag(&ast_options, AST_OPT_FLAG_DEBUG_MODULE)
-#define ast_opt_verb_module		ast_test_flag(&ast_options, AST_OPT_FLAG_VERBOSE_MODULE)
+#define ast_opt_trace_module		ast_test_flag(&ast_options, AST_OPT_FLAG_TRACE_MODULE)
 #define ast_opt_light_background	ast_test_flag(&ast_options, AST_OPT_FLAG_LIGHT_BACKGROUND)
 #define ast_opt_force_black_background	ast_test_flag(&ast_options, AST_OPT_FLAG_FORCE_BLACK_BACKGROUND)
 #define ast_opt_hide_connect		ast_test_flag(&ast_options, AST_OPT_FLAG_HIDE_CONSOLE_CONNECT)
 #define ast_opt_lock_confdir		ast_test_flag(&ast_options, AST_OPT_FLAG_LOCK_CONFIG_DIR)
 #define ast_opt_generic_plc         ast_test_flag(&ast_options, AST_OPT_FLAG_GENERIC_PLC)
+#define ast_opt_ref_debug           ast_test_flag(&ast_options, AST_OPT_FLAG_REF_DEBUG)
 #define ast_opt_generic_plc_on_equal_codecs  ast_test_flag(&ast_options, AST_OPT_FLAG_GENERIC_PLC_ON_EQUAL_CODECS)
+#define ast_opt_hide_messaging_ami_events  ast_test_flag(&ast_options, AST_OPT_FLAG_HIDE_MESSAGING_AMI_EVENTS)
 
 /*! Maximum log level defined by PJPROJECT. */
 #define MAX_PJ_LOG_MAX_LEVEL		6
@@ -189,6 +187,7 @@ extern struct ast_flags ast_options;
 extern int option_verbose;
 extern int ast_option_maxfiles;		/*!< Max number of open file handles (files, sockets) */
 extern int option_debug;		/*!< Debugging */
+extern int option_trace;		/*!< Debugging */
 extern int ast_option_maxcalls;		/*!< Maximum number of simultaneous channels */
 extern unsigned int option_dtmfminduration;	/*!< Minimum duration of DTMF (channel.c) in ms */
 extern double ast_option_maxload;
@@ -205,6 +204,7 @@ extern char record_cache_dir[AST_CACHE_DIR_LEN];
 
 extern int ast_language_is_prefix;
 
+extern int ast_option_rtpusedynamic;
 extern unsigned int ast_option_rtpptdynamic;
 
 #if defined(__cplusplus) || defined(c_plusplus)

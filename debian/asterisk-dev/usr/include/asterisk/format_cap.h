@@ -46,20 +46,14 @@ enum ast_format_cap_flags {
  * \retval ast_format_cap object on success.
  * \retval NULL on failure.
  */
-struct ast_format_cap *__ast_format_cap_alloc(enum ast_format_cap_flags flags);
-struct ast_format_cap *__ast_format_cap_alloc_debug(enum ast_format_cap_flags flags, const char *tag, const char *file, int line, const char *func);
+struct ast_format_cap *__ast_format_cap_alloc(enum ast_format_cap_flags flags,
+	const char *tag, const char *file, int line, const char *func);
 
-#ifdef REF_DEBUG
 #define ast_format_cap_alloc(flags) \
-	__ast_format_cap_alloc_debug((flags), "", __FILE__, __LINE__, __PRETTY_FUNCTION__)
+	__ast_format_cap_alloc((flags), "ast_format_cap_alloc", \
+		__FILE__, __LINE__, __PRETTY_FUNCTION__)
 #define ast_t_format_cap_alloc(flags, tag) \
-	__ast_format_cap_alloc_debug((flags), (tag), __FILE__, __LINE__, __PRETTY_FUNCTION__)
-#else
-#define ast_format_cap_alloc(flags) \
-	__ast_format_cap_alloc((flags))
-#define ast_t_format_cap_alloc(flags, tag) \
-	__ast_format_cap_alloc((flags))
-#endif
+	__ast_format_cap_alloc((flags), (tag), __FILE__, __LINE__, __PRETTY_FUNCTION__)
 
 /*!
  * \brief Set the global framing.
@@ -103,20 +97,15 @@ unsigned int ast_format_cap_get_framing(const struct ast_format_cap *cap);
  *
  * \note If framing is specified here it overrides any global framing that has been set.
  */
-int __ast_format_cap_append(struct ast_format_cap *cap, struct ast_format *format, unsigned int framing);
-int __ast_format_cap_append_debug(struct ast_format_cap *cap, struct ast_format *format, unsigned int framing, const char *tag, const char *file, int line, const char *func);
+int __ast_format_cap_append(struct ast_format_cap *cap, struct ast_format *format, unsigned int framing,
+	const char *tag, const char *file, int line, const char *func);
 
-#ifdef REF_DEBUG
 #define ast_format_cap_append(cap, format, framing) \
-	__ast_format_cap_append_debug((cap), (format), (framing), "", __FILE__, __LINE__, __PRETTY_FUNCTION__)
+	__ast_format_cap_append((cap), (format), (framing), "ast_format_cap_append", \
+		__FILE__, __LINE__, __PRETTY_FUNCTION__)
 #define ast_t_format_cap_append(cap, format, framing, tag) \
-	__ast_format_cap_append_debug((cap), (format), (framing), (tag), __FILE__, __LINE__, __PRETTY_FUNCTION__)
-#else
-#define ast_format_cap_append(cap, format, framing) \
-	__ast_format_cap_append((cap), (format), (framing))
-#define ast_t_format_cap_append(cap, format, framing, tag) \
-	__ast_format_cap_append((cap), (format), (framing))
-#endif
+	__ast_format_cap_append((cap), (format), (framing), (tag), \
+		__FILE__, __LINE__, __PRETTY_FUNCTION__)
 
 /*!
  * \brief Add all codecs Asterisk knows about for a specific type to
@@ -319,7 +308,18 @@ int ast_format_cap_has_type(const struct ast_format_cap *cap, enum ast_media_typ
  *
  * \return The contents of the buffer in \c buf
  */
-const char *ast_format_cap_get_names(struct ast_format_cap *cap, struct ast_str **buf);
+const char *ast_format_cap_get_names(const struct ast_format_cap *cap, struct ast_str **buf);
+
+/*!
+ * \brief Append the names of codecs of a set of formats to an ast_str buffer
+ * \since 18
+ *
+ * \param cap The capabilities structure containing the formats
+ * \param buf A \c ast_str buffer to append the names of the formats to
+ *
+ * \return The contents of the buffer in \c buf
+ */
+const char *ast_format_cap_append_names(const struct ast_format_cap *cap, struct ast_str **buf);
 
 #ifndef AST_FORMAT_CAP_NAMES_LEN
 /*! Buffer size for callers of ast_format_cap_get_names to allocate. */
@@ -333,6 +333,6 @@ const char *ast_format_cap_get_names(struct ast_format_cap *cap, struct ast_str 
  * \retval 1 The format cap has zero formats or only ast_format_none
  * \retval 0 The format cap has at least one format
  */
-int ast_format_cap_empty(struct ast_format_cap *cap);
+int ast_format_cap_empty(const struct ast_format_cap *cap);
 
 #endif /* _AST_FORMAT_CAP_H */

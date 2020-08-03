@@ -397,6 +397,19 @@ struct ast_msg_var_iterator *ast_msg_var_iterator_init(const struct ast_msg *msg
 int ast_msg_var_iterator_next(const struct ast_msg *msg, struct ast_msg_var_iterator *iter, const char **name, const char **value);
 
 /*!
+ * \brief Get the next variable name and value that was set on a received message
+ * \param msg The message with the variables
+ * \param iter An iterator created with ast_msg_var_iterator_init
+ * \param name A pointer to the name result pointer
+ * \param value A pointer to the value result pointer
+ *
+ * \retval 0 No more entries
+ * \retval 1 Valid entry
+ */
+int ast_msg_var_iterator_next_received(const struct ast_msg *msg,
+	struct ast_msg_var_iterator *iter, const char **name, const char **value);
+
+/*!
  * \brief Destroy a message variable iterator
  * \param iter Iterator to be destroyed
  */
@@ -465,6 +478,24 @@ struct ast_msg_data_attribute {
  */
 struct ast_msg_data *ast_msg_data_alloc(enum ast_msg_data_source_type source,
 	struct ast_msg_data_attribute attributes[], size_t count);
+
+/*!
+ * \brief Allocates an ast_msg_data structure.
+ * \since 13.35.0
+ * \since 16.12.0
+ * \since 17.6.0
+ *
+ * \param source The source type of the message
+ * \param to Where the message is sent to
+ * \param from Where the message is sent from
+ * \param content_type Content type of the body
+ * \param body The message body
+ *
+ * \return Pointer to msg structure or NULL on allocation failure.
+ *         Caller must call ast_free when done.
+ */
+struct ast_msg_data *ast_msg_data_alloc2(enum ast_msg_data_source_type source_type,
+	const char *to, const char *from, const char *content_type, const char *body);
 
 /*!
  * \brief Clone an ast_msg_data structure

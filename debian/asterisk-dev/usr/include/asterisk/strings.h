@@ -617,8 +617,8 @@ int ast_regex_string_to_regex_pattern(const char *regex_string, struct ast_str *
  * \note The result of this function is dynamically allocated memory, and must
  *       be free()'d after it is no longer needed.
  */
-#ifdef __AST_DEBUG_MALLOC
-#define	ast_str_create(a)	_ast_str_create(a,__FILE__,__LINE__,__PRETTY_FUNCTION__)
+#define ast_str_create(init_len) \
+	_ast_str_create(init_len, __FILE__, __LINE__, __PRETTY_FUNCTION__)
 AST_INLINE_API(
 struct ast_str * attribute_malloc _ast_str_create(size_t init_len,
 		const char *file, int lineno, const char *func),
@@ -636,24 +636,6 @@ struct ast_str * attribute_malloc _ast_str_create(size_t init_len,
 	return buf;
 }
 )
-#else
-AST_INLINE_API(
-struct ast_str * attribute_malloc ast_str_create(size_t init_len),
-{
-	struct ast_str *buf;
-
-	buf = (struct ast_str *)ast_calloc(1, sizeof(*buf) + init_len);
-	if (buf == NULL)
-		return NULL;
-
-	buf->__AST_STR_LEN = init_len;
-	buf->__AST_STR_USED = 0;
-	buf->__AST_STR_TS = DS_MALLOC;
-
-	return buf;
-}
-)
-#endif
 
 /*! \brief Reset the content of a dynamic string.
  * Useful before a series of ast_str_append.
@@ -772,7 +754,6 @@ char *ast_str_truncate(struct ast_str *buf, ssize_t len),
 /*!
  * Make space in a new string (e.g. to read in data from a file)
  */
-#ifdef __AST_DEBUG_MALLOC
 AST_INLINE_API(
 int _ast_str_make_space(struct ast_str **buf, size_t new_len, const char *file, int lineno, const char *function),
 {
@@ -796,32 +777,8 @@ int _ast_str_make_space(struct ast_str **buf, size_t new_len, const char *file, 
 	return 0;
 }
 )
-#define ast_str_make_space(a,b)	_ast_str_make_space(a,b,__FILE__,__LINE__,__PRETTY_FUNCTION__)
-#else
-AST_INLINE_API(
-int ast_str_make_space(struct ast_str **buf, size_t new_len),
-{
-	struct ast_str *old_buf = *buf;
-
-	if (new_len <= (*buf)->__AST_STR_LEN)
-		return 0;	/* success */
-	if ((*buf)->__AST_STR_TS == DS_ALLOCA || (*buf)->__AST_STR_TS == DS_STATIC)
-		return -1;	/* cannot extend */
-	*buf = (struct ast_str *)ast_realloc(*buf, new_len + sizeof(struct ast_str));
-	if (*buf == NULL) {
-		*buf = old_buf;
-		return -1;
-	}
-	if ((*buf)->__AST_STR_TS != DS_MALLOC) {
-		pthread_setspecific((*buf)->__AST_STR_TS->key, *buf);
-		_DB1(__ast_threadstorage_object_replace(old_buf, *buf, new_len + sizeof(struct ast_str));)
-	}
-
-	(*buf)->__AST_STR_LEN = new_len;
-	return 0;
-}
-)
-#endif
+#define ast_str_make_space(buf, new_len) \
+	_ast_str_make_space(buf, new_len, __FILE__, __LINE__, __PRETTY_FUNCTION__)
 
 AST_INLINE_API(
 int ast_str_copy_string(struct ast_str **dst, struct ast_str *src),
@@ -965,14 +922,12 @@ enum {
  *       through calling one of the other functions or macros defined in this
  *       file.
  */
-#ifdef __AST_DEBUG_MALLOC
-int __attribute__((format(printf, 4, 0))) __ast_debug_str_helper(struct ast_str **buf, ssize_t max_len,
-							   int append, const char *fmt, va_list ap, const char *file, int lineno, const char *func);
-#define __ast_str_helper(a,b,c,d,e)	__ast_debug_str_helper(a,b,c,d,e,__FILE__,__LINE__,__PRETTY_FUNCTION__)
-#else
-int __attribute__((format(printf, 4, 0))) __ast_str_helper(struct ast_str **buf, ssize_t max_len,
-							   int append, const char *fmt, va_list ap);
-#endif
+int __attribute__((format(printf, 4, 0))) __ast_str_helper(struct ast_str **buf,
+	ssize_t max_len, int append, const char *fmt, va_list ap,
+	const char *file, int lineno, const char *func);
+#define _ast_str_helper(buf, max_len, append, fmt, ap) \
+	__ast_str_helper(buf, max_len, append, fmt, ap, __FILE__, __LINE__, __PRETTY_FUNCTION__)
+
 char *__ast_str_helper2(struct ast_str **buf, ssize_t max_len,
 	const char *src, size_t maxsrc, int append, int escapecommas);
 
@@ -1022,7 +977,7 @@ char *__ast_str_helper2(struct ast_str **buf, ssize_t max_len,
  */
 AST_INLINE_API(int __attribute__((format(printf, 3, 0))) ast_str_set_va(struct ast_str **buf, ssize_t max_len, const char *fmt, va_list ap),
 {
-	return __ast_str_helper(buf, max_len, 0, fmt, ap);
+	return _ast_str_helper(buf, max_len, 0, fmt, ap);
 }
 )
 
@@ -1040,7 +995,7 @@ AST_INLINE_API(int __attribute__((format(printf, 3, 0))) ast_str_set_va(struct a
  */
 AST_INLINE_API(int __attribute__((format(printf, 3, 0))) ast_str_append_va(struct ast_str **buf, ssize_t max_len, const char *fmt, va_list ap),
 {
-	return __ast_str_helper(buf, max_len, 1, fmt, ap);
+	return _ast_str_helper(buf, max_len, 1, fmt, ap);
 }
 )
 
@@ -1134,6 +1089,59 @@ int __attribute__((format(printf, 3, 4))) ast_str_append(
 	return res;
 }
 )
+
+/*!
+ * \brief Provides a temporary ast_str and returns a copy of its buffer
+ * \since 16.12
+ * \since 17.6
+ * \since 18.0
+ *
+ * \param init_len The initial length of the temporary ast_str needed.
+ * \param __expr An expression that needs the temporary ast_str and returns a char *.
+ *
+ * \returns A copy of __expr's return buffer allocated on the stack.
+ *
+ * \details
+ * There are a few query functions scattered around that need an ast_str in which
+ * to assemble the results but it's not always convenient to create an ast_str
+ * and ensure it's freed just to print a log message.  For example...
+ *
+ * struct ast_str *temp = ast_str_create(128);
+ * ast_log(LOG_INFO, "Format caps: %s\n", ast_format_cap_get_names(caps, &temp));
+ * ast_free(temp);
+ *
+ * That's not bad if you only have to do it once but some of our code that deals
+ * with streams and codecs is pretty complex and good instrumentation is essential.
+ * The aim of this function is to make that easier.
+ *
+ * With this macro, the above code can be simplified as follows...
+ * \example
+ * ast_log(LOG_INFO, "Format caps: %s\n",
+ *     ast_str_tmp(128, ast_format_cap_get_names(caps, &STR_TMP));
+ *
+ * STR_TMP will always be a reference to the temporary ast_str created
+ * by the macro.  Its scope is limited by the macro so you can use it multiple
+ * times without conflict.
+ *
+ * \example
+ * ast_log(LOG_INFO, "Format caps in: %s  Format caps out: %s\n",
+ *     ast_str_tmp(128, ast_format_cap_get_names(caps_in, &STR_TMP),
+ *     ast_str_tmp(128, ast_format_cap_get_names(caps_out, &STR_TMP)
+ *     );
+ *
+ * \warning
+ * The returned string is stack allocated so don't go overboard.
+ *
+ */
+#define ast_str_tmp(init_len, __expr) \
+({ \
+	struct ast_str *STR_TMP = ast_str_create(init_len); \
+	char *ret = ast_strdupa(__expr); \
+	ast_free(STR_TMP); \
+	ret; \
+})
+
+
 
 /*!
  * \brief Check if a string is only digits
@@ -1353,6 +1361,21 @@ void ast_str_container_remove(struct ao2_container *str_container, const char *r
  * \return A pointer to buf
  */
 char *ast_generate_random_string(char *buf, size_t size);
+
+/*!
+ * \brief Compare strings for equality checking for NULL.
+ * \since 16.3.0
+ *
+ * This function considers NULL values as non-strings, thus a false condition.
+ * This means that it will return false if one, or both of the given values are
+ * NULL (i.e. two NULLs are not equal strings).
+ *
+ * \param str1 The string to compare to str2
+ * \param str2 The string to compare to str1
+ *
+ * \return true if valid strings and equal, false otherwise.
+ */
+int ast_strings_equal(const char *str1, const char *str2);
 
 /*!
  * \brief Compares 2 strings using realtime-style operators

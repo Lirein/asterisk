@@ -225,9 +225,53 @@
 			<para>Since there are several headers (such as Via) which can occur multiple
 			times, SIP_HEADER takes an optional second argument to specify which header with
 			that name to retrieve. Headers start at offset <literal>1</literal>.</para>
+			<para>This function does not access headers from the REFER message if the call
+			was transferred. To obtain the REFER headers, set the dialplan variable
+			<variable>GET_TRANSFERRER_DATA</variable> to the prefix of the headers of the
+			REFER message that you need to access; for example, <literal>X-</literal> to
+			get all headers starting with <literal>X-</literal>. The variable must be set
+			before a call to the application that starts the channel that may eventually
+			transfer back into the dialplan, and must be inherited by that channel, so prefix
+			it with the <literal>_</literal> or <literal>__</literal> when setting (or
+			set it in the pre-dial handler executed on the new channel). To get all headers
+			of the REFER message, set the value to <literal>*</literal>. Headers
+			are returned in the form of a dialplan hash TRANSFER_DATA, and can be accessed
+			with the functions <variable>HASHKEYS(TRANSFER_DATA)</variable> and, e. g.,
+			<variable>HASH(TRANSFER_DATA,X-That-Special-Header)</variable>.</para>
+			<para>Please also note that contents of the SDP (an attachment to the
+			SIP request) can't be accessed with this function.</para>
+		</description>
+		<see-also>
+			<ref type="function">SIP_HEADERS</ref>
+		</see-also>
+	</function>
+	<function name="SIP_HEADERS" language="en_US">
+		<synopsis>
+			Gets the list of SIP header names from an incoming INVITE message.
+		</synopsis>
+		<syntax>
+			<parameter name="prefix">
+				<para>If specified, only the headers matching the given prefix are returned.</para>
+			</parameter>
+		</syntax>
+		<description>
+			<para>Returns a comma-separated list of header names (without values) from the
+			INVITE message that originated the current channel. Multiple headers with the
+			same name are included in the list only once. The returned list can be iterated
+			over using the functions POP() and SIP_HEADER().</para>
+			<para>For example, <literal>${SIP_HEADERS(Co)}</literal> might return
+			<literal>Contact,Content-Length,Content-Type</literal>. As a practical example,
+			you may use <literal>${SIP_HEADERS(X-)}</literal> to enumerate optional extended
+			headers.</para>
+			<para>This function does not access headers from the incoming SIP REFER message;
+			see the documentation of the function SIP_HEADER for how to access them.</para>
 			<para>Please observe that contents of the SDP (an attachment to the
 			SIP request) can't be accessed with this function.</para>
 		</description>
+		<see-also>
+			<ref type="function">SIP_HEADER</ref>
+			<ref type="function">POP</ref>
+		</see-also>
 	</function>
 	<function name="SIPPEER" language="en_US">
 		<synopsis>
@@ -795,6 +839,9 @@
 			<enum name="dahdi_span">
 				<para>R/O DAHDI span related to this channel.</para>
 			</enum>
+			<enum name="dahdi_group">
+				<para>R/O DAHDI logical group related to this channel.</para>
+			</enum>
 			<enum name="dahdi_type">
 				<para>R/O DAHDI channel type, one of:</para>
 				<enumlist>
@@ -1072,6 +1119,9 @@
 			<synopsis>Raised when a DAHDI channel is created or an underlying technology is associated with a DAHDI channel.</synopsis>
 			<syntax>
 				<channel_snapshot/>
+				<parameter name="DAHDIGroup">
+					<para>The DAHDI logical group associated with this channel.</para>
+				</parameter>
 				<parameter name="DAHDISpan">
 					<para>The DAHDI span associated with this channel.</para>
 				</parameter>
@@ -1191,6 +1241,19 @@
 		<para>This function uses the same DTMF mode naming as the dtmf_mode configuration option</para>
 	</description>
 </function>
+<function name="PJSIP_MOH_PASSTHROUGH" language="en_US">
+	<synopsis>
+		Get or change the on-hold behavior for a SIP call.
+	</synopsis>
+	<syntax>
+	</syntax>
+	<description>
+		<para>When read, returns the current moh passthrough mode</para>
+		<para>When written, sets the current moh passthrough mode</para>
+		<para>If <replaceable>yes</replaceable>, on-hold re-INVITEs are sent. If <replaceable>no</replaceable>, music on hold is generated.</para>
+		<para>This function can be used to override the moh_passthrough configuration option</para>
+	</description>
+</function>
 <function name="PJSIP_SEND_SESSION_REFRESH" language="en_US">
 	<synopsis>
 		W/O: Initiate a session refresh via an UPDATE or re-INVITE on an established media session
@@ -1231,6 +1294,60 @@
 	<see-also>
 		<ref type="function">PJSIP_MEDIA_OFFER</ref>
 	</see-also>
+</function>
+<function name="PJSIP_PARSE_URI" language="en_US">
+	<synopsis>
+		Parse an uri and return a type part of the URI.
+	</synopsis>
+	<syntax>
+		<parameter name="uri" required="true">
+			<para>URI to parse</para>
+		</parameter>
+		<parameter name="type" required="true">
+			<para>The <literal>type</literal> parameter specifies which URI part to read</para>
+			<enumlist>
+				<enum name="display">
+					<para>Display name.</para>
+				</enum>
+				<enum name="scheme">
+					<para>URI scheme.</para>
+				</enum>
+				<enum name="user">
+					<para>User part.</para>
+				</enum>
+				<enum name="passwd">
+					<para>Password part.</para>
+				</enum>
+				<enum name="host">
+					<para>Host part.</para>
+				</enum>
+				<enum name="port">
+					<para>Port number, or zero.</para>
+				</enum>
+				<enum name="user_param">
+					<para>User parameter.</para>
+				</enum>
+				<enum name="method_param">
+					<para>Method parameter.</para>
+				</enum>
+				<enum name="transport_param">
+					<para>Transport parameter.</para>
+				</enum>
+				<enum name="ttl_param">
+					<para>TTL param, or -1.</para>
+				</enum>
+				<enum name="lr_param">
+					<para>Loose routing param, or zero.</para>
+				</enum>
+				<enum name="maddr_param">
+					<para>Maddr param.</para>
+				</enum>
+			</enumlist>
+		</parameter>
+	</syntax>
+	<description>
+		<para>Parse an URI and return a specified part of the URI.</para>
+	</description>
 </function>
 <info name="CHANNEL" language="en_US" tech="PJSIP">
 	<enumlist>
@@ -1702,7 +1819,7 @@
 			Page series of phones
 		</synopsis>
 		<syntax>
-			<parameter name="Technology/Resource" required="true" argsep="&amp;">
+			<parameter name="Technology/Resource" required="false" argsep="&amp;">
 				<argument name="Technology/Resource" required="true">
 					<para>Specification of the device(s) to dial. These must be in the format of
 					<literal>Technology/Resource</literal>, where <replaceable>Technology</replaceable>
@@ -1894,6 +2011,42 @@
 			these ports to access audio coming from, or being send to the channel.</para>
 		</description>
 	</application>
+	<application name="BlindTransfer" language="en_US">
+		<synopsis>
+			Blind transfer channel(s) to the extension and context provided
+		</synopsis>
+		<syntax>
+			<parameter name="exten" required="true">
+				<para>Specify extension.</para>
+			</parameter>
+			<parameter name="context">
+				<para>Optionally specify a context.
+				By default, Asterisk will use the caller channel context.</para>
+			</parameter>
+		</syntax>
+		<description>
+			<para>Redirect all channels currently bridged to the caller channel to the
+			specified destination.</para>
+			<para>The result of the application will be reported in the <variable>BLINDTRANSFERSTATUS</variable>
+			channel variable:</para>
+			<variablelist>
+				<variable name="BLINDTRANSFERSTATUS">
+					<value name="SUCCESS">
+						Transfer succeeded.
+					</value>
+					<value name="FAILURE">
+						Transfer failed.
+					</value>
+					<value name="INVALID">
+						Transfer invalid.
+					</value>
+					<value name="NOTPERMITTED">
+						Transfer not permitted.
+					</value>
+				</variable>
+			</variablelist>
+		</description>
+	</application>
 	<application name="Milliwatt" language="en_US">
 		<synopsis>
 			Generate a Constant 1004Hz tone at 0dbm (mu-law).
@@ -1987,6 +2140,9 @@
 					<option name="o">
 						<para>The body should be coded as octets not 7-bit symbols.</para>
 					</option>
+					<option name="n">
+						<para>Do not log any SMS content to log file (privacy).</para>
+					</option>
 				</optionlist>
 			</parameter>
 			<parameter name="addr" />
@@ -2065,6 +2221,10 @@
 					<option name="n">
 						<para>Read digits even if the channel is not answered.</para>
 					</option>
+					<option name="p">
+						<para>The extension entered will be considered complete when a <literal>#</literal>
+						is entered.</para>
+					</option>
 				</optionlist>
 			</parameter>
 			<parameter name="timeout">
@@ -2137,6 +2297,9 @@
 			</parameter>
 			<parameter name="Duration" required="false">
 				<para>The duration, in milliseconds, of the digit to be played.</para>
+			</parameter>
+			<parameter name="Receive" required="false">
+				<para>Emulate receiving DTMF on this channel instead of sending it out.</para>
 			</parameter>
 		</syntax>
 		<description>
@@ -2881,7 +3044,7 @@
 				<parameter name="Meetme">
 					<para>The identifier for the MeetMe conference.</para>
 				</parameter>
-				<parameter name="Usernum">
+				<parameter name="User">
 					<para>The identifier of the MeetMe user who joined.</para>
 				</parameter>
 				<channel_snapshot/>
@@ -2956,6 +3119,35 @@
 			</syntax>
 		</managerEventInstance>
 	</managerEvent>
+	<application name="BridgeAdd" language="en_US">
+		<synopsis>
+			Join a bridge that contains the specified channel.
+		</synopsis>
+		<syntax>
+			<parameter name="channel" required="true">
+				<para>The current channel joins the bridge containing the channel
+				identified by the channel name, channel name prefix, or channel
+				uniqueid.</para>
+			</parameter>
+		</syntax>
+		<description>
+			<para>This application places the incoming channel into
+			the bridge containing the specified channel. The specified
+			channel only needs to be the prefix of a full channel name
+			IE. 'PJSIP/cisco0001'.
+			</para>
+			<para>This application sets the following channel variable upon completion:</para>
+			<variablelist>
+				<variable name="BRIDGERESULT">
+					<para>The result of the bridge attempt as a text string.</para>
+					<value name="SUCCESS" />
+					<value name="FAILURE" />
+					<value name="LOOP" />
+					<value name="NONEXISTENT" />
+				</variable>
+			</variablelist>
+		</description>
+	</application>
 	<application name="WaitForRing" language="en_US">
 		<synopsis>
 			Wait for Ring Application.
@@ -2968,25 +3160,6 @@
 			and only after the next ring has completed. Returns <literal>0</literal> on success or
 			<literal>-1</literal> on hangup.</para>
 		</description>
-	</application>
-	<application name="DBdel" language="en_US">
-		<synopsis>
-			Delete a key from the asterisk database.
-		</synopsis>
-		<syntax argsep="/">
-			<parameter name="family" required="true" />
-			<parameter name="key" required="true" />
-		</syntax>
-		<description>
-			<para>This application will delete a <replaceable>key</replaceable> from the Asterisk
-			database.</para>
-			<note><para>This application has been DEPRECATED in favor of the DB_DELETE function.</para></note>
-		</description>
-		<see-also>
-			<ref type="function">DB_DELETE</ref>
-			<ref type="application">DBdeltree</ref>
-			<ref type="function">DB</ref>
-		</see-also>
 	</application>
 	<application name="DBdeltree" language="en_US">
 		<synopsis>
@@ -3002,7 +3175,6 @@
 		</description>
 		<see-also>
 			<ref type="function">DB_DELETE</ref>
-			<ref type="application">DBdel</ref>
 			<ref type="function">DB</ref>
 		</see-also>
 	</application>
@@ -3185,7 +3357,7 @@
 			Attempt to connect to another device or endpoint and bridge the call.
 		</synopsis>
 		<syntax>
-			<parameter name="Technology/Resource" required="true" argsep="&amp;">
+			<parameter name="Technology/Resource" required="false" argsep="&amp;">
 				<argument name="Technology/Resource" required="true">
 					<para>Specification of the device(s) to dial.  These must be in the format of
 					<literal>Technology/Resource</literal>, where <replaceable>Technology</replaceable>
@@ -3253,11 +3425,9 @@
 					a call to be answered. Exit to that extension if it exists in the
 					current context, or the context defined in the <variable>EXITCONTEXT</variable> variable,
 					if it exists.</para>
-					<note>
-						<para>Many SIP and ISDN phones cannot send DTMF digits until the call is
-						connected.  If you wish to use this option with these phones, you
-						can use the <literal>Answer</literal> application before dialing.</para>
-					</note>
+					<para>NOTE: Many SIP and ISDN phones cannot send DTMF digits until the call is
+					connected.  If you wish to use this option with these phones, you
+					can use the <literal>Answer</literal> application before dialing.</para>
 				</option>
 				<option name="D" argsep=":">
 					<argument name="called" />
@@ -3288,21 +3458,15 @@
 					<argument name="priority" required="true" />
 					<para>When the caller hangs up, transfer the <emphasis>called</emphasis> party
 					to the specified destination and <emphasis>start</emphasis> execution at that location.</para>
-					<note>
-						<para>Any channel variables you want the called channel to inherit from the caller channel must be
-						prefixed with one or two underbars ('_').</para>
-					</note>
+					<para>NOTE: Any channel variables you want the called channel to inherit from the caller channel must be
+					prefixed with one or two underbars ('_').</para>
 				</option>
 				<option name="F">
 					<para>When the caller hangs up, transfer the <emphasis>called</emphasis> party to the next priority of the current extension
 					and <emphasis>start</emphasis> execution at that location.</para>
-					<note>
-						<para>Any channel variables you want the called channel to inherit from the caller channel must be
-						prefixed with one or two underbars ('_').</para>
-					</note>
-					<note>
-						<para>Using this option from a Macro() or GoSub() might not make sense as there would be no return points.</para>
-					</note>
+					<para>NOTE: Any channel variables you want the called channel to inherit from the caller channel must be
+					prefixed with one or two underbars ('_').</para>
+					<para>NOTE: Using this option from a Macro() or GoSub() might not make sense as there would be no return points.</para>
 				</option>
 				<option name="g">
 					<para>Proceed with dialplan execution at the next priority in the current extension if the
@@ -3315,9 +3479,7 @@
 					<para>If the call is answered, transfer the calling party to
 					the specified <replaceable>priority</replaceable> and the called party to the specified
 					<replaceable>priority</replaceable> plus one.</para>
-					<note>
-						<para>You cannot use any additional action post answer options in conjunction with this option.</para>
-					</note>
+					<para>NOTE: You cannot use any additional action post answer options in conjunction with this option.</para>
 				</option>
 				<option name="h">
 					<para>Allow the called party to hang up by sending the DTMF sequence
@@ -3326,12 +3488,10 @@
 				<option name="H">
 					<para>Allow the calling party to hang up by sending the DTMF sequence
 					defined for disconnect in <filename>features.conf</filename>.</para>
-					<note>
-						<para>Many SIP and ISDN phones cannot send DTMF digits until the call is
-						connected.  If you wish to allow DTMF disconnect before the dialed
-						party answers with these phones, you can use the <literal>Answer</literal>
-						application before dialing.</para>
-					</note>
+					<para>NOTE: Many SIP and ISDN phones cannot send DTMF digits until the call is
+					connected.  If you wish to allow DTMF disconnect before the dialed
+					party answers with these phones, you can use the <literal>Answer</literal>
+					application before dialing.</para>
 				</option>
 				<option name="i">
 					<para>Asterisk will ignore any forwarding requests it may receive on this dial attempt.</para>
@@ -3427,14 +3587,14 @@
 							</value>
 						</variable>
 					</variablelist>
-					<note>
-						<para>You cannot use any additional action post answer options in conjunction
-						with this option. Also, pbx services are run on the peer (called) channel,
-						so you will not be able to set timeouts via the <literal>TIMEOUT()</literal> function in this macro.</para>
-					</note>
-					<warning><para>Be aware of the limitations that macros have, specifically with regards to use of
+					<para>NOTE: You cannot use any additional action post answer options in conjunction
+					with this option. Also, pbx services are run on the peer (called) channel,
+					so you will not be able to set timeouts via the <literal>TIMEOUT()</literal> function in this macro.</para>
+					<para>WARNING: Be aware of the limitations that macros have, specifically with regards to use of
 					the <literal>WaitExten</literal> application. For more information, see the documentation for
-					<literal>Macro()</literal>.</para></warning>
+					<literal>Macro()</literal>.</para>
+					<para>NOTE: Macros are deprecated, GoSub should be used instead,
+					see the <literal>U</literal> option.</para>
 				</option>
 				<option name="n">
 					<argument name="delete">
@@ -3499,10 +3659,8 @@
 						to send no cause.  See the <filename>causes.h</filename> file for the
 						full list of valid causes and names.
 						</para>
-					<note>
-						<para>chan_sip does not support setting the cause on a CANCEL to anything
-						other than ANSWERED_ELSEWHERE.</para>
-					</note>
+					<para>NOTE: chan_sip does not support setting the cause on a CANCEL to anything
+					other than ANSWERED_ELSEWHERE.</para>
 				</option>
 				<option name="r">
 					<para>Default: Indicate ringing to the calling party, even if the called party isn't actually ringing. Pass no audio to the calling
@@ -3537,7 +3695,8 @@
 				</option>
 				<option name="U" argsep="^">
 					<argument name="x" required="true">
-						<para>Name of the subroutine to execute via <literal>Gosub</literal></para>
+						<para>Name of the subroutine context to execute via <literal>Gosub</literal>.
+						The subroutine execution starts in the named context at the s exten and priority 1.</para>
 					</argument>
 					<argument name="arg" multiple="true" required="false">
 						<para>Arguments for the <literal>Gosub</literal> routine</para>
@@ -3566,11 +3725,9 @@
 							</value>
 						</variable>
 					</variablelist>
-					<note>
-						<para>You cannot use any additional action post answer options in conjunction
-						with this option. Also, pbx services are run on the peer (called) channel,
-						so you will not be able to set timeouts via the <literal>TIMEOUT()</literal> function in this routine.</para>
-					</note>
+					<para>NOTE: You cannot use any additional action post answer options in conjunction
+					with this option. Also, pbx services are run on the <emphasis>called</emphasis> channel,
+					so you will not be able to set timeouts via the <literal>TIMEOUT()</literal> function in this routine.</para>
 				</option>
 				<option name="u">
 					<argument name = "x" required="true">
@@ -3655,27 +3812,29 @@
 			<example title="Dial with pre-dial subroutines">
 			[default]
 
-			exten => callee_channel,1,NoOp()
+			exten => callee_channel,1,NoOp(ARG1=${ARG1} ARG2=${ARG2})
 			 same => n,Log(NOTICE, I'm called on channel ${CHANNEL} prior to it starting the dial attempt)
 			 same => n,Return()
 
-			exten => called_channel,1,NoOp()
+			exten => called_channel,1,NoOp(ARG1=${ARG1} ARG2=${ARG2})
 			 same => n,Log(NOTICE, I'm called on outbound channel ${CHANNEL} prior to it being used to dial someone)
 			 same => n,Return()
 
 			exten => _X.,1,NoOp()
-			 same => n,Dial(PJSIP/alice,,b(default^called_channel^1)B(default^callee_channel^1))
+			 same => n,Dial(PJSIP/alice,,b(default^called_channel^1(my_gosub_arg1^my_gosub_arg2))B(default^callee_channel^1(my_gosub_arg1^my_gosub_arg2)))
 			 same => n,Hangup()
 			</example>
 			<example title="Dial with post-answer subroutine executed on outbound channel">
-			[default]
+			[my_gosub_routine]
 
-			exten => called_channel,1,NoOp()
+			exten => s,1,NoOp(ARG1=${ARG1} ARG2=${ARG2})
 			 same => n,Playback(hello)
 			 same => n,Return()
 
+			[default]
+
 			exten => _X.,1,NoOp()
-			 same => n,Dial(PJSIP/alice,,U(default^called_channel^1))
+			 same => n,Dial(PJSIP/alice,,U(my_gosub_routine^my_gosub_arg1^my_gosub_arg2))
 			 same => n,Hangup()
 			</example>
 			<example title="Dial into ConfBridge using 'G' option">
@@ -3689,8 +3848,26 @@
 				<variable name="DIALEDTIME">
 					<para>This is the time from dialing a channel until when it is disconnected.</para>
 				</variable>
+				<variable name="DIALEDTIME_MS">
+					<para>This is the milliseconds version of the DIALEDTIME variable.</para>
+				</variable>
 				<variable name="ANSWEREDTIME">
 					<para>This is the amount of time for actual call.</para>
+				</variable>
+				<variable name="ANSWEREDTIME_MS">
+					<para>This is the milliseconds version of the ANSWEREDTIME variable.</para>
+				</variable>
+				<variable name="RINGTIME">
+					<para>This is the time from creating the channel to the first RINGING event received. Empty if there was no ring.</para>
+				</variable>
+				<variable name="RINGTIME_MS">
+					<para>This is the milliseconds version of the RINGTIME variable.</para>
+				</variable>
+				<variable name="PROGRESSTIME">
+					<para>This is the time from creating the channel to the first PROGRESS event received. Empty if there was no such event.</para>
+				</variable>
+				<variable name="PROGRESSTIME_MS">
+					<para>This is the milliseconds version of the PROGRESSTIME variable.</para>
 				</variable>
 				<variable name="DIALEDPEERNAME">
 					<para>The name of the outbound channel that answered the call.</para>
@@ -4493,16 +4670,18 @@
 			Check channel availability
 		</synopsis>
 		<syntax>
-			<parameter name="Technology/Resource" required="true" argsep="&amp;">
+			<parameter name="Technology/Resource" required="false" argsep="&amp;">
+				<argument name="Technology/Resource" required="true">
+					<para>Specification of the device(s) to check.  These must be in the format of
+					<literal>Technology/Resource</literal>, where <replaceable>Technology</replaceable>
+					represents a particular channel driver, and <replaceable>Resource</replaceable>
+					represents a resource available to that particular channel driver.</para>
+				</argument>
 				<argument name="Technology2/Resource2" multiple="true">
 					<para>Optional extra devices to check</para>
 					<para>If you need more than one enter them as
 					Technology2/Resource2&amp;Technology3/Resource3&amp;.....</para>
 				</argument>
-				<para>Specification of the device(s) to check.  These must be in the format of
-				<literal>Technology/Resource</literal>, where <replaceable>Technology</replaceable>
-				represents a particular channel driver, and <replaceable>Resource</replaceable>
-				represents a resource available to that particular channel driver.</para>
 			</parameter>
 			<parameter name="options" required="false">
 				<optionlist>
@@ -4567,7 +4746,7 @@
 			</parameter>
 			<parameter name="maximumNumberOfWords" required="false">
 				<para>Is the maximum number of words in a greeting</para>
-				<para>If this is REACHED, then the result is detection as a MACHINE</para>
+				<para>If this is exceeded, then the result is detection as a MACHINE</para>
 			</parameter>
 			<parameter name="silenceThreshold" required="false">
 				<para>What is the average level of noise from 0 to 32767 which if not exceeded, should be considered silence?</para>
@@ -5500,6 +5679,27 @@
 			<parameter name="queuename" required="true" />
 			<parameter name="options">
 				<optionlist>
+					<option name="b" argsep="^">
+						<para>Before initiating an outgoing call, <literal>Gosub</literal> to the specified
+						location using the newly created channel.  The <literal>Gosub</literal> will be
+						executed for each destination channel.</para>
+						<argument name="context" required="false" />
+						<argument name="exten" required="false" />
+						<argument name="priority" required="true" hasparams="optional" argsep="^">
+							<argument name="arg1" multiple="true" required="true" />
+							<argument name="argN" />
+						</argument>
+					</option>
+					<option name="B" argsep="^">
+						<para>Before initiating the outgoing call(s), <literal>Gosub</literal> to the
+						specified location using the current channel.</para>
+						<argument name="context" required="false" />
+						<argument name="exten" required="false" />
+						<argument name="priority" required="true" hasparams="optional" argsep="^">
+							<argument name="arg1" multiple="true" required="true" />
+							<argument name="argN" />
+						</argument>
+					</option>
 					<option name="C">
 						<para>Mark all calls as "answered elsewhere" when cancelled.</para>
 					</option>
@@ -5515,21 +5715,15 @@
 						<argument name="priority" required="true" />
 						<para>When the caller hangs up, transfer the <emphasis>called member</emphasis>
 						to the specified destination and <emphasis>start</emphasis> execution at that location.</para>
-						<note>
-							<para>Any channel variables you want the called channel to inherit from the caller channel must be
-							prefixed with one or two underbars ('_').</para>
-						</note>
+						<para>NOTE: Any channel variables you want the called channel to inherit from the caller channel must be
+						prefixed with one or two underbars ('_').</para>
 					</option>
 					<option name="F">
 						<para>When the caller hangs up, transfer the <emphasis>called member</emphasis> to the next priority of
 						the current extension and <emphasis>start</emphasis> execution at that location.</para>
-						<note>
-							<para>Any channel variables you want the called channel to inherit from the caller channel must be
-							prefixed with one or two underbars ('_').</para>
-						</note>
-						<note>
-							<para>Using this option from a Macro() or GoSub() might not make sense as there would be no return points.</para>
-						</note>
+						<para>NOTE: Any channel variables you want the called channel to inherit from the caller channel must be
+						prefixed with one or two underbars ('_').</para>
+						<para>NOTE: Using this option from a Macro() or GoSub() might not make sense as there would be no return points.</para>
 					</option>
 					<option name="h">
 						<para>Allow <emphasis>callee</emphasis> to hang up by pressing <literal>*</literal>.</para>
@@ -5602,9 +5796,12 @@
 			</parameter>
 			<parameter name="macro">
 				<para>Will run a macro on the called party's channel (the queue member) once the parties are connected.</para>
+				<para>NOTE: Macros are deprecated, GoSub should be used instead.</para>
 			</parameter>
 			<parameter name="gosub">
-				<para>Will run a gosub on the called party's channel (the queue member) once the parties are connected.</para>
+				<para>Will run a gosub on the called party's channel (the queue member)
+				once the parties are connected.  The subroutine execution starts in the
+				named context at the s exten and priority 1.</para>
 			</parameter>
 			<parameter name="rule">
 				<para>Will cause the queue's defaultrule to be overridden by the rule specified.</para>
@@ -5651,6 +5848,7 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
@@ -5667,6 +5865,7 @@
 			<parameter name="options" />
 			<parameter name="membername" />
 			<parameter name="stateinterface" />
+			<parameter name="wrapuptime" />
 		</syntax>
 		<description>
 			<para>Dynamically adds interface to an existing queue. If the interface is
@@ -5692,6 +5891,7 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
@@ -5729,6 +5929,7 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
@@ -5773,6 +5974,7 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
@@ -5814,6 +6016,7 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
@@ -5845,10 +6048,29 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
 		</see-also>
+	</application>
+	<application name="QueueUpdate" language="en_US">
+		<synopsis>
+			Writes to the queue_log file for OutBound calls and updates Realtime Data.
+			Is used at h extension to be able to have all the parameters.
+		</synopsis>
+		<syntax>
+			<parameter name="queuename" required="true" />
+			<parameter name="uniqueid" required="true" />
+			<parameter name="agent" required="true" />
+			<parameter name="status" required="true" />
+			<parameter name="talktime" required="true" />
+			<parameter name="params" required="false" />
+		</syntax>
+		<description>
+			<para>Allows you to write Outbound events into the queue log.</para>
+			<para>Example: exten => h,1,QueueUpdate(${QUEUE}, ${UNIQUEID}, ${AGENT}, ${DIALSTATUS}, ${ANSWEREDTIME}, ${DIALEDTIME} | ${DIALEDNUMBER})</para>
+		</description>
 	</application>
 	<function name="QUEUE_VARIABLES" language="en_US">
 		<synopsis>
@@ -5899,6 +6121,7 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
@@ -5906,7 +6129,8 @@
 	</function>
 	<function name="QUEUE_MEMBER" language="en_US">
 		<synopsis>
-			Count number of members answering a queue.
+			Provides a count of queue members based on the provided criteria, or updates a
+			queue member's settings.
 		</synopsis>
 		<syntax>
 			<parameter name="queuename" required="false" />
@@ -5962,6 +6186,7 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
@@ -5989,6 +6214,7 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
@@ -6003,6 +6229,35 @@
 		</syntax>
 		<description>
 			<para>Returns 1 if the specified queue exists, 0 if it does not</para>
+		</description>
+		<see-also>
+			<ref type="application">Queue</ref>
+			<ref type="application">QueueLog</ref>
+			<ref type="application">AddQueueMember</ref>
+			<ref type="application">RemoveQueueMember</ref>
+			<ref type="application">PauseQueueMember</ref>
+			<ref type="application">UnpauseQueueMember</ref>
+			<ref type="function">QUEUE_VARIABLES</ref>
+			<ref type="function">QUEUE_MEMBER</ref>
+			<ref type="function">QUEUE_MEMBER_COUNT</ref>
+			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
+			<ref type="function">QUEUE_WAITING_COUNT</ref>
+			<ref type="function">QUEUE_MEMBER_LIST</ref>
+			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
+		</see-also>
+	</function>
+	<function name="QUEUE_GET_CHANNEL" language="en_US">
+		<synopsis>
+			Return caller at the specified position in a queue.
+		</synopsis>
+		<syntax>
+			<parameter name="queuename" required="true" />
+			<parameter name="position" />
+		</syntax>
+		<description>
+			<para>Returns the caller channel at <replaceable>position</replaceable> in the specified <replaceable>queuename</replaceable>.</para>
+			<para>If <replaceable>position</replaceable> is unspecified the first channel is returned.</para>
 		</description>
 		<see-also>
 			<ref type="application">Queue</ref>
@@ -6041,6 +6296,7 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
@@ -6067,6 +6323,7 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
@@ -6095,21 +6352,12 @@
 			<ref type="function">QUEUE_MEMBER</ref>
 			<ref type="function">QUEUE_MEMBER_COUNT</ref>
 			<ref type="function">QUEUE_EXISTS</ref>
+			<ref type="function">QUEUE_GET_CHANNEL</ref>
 			<ref type="function">QUEUE_WAITING_COUNT</ref>
 			<ref type="function">QUEUE_MEMBER_LIST</ref>
 			<ref type="function">QUEUE_MEMBER_PENALTY</ref>
 		</see-also>
 	</function>
-	<manager name="Queues" language="en_US">
-		<synopsis>
-			Queues.
-		</synopsis>
-		<syntax>
-		</syntax>
-		<description>
-			<para>Show queues information.</para>
-		</description>
-	</manager>
 	<manager name="QueueStatus" language="en_US">
 		<synopsis>
 			Show queue status.
@@ -6316,6 +6564,26 @@
 			<para>Reset the statistics for a queue.</para>
 		</description>
 	</manager>
+	<manager name="QueueChangePriorityCaller" language="en_US">
+		<synopsis>
+			Change priority of a caller on queue.
+		</synopsis>
+		<syntax>
+			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
+			<parameter name="Queue" required="true">
+				<para>The name of the queue to take action on.</para>
+			</parameter>
+			<parameter name="Caller" required="true">
+				<para>The caller (channel) to change priority on queue.</para>
+			</parameter>
+
+			<parameter name="Priority" required="true">
+				<para>Priority value for change for caller on queue.</para>
+			</parameter>
+		</syntax>
+		<description>
+		</description>
+	</manager>
 
 	<managerEvent language="en_US" name="QueueMemberStatus">
 		<managerEventInstance class="EVENT_FLAG_AGENT">
@@ -6348,6 +6616,9 @@
 				</parameter>
 				<parameter name="LastCall">
 					<para>The time this member last took a call, expressed in seconds since 00:00, Jan 1, 1970 UTC.</para>
+				</parameter>
+				<parameter name="LastPause">
+					<para>The time when started last paused the queue member.</para>
 				</parameter>
 				<parameter name="InCall">
 					<para>Set to 1 if member is in call. Set to 0 after LastCall time is updated.</para>
@@ -6385,6 +6656,9 @@
 						<enum name="1"/>
 					</enumlist>
 				</parameter>
+				<parameter name="Wrapuptime">
+					<para>The Wrapup Time of the queue member. If this value is set will override the wrapup time of queue.</para>
+				</parameter>
 			</syntax>
 		</managerEventInstance>
 	</managerEvent>
@@ -6417,9 +6691,6 @@
 			<synopsis>Raised when a member is paused/unpaused in the queue.</synopsis>
 			<syntax>
 				<xi:include xpointer="xpointer(/docs/managerEvent[@name='QueueMemberStatus']/managerEventInstance/syntax/parameter)" />
-				<parameter name="Reason">
-					<para>The reason a member was paused.</para>
-				</parameter>
 			</syntax>
 			<see-also>
 				<ref type="application">PauseQueueMember</ref>
@@ -6649,6 +6920,10 @@
 						either a single group or a colon-delimited list of groups, such
 						as <literal>sales:support:accounting</literal>.</para></note>
 					</option>
+					<option name="l">
+						<para>Allow usage of a long queue to store audio frames.</para>
+						<note><para>This may introduce some delay in the received audio feed, but will improve the audio quality.</para></note>
+					</option>
 					<option name="n" argsep="@">
 						<para>Say the name of the person being spied on if that person has recorded
 						his/her name. If a context is specified, then that voicemail context will
@@ -6794,6 +7069,10 @@
 						either a single group or a colon-delimited list of groups, such
 						as <literal>sales:support:accounting</literal>.</para></note>
 					</option>
+					<option name="l">
+						<para>Allow usage of a long queue to store audio frames.</para>
+						<note><para>This may introduce some delay in the received audio feed, but will improve the audio quality.</para></note>
+					</option>
 					<option name="n" argsep="@">
 						<para>Say the name of the person being spied on if that person has recorded
 						his/her name. If a context is specified, then that voicemail context will
@@ -6899,353 +7178,6 @@
 			to properly setup <filename>dahdi.conf</filename> for on-hook operations.</para>
 		</description>
 	</application>
-	<application name="VoiceMail" language="en_US">
-		<synopsis>
-			Leave a Voicemail message.
-		</synopsis>
-		<syntax>
-			<parameter name="mailboxs" argsep="&amp;" required="true">
-				<argument name="mailbox1" argsep="@" required="true">
-					<argument name="mailbox" required="true" />
-					<argument name="context" />
-				</argument>
-				<argument name="mailbox2" argsep="@" multiple="true">
-					<argument name="mailbox" required="true" />
-					<argument name="context" />
-				</argument>
-			</parameter>
-			<parameter name="options">
-				<optionlist>
-					<option name="b">
-						<para>Play the <literal>busy</literal> greeting to the calling party.</para>
-					</option>
-					<option name="d">
-						<argument name="c" />
-						<para>Accept digits for a new extension in context <replaceable>c</replaceable>,
-						if played during the greeting. Context defaults to the current context.</para>
-					</option>
-					<option name="g">
-						<argument name="#" required="true" />
-						<para>Use the specified amount of gain when recording the voicemail
-						message. The units are whole-number decibels (dB). Only works on supported
-						technologies, which is DAHDI only.</para>
-					</option>
-					<option name="s">
-						<para>Skip the playback of instructions for leaving a message to the
-						calling party.</para>
-					</option>
-					<option name="u">
-						<para>Play the <literal>unavailable</literal> greeting.</para>
-					</option>
-					<option name="U">
-						<para>Mark message as <literal>URGENT</literal>.</para>
-					</option>
-					<option name="P">
-						<para>Mark message as <literal>PRIORITY</literal>.</para>
-					</option>
-				</optionlist>
-			</parameter>
-		</syntax>
-		<description>
-			<para>This application allows the calling party to leave a message for the specified
-			list of mailboxes. When multiple mailboxes are specified, the greeting will be taken from
-			the first mailbox specified. Dialplan execution will stop if the specified mailbox does not
-			exist.</para>
-			<para>The Voicemail application will exit if any of the following DTMF digits are received:</para>
-			<enumlist>
-				<enum name="0">
-					<para>Jump to the <literal>o</literal> extension in the current dialplan context.</para>
-				</enum>
-				<enum name="*">
-					<para>Jump to the <literal>a</literal> extension in the current dialplan context.</para>
-				</enum>
-			</enumlist>
-			<para>This application will set the following channel variable upon completion:</para>
-			<variablelist>
-				<variable name="VMSTATUS">
-					<para>This indicates the status of the execution of the VoiceMail application.</para>
-					<value name="SUCCESS" />
-					<value name="USEREXIT" />
-					<value name="FAILED" />
-				</variable>
-			</variablelist>
-		</description>
-		<see-also>
-			<ref type="application">VoiceMailMain</ref>
-		</see-also>
-	</application>
-	<application name="VoiceMailMain" language="en_US">
-		<synopsis>
-			Check Voicemail messages.
-		</synopsis>
-		<syntax>
-			<parameter name="mailbox" required="true" argsep="@">
-				<argument name="mailbox" />
-				<argument name="context" />
-			</parameter>
-			<parameter name="options">
-				<optionlist>
-					<option name="p">
-						<para>Consider the <replaceable>mailbox</replaceable> parameter as a prefix to
-						the mailbox that is entered by the caller.</para>
-					</option>
-					<option name="g">
-						<argument name="#" required="true" />
-						<para>Use the specified amount of gain when recording a voicemail message.
-						The units are whole-number decibels (dB).</para>
-					</option>
-					<option name="s">
-						<para>Skip checking the passcode for the mailbox.</para>
-					</option>
-					<option name="a">
-						<argument name="folder" required="true" />
-						<para>Skip folder prompt and go directly to <replaceable>folder</replaceable> specified.
-						Defaults to <literal>INBOX</literal> (or <literal>0</literal>).</para>
-						<enumlist>
-							<enum name="0"><para>INBOX</para></enum>
-							<enum name="1"><para>Old</para></enum>
-							<enum name="2"><para>Work</para></enum>
-							<enum name="3"><para>Family</para></enum>
-							<enum name="4"><para>Friends</para></enum>
-							<enum name="5"><para>Cust1</para></enum>
-							<enum name="6"><para>Cust2</para></enum>
-							<enum name="7"><para>Cust3</para></enum>
-							<enum name="8"><para>Cust4</para></enum>
-							<enum name="9"><para>Cust5</para></enum>
-						</enumlist>
-					</option>
-				</optionlist>
-			</parameter>
-		</syntax>
-		<description>
-			<para>This application allows the calling party to check voicemail messages. A specific
-			<replaceable>mailbox</replaceable>, and optional corresponding <replaceable>context</replaceable>,
-			may be specified. If a <replaceable>mailbox</replaceable> is not provided, the calling party will
-			be prompted to enter one. If a <replaceable>context</replaceable> is not specified, the
-			<literal>default</literal> context will be used.</para>
-			<para>The VoiceMailMain application will exit if the following DTMF digit is entered as Mailbox
-			or Password, and the extension exists:</para>
-			<enumlist>
-				<enum name="*">
-					<para>Jump to the <literal>a</literal> extension in the current dialplan context.</para>
-				</enum>
-			</enumlist>
-		</description>
-		<see-also>
-			<ref type="application">VoiceMail</ref>
-		</see-also>
-	</application>
-	<application name="MailboxExists" language="en_US">
-		<synopsis>
-			Check to see if Voicemail mailbox exists.
-		</synopsis>
-		<syntax>
-			<parameter name="mailbox" required="true" argsep="@">
-				<argument name="mailbox" required="true" />
-				<argument name="context" />
-			</parameter>
-			<parameter name="options">
-				<para>None options.</para>
-			</parameter>
-		</syntax>
-		<description>
-			<note><para>DEPRECATED. Use VM_INFO(mailbox[@context],exists) instead.</para></note>
-			<para>Check to see if the specified <replaceable>mailbox</replaceable> exists. If no voicemail
-			<replaceable>context</replaceable> is specified, the <literal>default</literal> context
-			will be used.</para>
-			<para>This application will set the following channel variable upon completion:</para>
-			<variablelist>
-				<variable name="VMBOXEXISTSSTATUS">
-					<para>This will contain the status of the execution of the MailboxExists application.
-					Possible values include:</para>
-					<value name="SUCCESS" />
-					<value name="FAILED" />
-				</variable>
-			</variablelist>
-		</description>
-		<see-also>
-			<ref type="function">VM_INFO</ref>
-		</see-also>
-	</application>
-	<application name="VMAuthenticate" language="en_US">
-		<synopsis>
-			Authenticate with Voicemail passwords.
-		</synopsis>
-		<syntax>
-			<parameter name="mailbox" required="true" argsep="@">
-				<argument name="mailbox" />
-				<argument name="context" />
-			</parameter>
-			<parameter name="options">
-				<optionlist>
-					<option name="s">
-						<para>Skip playing the initial prompts.</para>
-					</option>
-				</optionlist>
-			</parameter>
-		</syntax>
-		<description>
-			<para>This application behaves the same way as the Authenticate application, but the passwords
-			are taken from <filename>voicemail.conf</filename>. If the <replaceable>mailbox</replaceable> is
-			specified, only that mailbox's password will be considered valid. If the <replaceable>mailbox</replaceable>
-			is not specified, the channel variable <variable>AUTH_MAILBOX</variable> will be set with the authenticated
-			mailbox.</para>
-			<para>The VMAuthenticate application will exit if the following DTMF digit is entered as Mailbox
-			or Password, and the extension exists:</para>
-			<enumlist>
-				<enum name="*">
-					<para>Jump to the <literal>a</literal> extension in the current dialplan context.</para>
-				</enum>
-			</enumlist>
-		</description>
-	</application>
-	<application name="VoiceMailPlayMsg" language="en_US">
-		<synopsis>
-			Play a single voice mail msg from a mailbox by msg id.
-		</synopsis>
-		<syntax>
-			<parameter name="mailbox" required="true" argsep="@">
-				<argument name="mailbox" />
-				<argument name="context" />
-			</parameter>
-			<parameter name="msg_id" required="true">
-				<para>The msg id of the msg to play back. </para>
-			</parameter>
-		</syntax>
-		<description>
-			<para>This application sets the following channel variable upon completion:</para>
-			<variablelist>
-				<variable name="VOICEMAIL_PLAYBACKSTATUS">
-					<para>The status of the playback attempt as a text string.</para>
-					<value name="SUCCESS"/>
-					<value name="FAILED"/>
-				</variable>
-			</variablelist>
-		</description>
-	</application>
-	<application name="VMSayName" language="en_US">
-		<synopsis>
-			Play the name of a voicemail user
-		</synopsis>
-		<syntax>
-			<parameter name="mailbox" required="true" argsep="@">
-				<argument name="mailbox" />
-				<argument name="context" />
-			</parameter>
-		</syntax>
-		<description>
-			<para>This application will say the recorded name of the voicemail user specified as the
-			argument to this application. If no context is provided, <literal>default</literal> is assumed.</para>
-		</description>
-	</application>
-	<function name="MAILBOX_EXISTS" language="en_US">
-		<synopsis>
-			Tell if a mailbox is configured.
-		</synopsis>
-		<syntax argsep="@">
-			<parameter name="mailbox" required="true" />
-			<parameter name="context" />
-		</syntax>
-		<description>
-			<note><para>DEPRECATED. Use VM_INFO(mailbox[@context],exists) instead.</para></note>
-			<para>Returns a boolean of whether the corresponding <replaceable>mailbox</replaceable> exists.
-			If <replaceable>context</replaceable> is not specified, defaults to the <literal>default</literal>
-			context.</para>
-		</description>
-		<see-also>
-			<ref type="function">VM_INFO</ref>
-		</see-also>
-	</function>
-	<function name="VM_INFO" language="en_US">
-		<synopsis>
-			Returns the selected attribute from a mailbox.
-		</synopsis>
-		<syntax argsep=",">
-			<parameter name="mailbox" argsep="@" required="true">
-				<argument name="mailbox" required="true" />
-				<argument name="context" />
-			</parameter>
-			<parameter name="attribute" required="true">
-				<optionlist>
-					<option name="count">
-						<para>Count of messages in specified <replaceable>folder</replaceable>.
-						If <replaceable>folder</replaceable> is not specified, defaults to <literal>INBOX</literal>.</para>
-					</option>
-					<option name="email">
-						<para>E-mail address associated with the mailbox.</para>
-					</option>
-					<option name="exists">
-						<para>Returns a boolean of whether the corresponding <replaceable>mailbox</replaceable> exists.</para>
-					</option>
-					<option name="fullname">
-						<para>Full name associated with the mailbox.</para>
-					</option>
-					<option name="language">
-						<para>Mailbox language if overridden, otherwise the language of the channel.</para>
-					</option>
-					<option name="locale">
-						<para>Mailbox locale if overridden, otherwise global locale.</para>
-					</option>
-					<option name="pager">
-						<para>Pager e-mail address associated with the mailbox.</para>
-					</option>
-					<option name="password">
-						<para>Mailbox access password.</para>
-					</option>
-					<option name="tz">
-						<para>Mailbox timezone if overridden, otherwise global timezone</para>
-					</option>
-				</optionlist>
-			</parameter>
-			<parameter name="folder" required="false">
-				<para>If not specified, <literal>INBOX</literal> is assumed.</para>
-			</parameter>
-		</syntax>
-		<description>
-			<para>Returns the selected attribute from the specified <replaceable>mailbox</replaceable>.
-			If <replaceable>context</replaceable> is not specified, defaults to the <literal>default</literal>
-			context. Where the <replaceable>folder</replaceable> can be specified, common folders
-			include <literal>INBOX</literal>, <literal>Old</literal>, <literal>Work</literal>,
-			<literal>Family</literal> and <literal>Friends</literal>.</para>
-		</description>
-	</function>
-	<manager name="VoicemailUsersList" language="en_US">
-		<synopsis>
-			List All Voicemail User Information.
-		</synopsis>
-		<syntax>
-			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
-		</syntax>
-		<description>
-		</description>
-	</manager>
-	<manager name="VoicemailRefresh" language="en_US">
-		<synopsis>
-			Tell Asterisk to poll mailboxes for a change
-		</synopsis>
-		<syntax>
-			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
-			<parameter name="Context" />
-			<parameter name="Mailbox" />
-		</syntax>
-		<description>
-			<para>Normally, MWI indicators are only sent when Asterisk itself
-			changes a mailbox.  With external programs that modify the content
-			of a mailbox from outside the application, an option exists called
-			<literal>pollmailboxes</literal> that will cause voicemail to
-			continually scan all mailboxes on a system for changes.  This can
-			cause a large amount of load on a system.  This command allows
-			external applications to signal when a particular mailbox has
-			changed, thus permitting external applications to modify mailboxes
-			and MWI to work without introducing considerable CPU load.</para>
-			<para>If <replaceable>Context</replaceable> is not specified, all
-			mailboxes on the system will be polled for changes.  If
-			<replaceable>Context</replaceable> is specified, but
-			<replaceable>Mailbox</replaceable> is omitted, then all mailboxes
-			within <replaceable>Context</replaceable> will be polled.
-			Otherwise, only a single mailbox will be polled for changes.</para>
-		</description>
-	</manager>
 	<application name="SkelGuessNumber" language="en_US">
 		<synopsis>
 			An example number guessing game
@@ -7468,6 +7400,37 @@
 						application. Some (not all) possible reasons for this:
 						requested is not registered; The app requested is not
 						active; Stasis couldn't send a start message.
+					</value>
+				</variable>
+			</variablelist>
+		</description>
+	</application>
+	<application name="AttendedTransfer" language="en_US">
+		<synopsis>
+			Attended transfer to the extension provided and TRANSFER_CONTEXT
+		</synopsis>
+		<syntax>
+			<parameter name="exten" required="true">
+				<para>Specify extension.</para>
+			</parameter>
+		</syntax>
+		<description>
+			<para>Queue up attended transfer to the specified extension in the <literal>TRANSFER_CONTEXT</literal>.</para>
+			<para>Note that the attended transfer only work when two channels have answered and are bridged together.</para>
+			<para>Make sure to set Attended Transfer DTMF feature <literal>atxfer</literal>
+			and attended transfer is permitted.</para>
+			<para>The result of the application will be reported in the <variable>ATTENDEDTRANSFERSTATUS</variable>
+			channel variable:</para>
+			<variablelist>
+				<variable name="ATTENDEDTRANSFERSTATUS">
+					<value name="SUCCESS">
+						Transfer successfully queued.
+					</value>
+					<value name="FAILURE">
+						Transfer failed.
+					</value>
+					<value name="NOTPERMITTED">
+						Transfer not permitted.
 					</value>
 				</variable>
 			</variablelist>
@@ -7731,6 +7694,11 @@
 						Like with the basic filename argument, if an absolute path isn't given, it will create
 						the file in the configured monitoring directory.</para>
 					</option>
+					<option name="n">
+						<para>When the <replaceable>r</replaceable> or <replaceable>t</replaceable> option is
+						used, MixMonitor will insert silence into the specified files to maintain
+						synchronization between them. Use this option to disable that behavior.</para>
+					</option>
 					<option name="i">
 						<argument name="chanvar" required="true" />
 						<para>Stores the MixMonitor's ID on this channel variable.</para>
@@ -7765,6 +7733,11 @@
 			<para>This application does not automatically answer and should be preceeded by
 			an application such as Answer or Progress().</para>
 			<note><para>MixMonitor runs as an audiohook.</para></note>
+			<note><para>If a filename passed to MixMonitor ends with
+			<literal>.wav49</literal>, Asterisk will silently convert the extension to
+			<literal>.WAV</literal> for legacy reasons. <variable>MIXMONITOR_FILENAME</variable>
+			will contain the actual filename that Asterisk is writing to, not necessarily the
+			value that was passed in.</para></note>
 			<variablelist>
 				<variable name="MIXMONITOR_FILENAME">
 					<para>Will contain the filename used to record.</para>
@@ -7926,6 +7899,34 @@
 			<parameter name="timeout" required="false">
 				<para>Timeout in seconds. Default is 30 seconds.</para>
 			</parameter>
+			<parameter name="options" required="false">
+				<optionlist>
+				<option name="a">
+					<para>Originate asynchronously.  In other words, continue in the dialplan
+					without waiting for the originated channel to answer.</para>
+				</option>
+				<option name="b" argsep="^">
+					<para>Before originating the outgoing call, Gosub to the specified
+					location using the newly created channel.</para>
+					<argument name="context" required="false" />
+					<argument name="exten" required="false" />
+					<argument name="priority" required="true" hasparams="optional" argsep="^">
+						<argument name="arg1" multiple="true" required="true" />
+						<argument name="argN" />
+					</argument>
+				</option>
+				<option name="B" argsep="^">
+					<para>Before originating the outgoing call, Gosub to the specified
+					location using the current channel.</para>
+					<argument name="context" required="false" />
+					<argument name="exten" required="false" />
+					<argument name="priority" required="true" hasparams="optional" argsep="^">
+						<argument name="arg1" multiple="true" required="true" />
+						<argument name="argN" />
+					</argument>
+				</option>
+				</optionlist>
+			</parameter>
 		</syntax>
 		<description>
 		<para>This application originates an outbound call and connects it to a specified extension or application.  This application will block until the outgoing call fails or gets answered.  At that point, this application will exit with the status variable set and dialplan processing will continue.</para>
@@ -7945,6 +7946,40 @@
 				</value>
 			</variable>
 		</variablelist>
+		</description>
+	</application>
+	<application name="StreamEcho" language="en_US">
+		<synopsis>
+			Echo media, up to 'N' streams of a type, and DTMF back to the calling party
+		</synopsis>
+		<syntax>
+		<parameter name="num" required="false">
+			<para>The number of streams of a type to echo back. If '0' is specified then
+			all streams of a type are removed.</para>
+		</parameter>
+		<parameter name="type" required="false">
+			<para>The media type of the stream(s) to add or remove (in the case of "num"
+			being '0'). This can be set to either "audio" or "video" (default). If "num"
+			is empty (i.e. not specified) then this parameter is ignored.</para>
+		</parameter>
+		</syntax>
+		<description>
+			<para>If a "num" (the number of streams) is not given then this simply echos
+			back any media or DTMF frames (note, however if '#' is detected then the
+			application exits) read from the calling channel back to itself. This means
+			for any relevant frame read from a particular stream it is written back out
+			to the associated write stream in a one to one fashion.
+			</para>
+			<para>However if a "num" is specified, and if the calling channel allows it
+			(a new offer is made requesting the allowance of additional streams) then any
+			any media received, like before, is echoed back onto each stream. However, in
+			this case a relevant frame received on a stream of the given "type" is also
+			echoed back out to the other streams of that same type. It should be noted that
+			when operating in this mode only the first stream found of the given "type" is
+			allowed from the original offer. And this first stream found is also the only
+			stream of that "type" granted read (send/receive) capabilities in the new offer
+			whereas the additional ones are set to receive only.</para>
+			<note><para>This does not echo CONTROL, MODEM, or NULL frames.</para></note>
 		</description>
 	</application>
 	<application name="UserEvent" language="en_US">
@@ -7977,353 +8012,6 @@
 			<ref type="managerEvent">UserEvent</ref>
 		</see-also>
 	</application>
-	<application name="VoiceMail" language="en_US">
-		<synopsis>
-			Leave a Voicemail message.
-		</synopsis>
-		<syntax>
-			<parameter name="mailboxs" argsep="&amp;" required="true">
-				<argument name="mailbox1" argsep="@" required="true">
-					<argument name="mailbox" required="true" />
-					<argument name="context" />
-				</argument>
-				<argument name="mailbox2" argsep="@" multiple="true">
-					<argument name="mailbox" required="true" />
-					<argument name="context" />
-				</argument>
-			</parameter>
-			<parameter name="options">
-				<optionlist>
-					<option name="b">
-						<para>Play the <literal>busy</literal> greeting to the calling party.</para>
-					</option>
-					<option name="d">
-						<argument name="c" />
-						<para>Accept digits for a new extension in context <replaceable>c</replaceable>,
-						if played during the greeting. Context defaults to the current context.</para>
-					</option>
-					<option name="g">
-						<argument name="#" required="true" />
-						<para>Use the specified amount of gain when recording the voicemail
-						message. The units are whole-number decibels (dB). Only works on supported
-						technologies, which is DAHDI only.</para>
-					</option>
-					<option name="s">
-						<para>Skip the playback of instructions for leaving a message to the
-						calling party.</para>
-					</option>
-					<option name="u">
-						<para>Play the <literal>unavailable</literal> greeting.</para>
-					</option>
-					<option name="U">
-						<para>Mark message as <literal>URGENT</literal>.</para>
-					</option>
-					<option name="P">
-						<para>Mark message as <literal>PRIORITY</literal>.</para>
-					</option>
-				</optionlist>
-			</parameter>
-		</syntax>
-		<description>
-			<para>This application allows the calling party to leave a message for the specified
-			list of mailboxes. When multiple mailboxes are specified, the greeting will be taken from
-			the first mailbox specified. Dialplan execution will stop if the specified mailbox does not
-			exist.</para>
-			<para>The Voicemail application will exit if any of the following DTMF digits are received:</para>
-			<enumlist>
-				<enum name="0">
-					<para>Jump to the <literal>o</literal> extension in the current dialplan context.</para>
-				</enum>
-				<enum name="*">
-					<para>Jump to the <literal>a</literal> extension in the current dialplan context.</para>
-				</enum>
-			</enumlist>
-			<para>This application will set the following channel variable upon completion:</para>
-			<variablelist>
-				<variable name="VMSTATUS">
-					<para>This indicates the status of the execution of the VoiceMail application.</para>
-					<value name="SUCCESS" />
-					<value name="USEREXIT" />
-					<value name="FAILED" />
-				</variable>
-			</variablelist>
-		</description>
-		<see-also>
-			<ref type="application">VoiceMailMain</ref>
-		</see-also>
-	</application>
-	<application name="VoiceMailMain" language="en_US">
-		<synopsis>
-			Check Voicemail messages.
-		</synopsis>
-		<syntax>
-			<parameter name="mailbox" required="true" argsep="@">
-				<argument name="mailbox" />
-				<argument name="context" />
-			</parameter>
-			<parameter name="options">
-				<optionlist>
-					<option name="p">
-						<para>Consider the <replaceable>mailbox</replaceable> parameter as a prefix to
-						the mailbox that is entered by the caller.</para>
-					</option>
-					<option name="g">
-						<argument name="#" required="true" />
-						<para>Use the specified amount of gain when recording a voicemail message.
-						The units are whole-number decibels (dB).</para>
-					</option>
-					<option name="s">
-						<para>Skip checking the passcode for the mailbox.</para>
-					</option>
-					<option name="a">
-						<argument name="folder" required="true" />
-						<para>Skip folder prompt and go directly to <replaceable>folder</replaceable> specified.
-						Defaults to <literal>INBOX</literal> (or <literal>0</literal>).</para>
-						<enumlist>
-							<enum name="0"><para>INBOX</para></enum>
-							<enum name="1"><para>Old</para></enum>
-							<enum name="2"><para>Work</para></enum>
-							<enum name="3"><para>Family</para></enum>
-							<enum name="4"><para>Friends</para></enum>
-							<enum name="5"><para>Cust1</para></enum>
-							<enum name="6"><para>Cust2</para></enum>
-							<enum name="7"><para>Cust3</para></enum>
-							<enum name="8"><para>Cust4</para></enum>
-							<enum name="9"><para>Cust5</para></enum>
-						</enumlist>
-					</option>
-				</optionlist>
-			</parameter>
-		</syntax>
-		<description>
-			<para>This application allows the calling party to check voicemail messages. A specific
-			<replaceable>mailbox</replaceable>, and optional corresponding <replaceable>context</replaceable>,
-			may be specified. If a <replaceable>mailbox</replaceable> is not provided, the calling party will
-			be prompted to enter one. If a <replaceable>context</replaceable> is not specified, the
-			<literal>default</literal> context will be used.</para>
-			<para>The VoiceMailMain application will exit if the following DTMF digit is entered as Mailbox
-			or Password, and the extension exists:</para>
-			<enumlist>
-				<enum name="*">
-					<para>Jump to the <literal>a</literal> extension in the current dialplan context.</para>
-				</enum>
-			</enumlist>
-		</description>
-		<see-also>
-			<ref type="application">VoiceMail</ref>
-		</see-also>
-	</application>
-	<application name="MailboxExists" language="en_US">
-		<synopsis>
-			Check to see if Voicemail mailbox exists.
-		</synopsis>
-		<syntax>
-			<parameter name="mailbox" required="true" argsep="@">
-				<argument name="mailbox" required="true" />
-				<argument name="context" />
-			</parameter>
-			<parameter name="options">
-				<para>None options.</para>
-			</parameter>
-		</syntax>
-		<description>
-			<note><para>DEPRECATED. Use VM_INFO(mailbox[@context],exists) instead.</para></note>
-			<para>Check to see if the specified <replaceable>mailbox</replaceable> exists. If no voicemail
-			<replaceable>context</replaceable> is specified, the <literal>default</literal> context
-			will be used.</para>
-			<para>This application will set the following channel variable upon completion:</para>
-			<variablelist>
-				<variable name="VMBOXEXISTSSTATUS">
-					<para>This will contain the status of the execution of the MailboxExists application.
-					Possible values include:</para>
-					<value name="SUCCESS" />
-					<value name="FAILED" />
-				</variable>
-			</variablelist>
-		</description>
-		<see-also>
-			<ref type="function">VM_INFO</ref>
-		</see-also>
-	</application>
-	<application name="VMAuthenticate" language="en_US">
-		<synopsis>
-			Authenticate with Voicemail passwords.
-		</synopsis>
-		<syntax>
-			<parameter name="mailbox" required="true" argsep="@">
-				<argument name="mailbox" />
-				<argument name="context" />
-			</parameter>
-			<parameter name="options">
-				<optionlist>
-					<option name="s">
-						<para>Skip playing the initial prompts.</para>
-					</option>
-				</optionlist>
-			</parameter>
-		</syntax>
-		<description>
-			<para>This application behaves the same way as the Authenticate application, but the passwords
-			are taken from <filename>voicemail.conf</filename>. If the <replaceable>mailbox</replaceable> is
-			specified, only that mailbox's password will be considered valid. If the <replaceable>mailbox</replaceable>
-			is not specified, the channel variable <variable>AUTH_MAILBOX</variable> will be set with the authenticated
-			mailbox.</para>
-			<para>The VMAuthenticate application will exit if the following DTMF digit is entered as Mailbox
-			or Password, and the extension exists:</para>
-			<enumlist>
-				<enum name="*">
-					<para>Jump to the <literal>a</literal> extension in the current dialplan context.</para>
-				</enum>
-			</enumlist>
-		</description>
-	</application>
-	<application name="VoiceMailPlayMsg" language="en_US">
-		<synopsis>
-			Play a single voice mail msg from a mailbox by msg id.
-		</synopsis>
-		<syntax>
-			<parameter name="mailbox" required="true" argsep="@">
-				<argument name="mailbox" />
-				<argument name="context" />
-			</parameter>
-			<parameter name="msg_id" required="true">
-				<para>The msg id of the msg to play back. </para>
-			</parameter>
-		</syntax>
-		<description>
-			<para>This application sets the following channel variable upon completion:</para>
-			<variablelist>
-				<variable name="VOICEMAIL_PLAYBACKSTATUS">
-					<para>The status of the playback attempt as a text string.</para>
-					<value name="SUCCESS"/>
-					<value name="FAILED"/>
-				</variable>
-			</variablelist>
-		</description>
-	</application>
-	<application name="VMSayName" language="en_US">
-		<synopsis>
-			Play the name of a voicemail user
-		</synopsis>
-		<syntax>
-			<parameter name="mailbox" required="true" argsep="@">
-				<argument name="mailbox" />
-				<argument name="context" />
-			</parameter>
-		</syntax>
-		<description>
-			<para>This application will say the recorded name of the voicemail user specified as the
-			argument to this application. If no context is provided, <literal>default</literal> is assumed.</para>
-		</description>
-	</application>
-	<function name="MAILBOX_EXISTS" language="en_US">
-		<synopsis>
-			Tell if a mailbox is configured.
-		</synopsis>
-		<syntax argsep="@">
-			<parameter name="mailbox" required="true" />
-			<parameter name="context" />
-		</syntax>
-		<description>
-			<note><para>DEPRECATED. Use VM_INFO(mailbox[@context],exists) instead.</para></note>
-			<para>Returns a boolean of whether the corresponding <replaceable>mailbox</replaceable> exists.
-			If <replaceable>context</replaceable> is not specified, defaults to the <literal>default</literal>
-			context.</para>
-		</description>
-		<see-also>
-			<ref type="function">VM_INFO</ref>
-		</see-also>
-	</function>
-	<function name="VM_INFO" language="en_US">
-		<synopsis>
-			Returns the selected attribute from a mailbox.
-		</synopsis>
-		<syntax argsep=",">
-			<parameter name="mailbox" argsep="@" required="true">
-				<argument name="mailbox" required="true" />
-				<argument name="context" />
-			</parameter>
-			<parameter name="attribute" required="true">
-				<optionlist>
-					<option name="count">
-						<para>Count of messages in specified <replaceable>folder</replaceable>.
-						If <replaceable>folder</replaceable> is not specified, defaults to <literal>INBOX</literal>.</para>
-					</option>
-					<option name="email">
-						<para>E-mail address associated with the mailbox.</para>
-					</option>
-					<option name="exists">
-						<para>Returns a boolean of whether the corresponding <replaceable>mailbox</replaceable> exists.</para>
-					</option>
-					<option name="fullname">
-						<para>Full name associated with the mailbox.</para>
-					</option>
-					<option name="language">
-						<para>Mailbox language if overridden, otherwise the language of the channel.</para>
-					</option>
-					<option name="locale">
-						<para>Mailbox locale if overridden, otherwise global locale.</para>
-					</option>
-					<option name="pager">
-						<para>Pager e-mail address associated with the mailbox.</para>
-					</option>
-					<option name="password">
-						<para>Mailbox access password.</para>
-					</option>
-					<option name="tz">
-						<para>Mailbox timezone if overridden, otherwise global timezone</para>
-					</option>
-				</optionlist>
-			</parameter>
-			<parameter name="folder" required="false">
-				<para>If not specified, <literal>INBOX</literal> is assumed.</para>
-			</parameter>
-		</syntax>
-		<description>
-			<para>Returns the selected attribute from the specified <replaceable>mailbox</replaceable>.
-			If <replaceable>context</replaceable> is not specified, defaults to the <literal>default</literal>
-			context. Where the <replaceable>folder</replaceable> can be specified, common folders
-			include <literal>INBOX</literal>, <literal>Old</literal>, <literal>Work</literal>,
-			<literal>Family</literal> and <literal>Friends</literal>.</para>
-		</description>
-	</function>
-	<manager name="VoicemailUsersList" language="en_US">
-		<synopsis>
-			List All Voicemail User Information.
-		</synopsis>
-		<syntax>
-			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
-		</syntax>
-		<description>
-		</description>
-	</manager>
-	<manager name="VoicemailRefresh" language="en_US">
-		<synopsis>
-			Tell Asterisk to poll mailboxes for a change
-		</synopsis>
-		<syntax>
-			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
-			<parameter name="Context" />
-			<parameter name="Mailbox" />
-		</syntax>
-		<description>
-			<para>Normally, MWI indicators are only sent when Asterisk itself
-			changes a mailbox.  With external programs that modify the content
-			of a mailbox from outside the application, an option exists called
-			<literal>pollmailboxes</literal> that will cause voicemail to
-			continually scan all mailboxes on a system for changes.  This can
-			cause a large amount of load on a system.  This command allows
-			external applications to signal when a particular mailbox has
-			changed, thus permitting external applications to modify mailboxes
-			and MWI to work without introducing considerable CPU load.</para>
-			<para>If <replaceable>Context</replaceable> is not specified, all
-			mailboxes on the system will be polled for changes.  If
-			<replaceable>Context</replaceable> is specified, but
-			<replaceable>Mailbox</replaceable> is omitted, then all mailboxes
-			within <replaceable>Context</replaceable> will be polled.
-			Otherwise, only a single mailbox will be polled for changes.</para>
-		</description>
-	</manager>
 	<application name="Transfer" language="en_US">
 		<synopsis>
 			Transfer caller to remote extension.
@@ -8357,45 +8045,39 @@
 			</variablelist>
 		</description>
 	</application>
-	<application name="SetCallerPres" language="en_US">
+	<application name="StatsD" language="en_US">
 		<synopsis>
-			Set CallerID Presentation.
+			Allow statistics to be passed to the StatsD server from the dialplan.
 		</synopsis>
 		<syntax>
-			<parameter name="presentation" required="true">
-				<enumlist>
-					<enum name="allowed_not_screened">
-						<para>Presentation Allowed, Not Screened.</para>
-					</enum>
-					<enum name="allowed_passed_screen">
-						<para>Presentation Allowed, Passed Screen.</para>
-					</enum>
-					<enum name="allowed_failed_screen">
-						<para>Presentation Allowed, Failed Screen.</para>
-					</enum>
-					<enum name="allowed">
-						<para>Presentation Allowed, Network Number.</para>
-					</enum>
-					<enum name="prohib_not_screened">
-						<para>Presentation Prohibited, Not Screened.</para>
-					</enum>
-					<enum name="prohib_passed_screen">
-						<para>Presentation Prohibited, Passed Screen.</para>
-					</enum>
-					<enum name="prohib_failed_screen">
-						<para>Presentation Prohibited, Failed Screen.</para>
-					</enum>
-					<enum name="prohib">
-						<para>Presentation Prohibited, Network Number.</para>
-					</enum>
-					<enum name="unavailable">
-						<para>Number Unavailable.</para>
-					</enum>
-				</enumlist>
+			<parameter name="metric_type" required="true">
+				<para>The metric type to be sent to StatsD. Valid metric types
+				are 'g' for gauge, 'c' for counter, 'ms' for timer, and 's' for
+				sets.</para>
+			</parameter>
+			<parameter name="statistic_name" required="true">
+				<para>The name of the variable to be sent to StatsD. Statistic
+				names cannot contain the pipe (|) character.</para>
+			</parameter>
+			<parameter name="value" required="true">
+				<para>The value of the variable to be sent to StatsD. Values
+				must be numeric. Values for gauge and counter metrics can be
+				sent with a '+' or '-' to update a value after the value has
+				been initialized. Only counters can be initialized as negative.
+				Sets can send a string as the value parameter, but the string
+				cannot contain the pipe character.</para>
+			</parameter>
+			<parameter name="sample_rate">
+				<para>The value of the sample rate to be sent to StatsD. Sample
+				rates less than or equal to 0 will never be sent and sample rates
+				greater than or equal to 1 will always be sent. Any rate
+				between 1 and 0 will be compared to a randomly generated value,
+				and if it is greater than the random value, it will be sent.</para>
 			</parameter>
 		</syntax>
 		<description>
-			<para>Set Caller*ID presentation on a call.</para>
+			<para>This dialplan application sends statistics to the StatsD
+			server specified inside of <literal>statsd.conf</literal>.</para>
 		</description>
 	</application>
 	<managerEvent language="en_US" name="ConfbridgeStart">
@@ -8612,6 +8294,23 @@
 				<configOption name="admin">
 					<synopsis>Sets if the user is an admin or not</synopsis>
 				</configOption>
+				<configOption name="send_events" default="no">
+					<synopsis>Sets if events are send to the user</synopsis>
+					<description><para>If events are enabled for this bridge and this option is
+					set, users will receive events like join, leave, talking, etc. via text
+					messages.  For users accessing the bridge via chan_pjsip, this means
+					in-dialog MESSAGE messages.  This is most useful for WebRTC participants
+					where the browser application can use the messages to alter the user
+					interface.</para></description>
+				</configOption>
+				<configOption name="echo_events" default="yes">
+					<synopsis>Sets if events are echoed back to the user that
+					triggered them</synopsis>
+					<description><para>If events are enabled for this user and this option
+					is set, the user will receive events they trigger, talking, mute, etc.
+					If not set, they will not receive their own events.
+					</para></description>
+				</configOption>
 				<configOption name="marked">
 					<synopsis>Sets if this is a marked user or not</synopsis>
 				</configOption>
@@ -8767,6 +8466,13 @@
 				<configOption name="timeout">
 					<synopsis>Kick the user out of the conference after this many seconds. 0 means there is no timeout for the user.</synopsis>
 				</configOption>
+				<configOption name="text_messaging" default="yes">
+					<synopsis>Sets if text messages are sent to the user.</synopsis>
+					<description><para>If text messaging is enabled for this user then
+					text messages will be sent to it. These may be events or from other
+					participants in the conference bridge. If disabled then no text
+					messages are sent to the user.</para></description>
+				</configOption>
 			</configObject>
 			<configObject name="bridge_profile">
 				<synopsis>A named profile to apply to specific bridges.</synopsis>
@@ -8801,6 +8507,15 @@
 						will be used.
 					</para></description>
 				</configOption>
+				<configOption name="maximum_sample_rate">
+					<synopsis>Set the maximum native sample rate for mixing the conference</synopsis>
+					<description><para>
+						Sets the maximum native sample rate the
+						conference is mixed at. This is set to not have a
+						maximum by default. If a sample rate is specified,
+						though, the native sample rate will never exceed it.
+					</para></description>
+				</configOption>
 				<configOption name="language" default="en">
 					<synopsis>The language used for announcements to the conference.</synopsis>
 					<description><para>
@@ -8819,6 +8534,13 @@
 						be chosen.  Using a larger mixing interval comes at the cost of introducing
 						larger amounts of delay into the bridge.  Valid values here are 10, 20, 40,
 						or 80.
+					</para></description>
+				</configOption>
+				<configOption name="binaural_active">
+					<synopsis>If true binaural conferencing with stereo audio is active</synopsis>
+					<description><para>
+						Activates binaural mixing for a conference bridge.
+						Binaural features are disabled by default.
 					</para></description>
 				</configOption>
 				<configOption name="record_conference">
@@ -8846,12 +8568,34 @@
 					</para></description>
 				</configOption>
 				<configOption name="record_file_append" default="yes">
-					<synopsis>Append record file when starting/stopping on same conference recording</synopsis>
+					<synopsis>Append to record file when starting/stopping on same conference recording</synopsis>
 					<description><para>
 						When <replaceable>record_file_append</replaceable> is set to yes, stopping and starting recording on a
 						conference adds the new portion to end of current record_file. When this is
 						set to no, a new <replaceable>record_file</replaceable> is generated every time you start then stop recording
 						on a conference.
+					</para></description>
+				</configOption>
+				<configOption name="record_file_timestamp" default="yes">
+					<synopsis>Append the start time to the record_file name so that it is unique.</synopsis>
+					<description><para>
+						When <replaceable>record_file_timestamp</replaceable> is set to yes, the start time is appended to
+						<replaceable>record_file</replaceable> so that the filename is unique. This allows you to specify
+						a <replaceable>record_file</replaceable> but not overwrite existing recordings.
+					</para></description>
+				</configOption>
+				<configOption name="record_options" default="">
+					<synopsis>Pass additional options to MixMonitor when recording</synopsis>
+					<description><para>
+						Pass additional options to MixMonitor when <replaceable>record_conference</replaceable> is set to yes.
+						See <literal>MixMonitor</literal> for available options.
+					</para></description>
+				</configOption>
+				<configOption name="record_command" default="">
+					<synopsis>Execute a command after recording ends</synopsis>
+					<description><para>
+						Executes the specified command when recording ends. Any strings matching <literal>^{X}</literal> will be
+						unescaped to <variable>X</variable>. All variables will be evaluated at the time ConfBridge is called.
 					</para></description>
 				</configOption>
 				<configOption name="regcontext">
@@ -8900,6 +8644,10 @@
 								is the single source of video distribution among all participants. If
 								that user leaves, the marked user to join after them becomes the source.</para>
 							</enum>
+							<enum name="sfu">
+								<para>Selective Forwarding Unit - Sets multi-stream
+								operation for a multi-party video conference.</para>
+							</enum>
 						</enumlist>
 					</description>
 				</configOption>
@@ -8934,6 +8682,8 @@
 							<enum name="sound_kicked"><para>The sound played to a user who has been kicked from the conference.</para></enum>
 							<enum name="sound_muted"><para>The sound played when the mute option it toggled on.</para></enum>
 							<enum name="sound_unmuted"><para>The sound played when the mute option it toggled off.</para></enum>
+							<enum name="sound_binaural_on"><para>The sound played when binaural auudio is turned on.</para></enum>
+							<enum name="sound_binaural_off"><para>The sound played when the binaural audio is turned off.</para></enum>
 							<enum name="sound_only_person"><para>The sound played when the user is the only person in the conference.</para></enum>
 							<enum name="sound_only_one"><para>The sound played to a user when there is only one other
 										person is in the conference.</para></enum>
@@ -8955,6 +8705,72 @@
 							<enum name="sound_unlocked_now"><para>The sound played to an admin after toggling the conference to unlocked mode.</para></enum>
 							<enum name="sound_error_menu"><para>The sound played when an invalid menu option is entered.</para></enum>
 						</enumlist>
+					</description>
+				</configOption>
+				<configOption name="video_update_discard" default="2000">
+					<synopsis>Sets the amount of time in milliseconds after sending a video update to discard subsequent video updates</synopsis>
+					<description><para>
+						Sets the amount of time in milliseconds after sending a video update request
+						that subsequent video updates should be discarded. This means that if we
+						send a video update we will discard any other video update requests until
+						after the configured amount of time has elapsed. This prevents flooding of
+						video update requests from clients.
+					</para></description>
+				</configOption>
+				<configOption name="remb_send_interval" default="0">
+					<synopsis>Sets the interval in milliseconds that a combined REMB frame will be sent to video sources</synopsis>
+					<description><para>
+						Sets the interval in milliseconds that a combined REMB frame will be sent
+						to video sources. This is done by taking all REMB frames that have been
+						received since the last REMB frame was sent, making a combined value,
+						and sending it to the source. A REMB frame contains receiver estimated
+						maximum bitrate information. By creating a combined REMB frame the
+						sender of video can be influenced on the bitrate they choose, allowing
+						better quality for all receivers.
+					</para></description>
+				</configOption>
+				<configOption name="remb_behavior" default="average">
+					<synopsis>Sets how REMB reports are generated from multiple sources</synopsis>
+					<description><para>
+						Sets how REMB reports are combined from multiple sources to form one. A REMB report
+						consists of information about the receiver estimated maximum bitrate. As a source
+						stream may be forwarded to multiple receivers the reports must be combined into
+						a single one which is sent to the sender.</para>
+						<enumlist>
+							<enum name="average">
+								<para>The average of all estimated maximum bitrates is taken and sent
+								to the sender.</para>
+							</enum>
+							<enum name="lowest">
+								<para>The lowest estimated maximum bitrate is forwarded to the sender.</para>
+							</enum>
+							<enum name="highest">
+								<para>The highest estimated maximum bitrate is forwarded to the sender.</para>
+							</enum>
+							<enum name="average_all">
+								<para>The average of all estimated maximum bitrates is taken from all
+								receivers in the bridge and a single value is sent to each sender.</para>
+							</enum>
+							<enum name="lowest_all">
+								<para>The lowest estimated maximum bitrate of all receivers in the bridge
+								is taken and sent to each sender.</para>
+							</enum>
+							<enum name="highest_all">
+								<para>The highest estimated maximum bitrate of all receivers in the bridge
+								is taken and sent to each sender.</para>
+							</enum>
+						</enumlist>
+					</description>
+				</configOption>
+				<configOption name="enable_events" default="no">
+					<synopsis>Enables events for this bridge</synopsis>
+					<description><para>
+						If enabled, recipients who joined the bridge via a channel driver
+						that supports Enhanced Messaging (currently only chan_pjsip) will
+						receive in-dialog messages containing a JSON body describing the
+						event.  The Content-Type header will be
+						<literal>text/x-ast-confbridge-event</literal>.
+						This feature must also be enabled in user profiles.</para>
 					</description>
 				</configOption>
 				<configOption name="template">
@@ -9020,6 +8836,9 @@
 						<enum name="toggle_mute"><para>
 							Toggle turning on and off mute.  Mute will make the user silent
 							to everyone else, but the user will still be able to listen in.
+							</para></enum>
+						<enum name="toggle_binaural"><para>
+							Toggle turning on and off binaural audio processing.
 							</para></enum>
 						<enum name="no_op"><para>
 							This action does nothing (No Operation). Its only real purpose exists for
@@ -9332,8 +9151,8 @@
 			<ref type="application">PauseQueueMember</ref>
 			<ref type="application">UnpauseQueueMember</ref>
 			<ref type="function">AGENT</ref>
-			<ref type="function">CHANNEL(dtmf_features)</ref>
-			<ref type="function">CONNECTEDLINE()</ref>
+			<ref type="function">CHANNEL</ref>
+			<ref type="function">CONNECTEDLINE</ref>
 			<ref type="filename">agents.conf</ref>
 			<ref type="filename">queues.conf</ref>
 		</see-also>
@@ -9801,6 +9620,13 @@
 				</parameter>
 				<parameter name="Muted">
 					<para>The current mute status.</para>
+					<enumlist>
+						<enum name="Yes"/>
+						<enum name="No"/>
+					</enumlist>
+				</parameter>
+				<parameter name="Talking">
+					<para>Is this user talking?</para>
 					<enumlist>
 						<enum name="Yes"/>
 						<enum name="No"/>
@@ -10439,38 +10265,6 @@
 			<ref type="application">VoiceMail</ref>
 		</see-also>
 	</application>
-	<application name="MailboxExists" language="en_US">
-		<synopsis>
-			Check to see if Voicemail mailbox exists.
-		</synopsis>
-		<syntax>
-			<parameter name="mailbox" required="true" argsep="@">
-				<argument name="mailbox" required="true" />
-				<argument name="context" />
-			</parameter>
-			<parameter name="options">
-				<para>None options.</para>
-			</parameter>
-		</syntax>
-		<description>
-			<note><para>DEPRECATED. Use VM_INFO(mailbox[@context],exists) instead.</para></note>
-			<para>Check to see if the specified <replaceable>mailbox</replaceable> exists. If no voicemail
-			<replaceable>context</replaceable> is specified, the <literal>default</literal> context
-			will be used.</para>
-			<para>This application will set the following channel variable upon completion:</para>
-			<variablelist>
-				<variable name="VMBOXEXISTSSTATUS">
-					<para>This will contain the status of the execution of the MailboxExists application.
-					Possible values include:</para>
-					<value name="SUCCESS" />
-					<value name="FAILED" />
-				</variable>
-			</variablelist>
-		</description>
-		<see-also>
-			<ref type="function">VM_INFO</ref>
-		</see-also>
-	</application>
 	<application name="VMAuthenticate" language="en_US">
 		<synopsis>
 			Authenticate with Voicemail passwords.
@@ -10542,24 +10336,6 @@
 			argument to this application. If no context is provided, <literal>default</literal> is assumed.</para>
 		</description>
 	</application>
-	<function name="MAILBOX_EXISTS" language="en_US">
-		<synopsis>
-			Tell if a mailbox is configured.
-		</synopsis>
-		<syntax argsep="@">
-			<parameter name="mailbox" required="true" />
-			<parameter name="context" />
-		</syntax>
-		<description>
-			<note><para>DEPRECATED. Use VM_INFO(mailbox[@context],exists) instead.</para></note>
-			<para>Returns a boolean of whether the corresponding <replaceable>mailbox</replaceable> exists.
-			If <replaceable>context</replaceable> is not specified, defaults to the <literal>default</literal>
-			context.</para>
-		</description>
-		<see-also>
-			<ref type="function">VM_INFO</ref>
-		</see-also>
-	</function>
 	<function name="VM_INFO" language="en_US">
 		<synopsis>
 			Returns the selected attribute from a mailbox.
@@ -10621,6 +10397,23 @@
 			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
 		</syntax>
 		<description>
+		</description>
+	</manager>
+	<manager name="VoicemailUserStatus" language="en_US">
+		<synopsis>
+			Show the status of given voicemail user's info.
+		</synopsis>
+		<syntax>
+			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
+			<parameter name="Context" required="true">
+				<para>The context you want to check.</para>
+			</parameter>
+			<parameter name="Mailbox" required="true">
+				<para>The mailbox you want to check.</para>
+			</parameter>
+		</syntax>
+		<description>
+			<para>Retrieves the status of the given voicemail user.</para>
 		</description>
 	</manager>
 	<manager name="VoicemailRefresh" language="en_US">
@@ -10839,6 +10632,24 @@
 			<ref type="application">SayCountedNoun</ref>
 			<ref type="application">SayNumber</ref>
 		</see-also>
+	</application>
+	<application name="AudioSocket" language="en_US">
+		<synopsis>
+			Transmit and receive audio between channel and TCP socket
+		</synopsis>
+		<syntax>
+			<parameter name="uuid" required="true">
+				<para>UUID is the universally-unique identifier of the call for the audio socket service.  This ID must conform to the string form of a standard UUID.</para>
+			</parameter>
+			<parameter name="service" required="true">
+				<para>Service is the name or IP address and port number of the audio socket service to which this call should be connected.  This should be in the form host:port, such as myserver:9019 </para>
+			</parameter>
+		</syntax>
+		<description>
+			<para>Connects to the given TCP service, then transmits channel audio over that socket.  In turn, audio is received from the socket and sent to the channel.  Only audio frames will be transmitted.</para>
+			<para>Protocol is specified at https://wiki.asterisk.org/wiki/display/AST/AudioSocket</para>
+			<para>This application does not automatically answer and should generally be preceeded by an application such as Answer() or Progress().</para>
+		</description>
 	</application>
 	<managerEvent language="en_US" name="Cdr">
 		<managerEventInstance class="EVENT_FLAG_CDR">
@@ -11393,21 +11204,6 @@
 			<warning><para>This function has been deprecated in favor of the <literal>DIALPLAN_EXISTS()</literal> function</para></warning>
 		</description>
 	</function>
-	<function name = "AUDIOHOOK_INHERIT" language="en_US">
-		<synopsis>
-			DEPRECATED: Used to set whether an audiohook may be inherited to another
-			channel. Due to architectural changes in Asterisk 12, audiohook inheritance
-			is performed automatically and this function now lacks function.
-		</synopsis>
-		<description>
-			<para>Prior to Asterisk 12, masquerades would occur under all sorts of
-			situations which were hard to predict.  In Asterisk 12, masquerades only
-			occur as a result of a small set of operations for which inheriting all
-			audiohooks from the original channel is now safe.  So in Asterisk 12.5+,
-			all audiohooks are inherited without needing other controls expressing
-			which audiohooks should be inherited under which conditions.</para>
-		</description>
-	</function>
 	<function name="ISNULL" language="en_US">
 		<synopsis>
 			Check if a value is NULL.
@@ -11563,8 +11359,9 @@
 		</syntax>
 		<description>
 			<para>Jitterbuffers are constructed in two different ways.
-			The first always take three arguments: <replaceable>max_size</replaceable>,
-			<replaceable>resync_threshold</replaceable>, and <replaceable>target_extra</replaceable>.
+			The first always take four arguments: <replaceable>max_size</replaceable>,
+			<replaceable>resync_threshold</replaceable>, <replaceable>target_extra</replaceable>,
+			and <replaceable>sync_video</replaceable>.
 			Alternatively, a single argument of <literal>default</literal> can be provided,
 			which will construct the default jitterbuffer for the given
 			<replaceable>jitterbuffer type</replaceable>.</para>
@@ -11577,11 +11374,16 @@
 			<para>target_extra: This option only affects the adaptive jitterbuffer. It represents
 			the amount time in milliseconds by which the new jitter buffer will pad its size.
 			Defaults to 40ms.</para>
+			<para>sync_video: This option enables video synchronization with the audio stream. It can be
+			turned on and off. Defaults to off.</para>
 			<example title="Fixed with defaults" language="text">
 			exten => 1,1,Set(JITTERBUFFER(fixed)=default)
 			</example>
 			<example title="Fixed with 200ms max size" language="text">
 			exten => 1,1,Set(JITTERBUFFER(fixed)=200)
+			</example>
+			<example title="Fixed with 200ms max size and video sync support" language="text">
+			exten => 1,1,Set(JITTERBUFFER(fixed)=200,,,yes)
 			</example>
 			<example title="Fixed with 200ms max size, resync threshold 1500" language="text">
 			exten => 1,1,Set(JITTERBUFFER(fixed)=200,1500)
@@ -11591,6 +11393,9 @@
 			</example>
 			<example title="Adaptive with 200ms max size, 60ms target extra" language="text">
 			exten => 1,1,Set(JITTERBUFFER(adaptive)=200,,60)
+			</example>
+			<example title="Adaptive with 200ms max size and video sync support" language="text">
+			exten => 1,1,Set(JITTERBUFFER(adaptive)=200,,,yes)
 			</example>
 			<example title="Set a fixed jitterbuffer with defaults; then remove it" language="text">
 			exten => 1,1,Set(JITTERBUFFER(fixed)=default)
@@ -11732,6 +11537,9 @@
 						the channel is hung up.  Any optionally omitted context
 						and exten are supplied by the channel pushing the handler
 						before it is pushed.</para>
+					</enum>
+					<enum name="onhold">
+						<para>R/O Whether or not the channel is onhold. (1/0)</para>
 					</enum>
 					<enum name="language">
 						<para>R/W language for sounds played.</para>
@@ -12232,15 +12040,39 @@
 			Retrieve content from a remote web or ftp server
 		</synopsis>
 		<syntax>
-			<parameter name="url" required="true" />
+			<parameter name="url" required="true">
+				<para>The full URL for the resource to retrieve.</para>
+			</parameter>
 			<parameter name="post-data">
+				<para><emphasis>Read Only</emphasis></para>
 				<para>If specified, an <literal>HTTP POST</literal> will be
 				performed with the content of
 				<replaceable>post-data</replaceable>, instead of an
 				<literal>HTTP GET</literal> (default).</para>
 			</parameter>
 		</syntax>
-		<description />
+		<description>
+			<para>When this function is read, a <literal>HTTP GET</literal>
+			(by default) will be used to retrieve the contents of the provided
+			<replaceable>url</replaceable>. The contents are returned as the
+			result of the function.</para>
+			<example title="Displaying contents of a page" language="text">
+			exten => s,1,Verbose(0, ${CURL(http://localhost:8088/static/astman.css)})
+			</example>
+			<para>When this function is written to, a <literal>HTTP GET</literal>
+			will be used to retrieve the contents of the provided
+			<replaceable>url</replaceable>. The value written to the function
+			specifies the destination file of the cURL'd resource.</para>
+			<example title="Retrieving a file" language="text">
+			exten => s,1,Set(CURL(http://localhost:8088/static/astman.css)=/var/spool/asterisk/tmp/astman.css))
+			</example>
+			<note>
+				<para>If <literal>live_dangerously</literal> in <literal>asterisk.conf</literal>
+				is set to <literal>no</literal>, this function can only be written to from the
+				dialplan, and not directly from external protocols. Read operations are
+				unaffected.</para>
+			</note>
+		</description>
 		<see-also>
 			<ref type="function">CURLOPT</ref>
 		</see-also>
@@ -12262,6 +12094,9 @@
 					<enum name="dnstimeout">
 						<para>Number of seconds to wait for DNS to be resolved</para>
 					</enum>
+					<enum name="followlocation">
+						<para>Whether or not to follow HTTP 3xx redirects (boolean)</para>
+					</enum>
 					<enum name="ftptext">
 						<para>For FTP URIs, force a text transfer (boolean)</para>
 					</enum>
@@ -12273,12 +12108,19 @@
 						<para>Include header information in the result
 						(boolean)</para>
 					</enum>
+					<enum name="httpheader">
+						<para>Add HTTP header. Multiple calls add multiple headers.
+						Setting of any header will remove the default
+						"Content-Type application/x-www-form-urlencoded"</para>
+					</enum>
 					<enum name="httptimeout">
 						<para>For HTTP(S) URIs, number of seconds to wait for a
 						server response</para>
 					</enum>
 					<enum name="maxredirs">
-						<para>Maximum number of redirects to follow</para>
+						<para>Maximum number of redirects to follow. The default is -1,
+						which allows for unlimited redirects. This only makes sense when
+						followlocation is also set.</para>
 					</enum>
 					<enum name="proxy">
 						<para>Hostname or IP address to use as a proxy server</para>
@@ -12333,7 +12175,7 @@
 		</syntax>
 		<description>
 			<para>Options may be set globally or per channel.  Per-channel
-			settings will override global settings.</para>
+			settings will override global settings. Only HTTP headers are added instead of overriding</para>
 		</description>
 		<see-also>
 			<ref type="function">CURL</ref>
@@ -12471,6 +12313,9 @@
 				<enumlist>
 					<enum name="clid">
 						<para>Caller ID.</para>
+					</enum>
+					<enum name="dclid">
+						<para>ConnectedLine ID.</para>
 					</enum>
 					<enum name="lastdata">
 						<para>Last application arguments.</para>
@@ -13440,19 +13285,9 @@
 				<enum name = "bmp"><para>ISO10646 Bmp String</para></enum>
 				<enum name = "utf8"><para>ISO10646 UTF-8 String</para></enum>
 			</enumlist>
-		</description>
-	</function>
-	<function name="CALLERPRES" language="en_US">
-		<synopsis>
-			Gets or sets Caller*ID presentation on the channel.
-		</synopsis>
-		<syntax />
-		<description>
-			<para>Gets or sets Caller*ID presentation on the channel.
-			This function is deprecated in favor of CALLERID(num-pres)
-			and CALLERID(name-pres) or CALLERID(pres) to get/set both
-			at once.
-			The following values are valid:</para>
+			<para>The allowable values for the <replaceable>num-pres</replaceable>,
+			<replaceable>name-pres</replaceable>, and <replaceable>pres</replaceable>
+			fields are the following:</para>
 			<enumlist>
 				<enum name="allowed_not_screened">
 					<para>Presentation Allowed, Not Screened.</para>
@@ -13546,6 +13381,38 @@
 				<enum name = "iso8859-7"><para>ISO8859-7</para></enum>
 				<enum name = "bmp"><para>ISO10646 Bmp String</para></enum>
 				<enum name = "utf8"><para>ISO10646 UTF-8 String</para></enum>
+			</enumlist>
+			<para>The allowable values for the <replaceable>num-pres</replaceable>,
+			<replaceable>name-pres</replaceable>, and <replaceable>pres</replaceable>
+			fields are the following:</para>
+			<enumlist>
+				<enum name="allowed_not_screened">
+					<para>Presentation Allowed, Not Screened.</para>
+				</enum>
+				<enum name="allowed_passed_screen">
+					<para>Presentation Allowed, Passed Screen.</para>
+				</enum>
+				<enum name="allowed_failed_screen">
+					<para>Presentation Allowed, Failed Screen.</para>
+				</enum>
+				<enum name="allowed">
+					<para>Presentation Allowed, Network Number.</para>
+				</enum>
+				<enum name="prohib_not_screened">
+					<para>Presentation Prohibited, Not Screened.</para>
+				</enum>
+				<enum name="prohib_passed_screen">
+					<para>Presentation Prohibited, Passed Screen.</para>
+				</enum>
+				<enum name="prohib_failed_screen">
+					<para>Presentation Prohibited, Failed Screen.</para>
+				</enum>
+				<enum name="prohib">
+					<para>Presentation Prohibited, Network Number.</para>
+				</enum>
+				<enum name="unavailable">
+					<para>Number Unavailable.</para>
+				</enum>
 			</enumlist>
 		</description>
 	</function>
@@ -13997,6 +13864,12 @@
 					<configOptionToEnum>
 						<xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='contact']/configOption)"/>
 					</configOptionToEnum>
+					<enum name="rtt">
+						<para>The RTT of the last qualify</para>
+					</enum>
+					<enum name="status">
+						<para>Status of the contact</para>
+					</enum>
 				</enumlist>
 			</parameter>
 		</syntax>
@@ -15343,6 +15216,14 @@
 			<parameter name="Variables">
 				<para>Comma <literal>,</literal> separated list of variable to include.</para>
 			</parameter>
+			<parameter name="AllVariables">
+				<para>If set to "true", the Status event will include all channel variables for
+				the requested channel(s).</para>
+				<enumlist>
+					<enum name="true"/>
+					<enum name="false"/>
+				</enumlist>
+			</parameter>
 		</syntax>
 		<description>
 			<para>Will return the status information of each channel along with the
@@ -15986,7 +15867,8 @@
 	</manager>
 	<manager name="SendText" language="en_US">
 		<synopsis>
-			Send text message to channel.
+			Sends a text message to channel. A content type	can be optionally specified. If not set
+			it is set to an empty string allowing a custom handler to default it as it sees fit.
 		</synopsis>
 		<syntax>
 			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
@@ -15996,10 +15878,16 @@
 			<parameter name="Message" required="true">
 				<para>Message to send.</para>
 			</parameter>
+			<parameter name="Content-Type" required="false" default="">
+				<para>The type of content in the message</para>
+			</parameter>
 		</syntax>
 		<description>
 			<para>Sends A Text Message to a channel while in a call.</para>
 		</description>
+		<see-also>
+			<ref type="application">SendText</ref>
+		</see-also>
 	</manager>
 	<manager name="UserEvent" language="en_US">
 		<synopsis>
@@ -16773,6 +16661,33 @@
 			</see-also>
 		</managerEventInstance>
 	</managerEvent>
+	<managerEvent language="en_US" name="DialState">
+		<managerEventInstance class="EVENT_FLAG_CALL">
+			<synopsis>Raised when dial status has changed.</synopsis>
+			<syntax>
+				<channel_snapshot/>
+				<channel_snapshot prefix="Dest"/>
+				<parameter name="DialStatus">
+					<para> The new state of the outbound dial attempt.</para>
+					<enumlist>
+						<enum name="RINGING">
+							<para>The outbound channel is ringing.</para>
+						</enum>
+						<enum name="PROCEEDING">
+							<para>The call to the outbound channel is proceeding.</para>
+						</enum>
+						<enum name="PROGRESS">
+							<para>Progress has been received on the outbound channel.</para>
+						</enum>
+					</enumlist>
+				</parameter>
+				<parameter name="Forward" required="false">
+					<para>If the call was forwarded, where the call was
+					forwarded to.</para>
+				</parameter>
+			</syntax>
+		</managerEventInstance>
+	</managerEvent>
 	<managerEvent language="en_US" name="DialEnd">
 		<managerEventInstance class="EVENT_FLAG_CALL">
 			<synopsis>Raised when a dial action has completed.</synopsis>
@@ -17074,6 +16989,40 @@
 			</syntax>
 		</managerEventInstance>
 	</managerEvent>
+	<managerEvent language="en_US" name="Load">
+		<managerEventInstance class="EVENT_FLAG_SYSTEM">
+			<synopsis>Raised when a module has been loaded in Asterisk.</synopsis>
+			<syntax>
+				<parameter name="Module">
+					<para>The name of the module that was loaded</para>
+				</parameter>
+				<parameter name="Status">
+					<para>The result of the load request.</para>
+					<enumlist>
+						<enum name="Failure"><para>Module could not be loaded properly</para></enum>
+						<enum name="Success"><para>Module loaded and configured</para></enum>
+						<enum name="Decline"><para>Module is not configured</para></enum>
+					</enumlist>
+				</parameter>
+			</syntax>
+		</managerEventInstance>
+	</managerEvent>
+	<managerEvent language="en_US" name="Unload">
+		<managerEventInstance class="EVENT_FLAG_SYSTEM">
+			<synopsis>Raised when a module has been unloaded in Asterisk.</synopsis>
+			<syntax>
+				<parameter name="Module">
+					<para>The name of the module that was unloaded</para>
+				</parameter>
+				<parameter name="Status">
+					<para>The result of the unload request.</para>
+					<enumlist>
+						<enum name="Success"><para>Module unloaded successfully</para></enum>
+					</enumlist>
+				</parameter>
+			</syntax>
+		</managerEventInstance>
+	</managerEvent>
 	<application name="CallCompletionRequest" language="en_US">
 		<synopsis>
 			Request call completion service for previous call
@@ -17128,7 +17077,9 @@
 		</synopsis>
 		<syntax>
 			<parameter name="channel" required="true">
-				<para>The current channel is bridged to the specified <replaceable>channel</replaceable>.</para>
+				<para>The current channel is bridged to the channel
+				identified by the channel name, channel name prefix, or channel
+				uniqueid.</para>
 			</parameter>
 			<parameter name="options">
 				<optionlist>
@@ -17412,7 +17363,7 @@
 						<enum name="Unknown"/>
 						<enum name="Unreachable"/>
 						<enum name="Reachable"/>
-						<enum name="Created"/>
+						<enum name="Unqualified"/>
 						<enum name="Removed"/>
 						<enum name="Updated"/>
 					</enumlist>
@@ -17425,18 +17376,6 @@
 				</parameter>
 				<parameter name="RoundtripUsec">
 					<para>The RTT measured during the last qualify.</para>
-				</parameter>
-				<parameter name="UserAgent">
-					<para>Content of the User-Agent header in REGISTER request</para>
-				</parameter>
-				<parameter name="RegExpire">
-					<para>Absolute time that this contact is no longer valid after</para>
-				</parameter>
-				<parameter name="ViaAddress">
-					<para>IP address:port of the last Via header in REGISTER request</para>
-				</parameter>
-				<parameter name="CallID">
-					<para>Content of the Call-ID header in REGISTER request</para>
 				</parameter>
 			</syntax>
 		</managerEventInstance>
@@ -17980,6 +17919,42 @@
 		<description>
 			<para>This application waits for a specified number of <replaceable>seconds</replaceable>.</para>
 		</description>
+	</application>
+	<application name="WaitDigit" language="en_US">
+		<synopsis>
+			Waits for a digit to be entered.
+		</synopsis>
+		<syntax>
+			<parameter name="seconds">
+				<para>Can be passed with fractions of a second. For example, <literal>1.5</literal> will ask the
+				application to wait for 1.5 seconds.</para>
+			</parameter>
+			<parameter name="digits">
+				<para>Digits to accept, all others are ignored.</para>
+			</parameter>
+		</syntax>
+		<description>
+			<para>This application waits for the user to press one of the accepted
+			<replaceable>digits</replaceable> for a specified number of
+			<replaceable>seconds</replaceable>.</para>
+			<variablelist>
+				<variable name="WAITDIGITSTATUS">
+					<para>This is the final status of the command</para>
+					<value name="ERROR">Parameters are invalid.</value>
+					<value name="DTMF">An accepted digit was received.</value>
+					<value name="TIMEOUT">The timeout passed before any acceptable digits were received.</value>
+					<value name="CANCEL">The channel has hungup or was redirected.</value>
+				</variable>
+				<variable name="WAITDIGITRESULT">
+					<para>The digit that was received, only set if
+					<variable>WAITDIGITSTATUS</variable> is <literal>DTMF</literal>.</para>
+				</variable>
+			</variablelist>
+		</description>
+		<see-also>
+			<ref type="application">Wait</ref>
+			<ref type="application">WaitExten</ref>
+		</see-also>
 	</application>
 	<application name="WaitExten" language="en_US">
 		<synopsis>
@@ -18593,6 +18568,12 @@
 				<parameter name="Status">
 					<para>Informational message</para>
 				</parameter>
+				<parameter name="Uptime">
+					<para>Seconds since start</para>
+				</parameter>
+				<parameter name="LastReload">
+					<para>Seconds since last reload</para>
+				</parameter>
 			</syntax>
 		</managerEventInstance>
 	</managerEvent>
@@ -18681,20 +18662,6 @@
 			</configObject>
 		</configFile>
 	</configInfo>
-	<manager name="DataGet" language="en_US">
-		<synopsis>
-			Retrieve the data api tree.
-		</synopsis>
-		<syntax>
-			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
-			<parameter name="Path" required="true" />
-			<parameter name="Search" />
-			<parameter name="Filter" />
-		</syntax>
-		<description>
-			<para>Retrieve the data api tree.</para>
-		</description>
-	</manager>
 	<configInfo name="cel" language="en_US">
 		<configFile name="cel.conf">
 			<configObject name="general">
@@ -19346,6 +19313,41 @@
 			</configObject>
 		</configFile>
 	</configInfo>
+	<configInfo name="res_resolver_unbound" language="en_US">
+		<configFile name="resolver_unbound.conf">
+			<configObject name="general">
+				<synopsis>General options for res_resolver_unbound</synopsis>
+				<configOption name="hosts">
+					<synopsis>Full path to an optional hosts file</synopsis>
+					<description><para>Hosts specified in a hosts file will be resolved within the resolver itself. If a value
+					of system is provided the system-specific file will be used.</para></description>
+				</configOption>
+				<configOption name="resolv">
+					<synopsis>Full path to an optional resolv.conf file</synopsis>
+					<description><para>The resolv.conf file specifies the nameservers to contact when resolving queries. If a
+					value of system is provided the system-specific file will be used. If provided alongside explicit nameservers the
+					nameservers contained within the resolv.conf file will be used after all others.</para></description>
+				</configOption>
+				<configOption name="nameserver">
+					<synopsis>Nameserver to use for queries</synopsis>
+					<description><para>An explicit nameserver can be specified which is used for resolving queries. If multiple
+					nameserver lines are specified the first will be the primary with failover occurring, in order, to the other
+					nameservers as backups. If provided alongside a resolv.conf file the nameservers explicitly specified will be
+					used before all others.</para></description>
+				</configOption>
+				<configOption name="debug">
+					<synopsis>Unbound debug level</synopsis>
+					<description><para>The debugging level for the unbound resolver. While there is no explicit range generally
+					the higher the number the more debug is output.</para></description>
+				</configOption>
+				<configOption name="ta_file">
+					<synopsis>Trust anchor file</synopsis>
+					<description><para>Full path to a file with DS and DNSKEY records in zone file format. This file is provided
+					to unbound and is used as a source for trust anchors.</para></description>
+				</configOption>
+			</configObject>
+		</configFile>
+	</configInfo>
 	<application name="JabberSend" language="en_US" module="res_xmpp">
 		<synopsis>
 			Sends an XMPP message to a buddy.
@@ -19421,14 +19423,31 @@
 		</syntax>
 		<description>
 			<para>Retrieves the numeric status associated with the buddy identified
-			by <replaceable>jid</replaceable>.
-			If the buddy does not exist in the buddylist, returns 7.</para>
-			<para>Status will be 1-7.</para>
-			<para>1=Online, 2=Chatty, 3=Away, 4=XAway, 5=DND, 6=Offline</para>
-			<para>If not in roster variable will be set to 7.</para>
-			<para>Example: ${JABBER_STATUS(asterisk,bob@domain.com)} returns 1 if
-			<replaceable>bob@domain.com</replaceable> is online. <replaceable>asterisk</replaceable> is
-			the associated XMPP account configured in xmpp.conf.</para>
+			by <replaceable>jid</replaceable>. The return value will be one of the
+			following.</para>
+			<enumlist>
+				<enum name="1">
+					<para>Online</para>
+				</enum>
+				<enum name="2">
+					<para>Chatty</para>
+				</enum>
+				<enum name="3">
+					<para>Away</para>
+				</enum>
+				<enum name="4">
+					<para>Extended Away</para>
+				</enum>
+				<enum name="5">
+					<para>Do Not Disturb</para>
+				</enum>
+				<enum name="6">
+					<para>Offline</para>
+				</enum>
+				<enum name="7">
+					<para>Not In Roster</para>
+				</enum>
+			</enumlist>
 		</description>
 		<see-also>
 			<ref type="function" module="res_xmpp">JABBER_RECEIVE</ref>
@@ -19495,50 +19514,6 @@
 		</syntax>
 		<description>
 			<para>Allows Asterisk to leave a chat room.</para>
-		</description>
-	</application>
-	<application name="JabberStatus" language="en_US" module="res_xmpp">
-		<synopsis>
-			Retrieve the status of a jabber list member
-		</synopsis>
-		<syntax>
-			<parameter name="Jabber" required="true">
-				<para>Client or transport Asterisk users to connect to Jabber.</para>
-			</parameter>
-			<parameter name="JID" required="true">
-				<para>XMPP/Jabber JID (Name) of recipient.</para>
-			</parameter>
-			<parameter name="Variable" required="true">
-				<para>Variable to store the status of requested user.</para>
-			</parameter>
-		</syntax>
-		<description>
-			<para>This application is deprecated. Please use the JABBER_STATUS() function instead.</para>
-			<para>Retrieves the numeric status associated with the specified buddy <replaceable>JID</replaceable>.
-			The return value in the <replaceable>Variable</replaceable>will be one of the following.</para>
-			<enumlist>
-				<enum name="1">
-					<para>Online.</para>
-				</enum>
-				<enum name="2">
-					<para>Chatty.</para>
-				</enum>
-				<enum name="3">
-					<para>Away.</para>
-				</enum>
-				<enum name="4">
-					<para>Extended Away.</para>
-				</enum>
-				<enum name="5">
-					<para>Do Not Disturb.</para>
-				</enum>
-				<enum name="6">
-					<para>Offline.</para>
-				</enum>
-				<enum name="7">
-					<para>Not In Roster.</para>
-				</enum>
-			</enumlist>
 		</description>
 	</application>
 	<manager name="JabberSend" language="en_US" module="res_xmpp">
@@ -19933,9 +19908,6 @@
 							<variable name="PARKING_SPACE">
 								<para>extension that the call was parked in prior to timing out.</para>
 							</variable>
-							<variable name="PARKINGSLOT">
-								<para>Deprecated.  Use <variable>PARKING_SPACE</variable> instead.</para>
-							</variable>
 							<variable name="PARKEDLOT">
 								<para>name of the lot that the call was parked in prior to timing out.</para>
 							</variable>
@@ -20013,6 +19985,91 @@
 			</configObject>
 		</configFile>
 	</configInfo>
+	<configInfo name="res_prometheus" language="en_US">
+		<synopsis>Resource for integration with Prometheus</synopsis>
+		<configFile name="prometheus.conf">
+			<configObject name="general">
+				<synopsis>General settings.</synopsis>
+				<description>
+					<para>
+					The <emphasis>general</emphasis> settings section contains information
+					to configure Asterisk to serve up statistics for a Prometheus server.
+					</para>
+					<note>
+						<para>You must enable Asterisk's HTTP server in <filename>http.conf</filename>
+						for this module to function properly!
+						</para>
+					</note>
+				</description>
+				<configOption name="enabled" default="no">
+					<synopsis>Enable or disable Prometheus statistics.</synopsis>
+					<description>
+						<enumlist>
+							<enum name="no" />
+							<enum name="yes" />
+						</enumlist>
+					</description>
+				</configOption>
+				<configOption name="core_metrics_enabled" default="yes">
+					<synopsis>Enable or disable core metrics.</synopsis>
+					<description>
+						<para>
+						Core metrics show various properties of the Asterisk system, including
+						how the binary was built, the version, uptime, last reload time, etc.
+						Generally, these options are harmless and should always be enabled.
+						This option mostly exists to disable output of all options for testing
+						purposes, as well as for those foolish souls who really don't care
+						what version of Asterisk they're running.
+						</para>
+						<enumlist>
+							<enum name="no" />
+							<enum name="yes" />
+						</enumlist>
+					</description>
+				</configOption>
+				<configOption name="uri" default="metrics">
+					<synopsis>The HTTP URI to serve metrics up on.</synopsis>
+				</configOption>
+				<configOption name="auth_username">
+					<synopsis>Username to use for Basic Auth.</synopsis>
+					<description>
+						<para>
+						If set, use Basic Auth to authenticate requests to the route
+						specified by <replaceable>uri</replaceable>. Note that you
+						will need to configure your Prometheus server with the
+						appropriate auth credentials.
+						</para>
+						<para>
+						If set, <replaceable>auth_password</replaceable> must also
+						be set appropriately.
+						</para>
+						<warning>
+							<para>
+							It is highly recommended to set up Basic Auth. Failure
+							to do so may result in useful information about your
+							Asterisk system being made easily scrapable by the
+							wide world. Consider yourself duly warned.
+							</para>
+						</warning>
+					</description>
+				</configOption>
+				<configOption name="auth_password">
+					<synopsis>Password to use for Basic Auth.</synopsis>
+					<description>
+						<para>
+						If set, this is used in conjunction with <replaceable>auth_username</replaceable>
+						to require Basic Auth for all requests to the Prometheus metrics. Note that
+						setting this without <replaceable>auth_username</replaceable> will not
+						do anything.
+						</para>
+					</description>
+				</configOption>
+				<configOption name="auth_realm" default="Asterisk Prometheus Metrics">
+					<synopsis>Auth realm used in challenge responses</synopsis>
+				</configOption>
+			</configObject>
+		</configFile>
+	</configInfo>
 	<configInfo name="res_pjsip" language="en_US">
 		<synopsis>SIP Resource using PJProject</synopsis>
 		<configFile name="pjsip.conf">
@@ -20057,6 +20114,239 @@
 				</configOption>
 				<configOption name="allow">
 					<synopsis>Media Codec(s) to allow</synopsis>
+				</configOption>
+				<configOption name="incoming_offer_codec_prefs">
+					<synopsis>Codec negotiation prefs for incoming offers.</synopsis>
+					<description>
+						<para>
+							This is a string that describes how the codecs
+							specified on an incoming SDP offer (pending) are reconciled with the codecs specified
+							on an endpoint (configured) before being sent to the Asterisk core.
+							The string actually specifies 4 <literal>name:value</literal> pair parameters
+							separated by commas. Whitespace is ignored and they may be specified in any order.
+
+						</para>
+						<para>
+							Parameters:
+						</para>
+						<enumlist>
+							<enum name="prefer: &lt; pending | configured &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="pending"><para>The codec list from the caller. (default)</para></enum>
+									<enum name="configured"><para>The codec list from the endpoint.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="operation : &lt; intersect | only_preferred | only_nonpreferred &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="intersect"><para>Only common codecs with the preferred codecs first. (default)</para></enum>
+									<enum name="only_preferred"><para>Use only the preferred codecs.</para></enum>
+									<enum name="only_nonpreferred"><para>Use only the non-preferred codecs.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="keep : &lt; all | first &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="all"><para>After the operation, keep all codecs. (default)</para></enum>
+									<enum name="first"><para>After the operation, keep only the first codec.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="transcode : &lt; allow | prevent &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="allow"><para>Allow transcoding. (default)</para></enum>
+									<enum name="prevent"><para>Prevent transcoding.</para></enum>
+								</enumlist>
+							</enum>
+						</enumlist>
+						<para>
+						</para>
+						<example>
+							incoming_offer_codec_prefs = prefer: pending, operation: intersect, keep: all, transcode: allow
+						</example>
+						<para>
+							Prefer the codecs coming from the caller.  Use only the ones that are common.
+							keeping the order of the preferred list. Keep all codecs in the result. Allow transcoding.
+						</para>
+					</description>
+				</configOption>
+				<configOption name="outgoing_offer_codec_prefs">
+					<synopsis>Codec negotiation prefs for outgoing offers.</synopsis>
+					<description>
+						<para>
+							This is a string that describes how the codecs specified in the topology that
+							comes from the Asterisk core (pending) are reconciled with the codecs specified on an
+							endpoint (configured) when sending an SDP offer.
+							The string actually specifies 4 <literal>name:value</literal> pair parameters
+							separated by commas. Whitespace is ignored and they may be specified in any order.
+
+						</para>
+						<para>
+							Parameters:
+						</para>
+						<enumlist>
+							<enum name="prefer: &lt; pending | configured &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="pending"><para>The codec list from the core. (default)</para></enum>
+									<enum name="configured"><para>The codec list from the endpoint.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="operation : &lt; union | intersect | only_preferred | only_nonpreferred &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="union"><para>Merge the lists with the preferred codecs first. (default)</para></enum>
+									<enum name="intersect"><para>Only common codecs with the preferred codecs first. (default)</para></enum>
+									<enum name="only_preferred"><para>Use only the preferred codecs.</para></enum>
+									<enum name="only_nonpreferred"><para>Use only the non-preferred codecs.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="keep : &lt; all | first &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="all"><para>After the operation, keep all codecs. (default)</para></enum>
+									<enum name="first"><para>After the operation, keep only the first codec.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="transcode : &lt; allow | prevent &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="allow"><para>Allow transcoding. (default)</para></enum>
+									<enum name="prevent"><para>Prevent transcoding.</para></enum>
+								</enumlist>
+							</enum>
+						</enumlist>
+						<para>
+						</para>
+						<example>
+						outgoing_offer_codec_prefs = prefer: configured, operation: union, keep: first, transcode: prevent
+						</example>
+						<para>
+						Prefer the codecs coming from the endpoint.  Merge them with the codecs from the core
+						keeping the order of the preferred list. Keep only the first one. No transcoding allowed.
+						</para>
+					</description>
+				</configOption>
+				<configOption name="incoming_answer_codec_prefs">
+					<synopsis>Codec negotiation prefs for incoming answers.</synopsis>
+					<description>
+						<para>
+							This is a string that describes how the codecs specified in an incoming SDP answer
+							(pending) are reconciled with the codecs specified on an endpoint (configured)
+							when receiving an SDP answer.
+							The string actually specifies 4 <literal>name:value</literal> pair parameters
+							separated by commas. Whitespace is ignored and they may be specified in any order.
+						</para>
+						<para>
+							Parameters:
+						</para>
+						<enumlist>
+							<enum name="prefer: &lt; pending | configured &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="pending"><para>The codec list in the received SDP answer. (default)</para></enum>
+									<enum name="configured"><para>The codec list from the endpoint.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="operation : &lt; union | intersect | only_preferred | only_nonpreferred &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="union"><para>Merge the lists with the preferred codecs first.</para></enum>
+									<enum name="intersect"><para>Only common codecs with the preferred codecs first. (default)</para></enum>
+									<enum name="only_preferred"><para>Use only the preferred codecs.</para></enum>
+									<enum name="only_nonpreferred"><para>Use only the non-preferred codecs.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="keep : &lt; all | first &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="all"><para>After the operation, keep all codecs. (default)</para></enum>
+									<enum name="first"><para>After the operation, keep only the first codec.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="transcode : &lt; allow | prevent &gt;">
+								<para>
+								The transcode parameter is ignored when processing answers.
+								</para>
+							</enum>
+						</enumlist>
+						<para>
+						</para>
+						<example>
+						incoming_answer_codec_prefs = keep: first
+						</example>
+						<para>
+						Use the defaults but keep oinly the first codec.
+						</para>
+					</description>
+				</configOption>
+				<configOption name="outgoing_answer_codec_prefs">
+					<synopsis>Codec negotiation prefs for outgoing answers.</synopsis>
+					<description>
+						<para>
+							This is a string that describes how the codecs that come from the core (pending)
+							are reconciled with the codecs specified on an endpoint (configured)
+							when sending an SDP answer.
+							The string actually specifies 4 <literal>name:value</literal> pair parameters
+							separated by commas. Whitespace is ignored and they may be specified in any order.
+						</para>
+						<para>
+							Parameters:
+						</para>
+						<enumlist>
+							<enum name="prefer: &lt; pending | configured &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="pending"><para>The codec list that came from the core. (default)</para></enum>
+									<enum name="configured"><para>The codec list from the endpoint.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="operation : &lt; union | intersect | only_preferred | only_nonpreferred &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="union"><para>Merge the lists with the preferred codecs first.</para></enum>
+									<enum name="intersect"><para>Only common codecs with the preferred codecs first. (default)</para></enum>
+									<enum name="only_preferred"><para>Use only the preferred codecs.</para></enum>
+									<enum name="only_nonpreferred"><para>Use only the non-preferred codecs.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="keep : &lt; all | first &gt;">
+								<para>
+								</para>
+								<enumlist>
+									<enum name="all"><para>After the operation, keep all codecs. (default)</para></enum>
+									<enum name="first"><para>After the operation, keep only the first codec.</para></enum>
+								</enumlist>
+							</enum>
+							<enum name="transcode : &lt; allow | prevent &gt;">
+								<para>
+								The transcode parameter is ignored when processing answers.
+								</para>
+							</enum>
+						</enumlist>
+						<para>
+						</para>
+						<example>
+						incoming_answer_codec_prefs = keep: first
+						</example>
+						<para>
+						Use the defaults but keep oinly the first codec.
+						</para>
+					</description>
 				</configOption>
 				<configOption name="allow_overlap" default="yes">
 					<synopsis>Enable RFC3578 overlap dialing support.</synopsis>
@@ -20145,6 +20435,12 @@
 							<enum name="update" />
 						</enumlist>
 					</description>
+				</configOption>
+				<configOption name="trust_connected_line">
+					<synopsis>Accept Connected Line updates from this endpoint</synopsis>
+				</configOption>
+				<configOption name="send_connected_line">
+					<synopsis>Send Connected Line updates to this endpoint</synopsis>
 				</configOption>
 				<configOption name="connected_line_method" default="invite">
 					<synopsis>Connected line method type</synopsis>
@@ -20322,7 +20618,7 @@
 						changes happen for any of the specified mailboxes. More than one mailbox can be
 						specified with a comma-delimited string. app_voicemail mailboxes must be specified
 						as mailbox@context; for example: mailboxes=6001@default. For mailboxes provided by
-						external sources, such as through the res_external_mwi module, you must specify
+						external sources, such as through the res_mwi_external module, you must specify
 						strings supported by the external system.
 					</para><para>
 						For endpoints that SUBSCRIBE for MWI, use the <literal>mailboxes</literal> option in your AOR
@@ -20428,14 +20724,17 @@
 					</para></description>
 				</configOption>
 				<configOption name="transport">
-					<synopsis>Desired transport configuration</synopsis>
-					<description><para>
-						This will set the desired transport configuration to send SIP data through.
+					<synopsis>Explicit transport configuration to use</synopsis>
+					<description>
+						<para>This will <emphasis>force</emphasis> the endpoint to use the
+						specified transport configuration to send SIP messages.  You need
+						to already know what kind of transport (UDP/TCP/IPv4/etc) the
+						endpoint device will use.
 						</para>
-						<warning><para>Not specifying a transport will <emphasis>DEFAULT</emphasis>
-						to the first configured transport in <filename>pjsip.conf</filename> which is
-						valid for the URI we are trying to contact.
-						</para></warning>
+						<note><para>Not specifying a transport will select the first
+						configured transport in <filename>pjsip.conf</filename> which is
+						compatible with the URI we are trying to contact.
+						</para></note>
 						<warning><para>Transport configuration is not affected by reloads. In order to
 						change transports, a full Asterisk restart is required</para></warning>
 					</description>
@@ -20692,6 +20991,9 @@
 				<configOption name="user_eq_phone" default="no">
 					<synopsis>Determines whether a user=phone parameter is placed into the request URI if the user is determined to be a phone number</synopsis>
 				</configOption>
+				<configOption name="moh_passthrough" default="no">
+					<synopsis>Determines whether hold and unhold will be passed through using re-INVITEs with recvonly and sendrecv to the remote side</synopsis>
+				</configOption>
 				<configOption name="sdp_owner" default="-">
 					<synopsis>String placed as the username portion of an SDP origin (o=) line.</synopsis>
 				</configOption>
@@ -20742,7 +21044,23 @@
 					<description><para>
 						This option only applies if <replaceable>media_encryption</replaceable> is
 						set to <literal>dtls</literal>.
-					</para></description>
+						</para><para>
+						It can be one of the following values:
+						</para><enumlist>
+							<enum name="no"><para>
+								meaning no verificaton is done.
+							</para></enum>
+							<enum name="fingerprint"><para>
+								meaning to verify the remote fingerprint.
+							</para></enum>
+							<enum name="certificate"><para>
+								meaning to verify the remote certificate.
+							</para></enum>
+							<enum name="yes"><para>
+								meaning to verify both the remote fingerprint and certificate.
+							</para></enum>
+						</enumlist>
+					</description>
 				</configOption>
 				<configOption name="dtls_rekey">
 					<synopsis>Interval at which to renegotiate the TLS session and rekey the SRTP session</synopsis>
@@ -20752,6 +21070,18 @@
 					</para><para>
 						If this is not set or the value provided is 0 rekeying will be disabled.
 					</para></description>
+				</configOption>
+				<configOption name="dtls_auto_generate_cert" default="no">
+					<synopsis>Whether or not to automatically generate an ephemeral X.509 certificate</synopsis>
+					<description>
+						<para>
+							If enabled, Asterisk will generate an X.509 certificate for each DTLS session.
+							This option only applies if <replaceable>media_encryption</replaceable> is set
+							to <literal>dtls</literal>. This option will be automatically enabled if
+							<literal>webrtc</literal> is enabled and <literal>dtls_cert_file</literal> is
+							not specified.
+						</para>
+					</description>
 				</configOption>
 				<configOption name="dtls_cert_file">
 					<synopsis>Path to certificate file to present to peer</synopsis>
@@ -20854,12 +21184,86 @@
 						have this accountcode set on it.
 					</para></description>
 				</configOption>
+				<configOption name="preferred_codec_only" default="no">
+					<synopsis>Respond to a SIP invite with the single most preferred codec (DEPRECATED)</synopsis>
+					<description><para>Respond to a SIP invite with the single most preferred codec
+					rather than advertising all joint codec capabilities. This limits the other side's codec
+					choice to exactly what we prefer.</para>
+					<warning><para>This option has been deprecated in favor of
+					<literal>incoming_call_offer_pref</literal>.  Setting both options is unsupported.</para>
+					</warning>
+					</description>
+					<see-also>
+						<ref type="configOption">incoming_call_offer_pref</ref>
+					</see-also>
+				</configOption>
+				<configOption name="incoming_call_offer_pref" default="local">
+					<synopsis>Preferences for selecting codecs for an incoming call.</synopsis>
+					<description>
+						<para>Based on this setting, a joint list of preferred codecs between those
+						received in an incoming SDP offer (remote), and those specified in the
+						endpoint's "allow" parameter (local) es created and is passed to the Asterisk
+						core. </para>
+						<note><para>This list will consist of only those codecs found in both lists.</para></note>
+						<enumlist>
+							<enum name="local"><para>
+								Include all codecs in the local list that are also in the remote list
+								preserving the local order.  (default).
+							</para></enum>
+							<enum name="local_first"><para>
+								Include only the first codec in the local list that is also in the remote list.
+							</para></enum>
+							<enum name="remote"><para>
+								Include all codecs in the remote list that are also in the local list
+								preserving the remote order.
+							</para></enum>
+							<enum name="remote_first"><para>
+								Include only the first codec in the remote list that is also in the local list.
+							</para></enum>
+						</enumlist>
+					</description>
+				</configOption>
+				<configOption name="outgoing_call_offer_pref" default="local">
+					<synopsis>Preferences for selecting codecs for an outgoing call.</synopsis>
+					<description>
+						<para>Based on this setting, a joint list of preferred codecs between
+						those received from the Asterisk core (remote), and those specified in
+						the endpoint's "allow" parameter (local) is created and is used to create
+						the outgoing SDP offer.</para>
+						<enumlist>
+							<enum name="local"><para>
+								Include all codecs in the local list that are also in the remote list
+								preserving the local order.
+							</para></enum>
+							<enum name="local_merge"><para>
+								Include all codecs in BOTH lists preserving the local order.
+								Remote codecs not in the local list will be placed at the end
+								of the joint list.
+							</para></enum>
+							<enum name="local_first"><para>
+								Include only the first codec in the local list.
+							</para></enum>
+							<enum name="remote"><para>
+								Include all codecs in the remote list that are also in the local list
+								preserving the remote order. (default)
+							</para></enum>
+							<enum name="remote_merge"><para>
+								Include all codecs in BOTH lists preserving the remote order.
+								Local codecs not in the remote list will be placed at the end
+								of the joint list.
+							</para></enum>
+							<enum name="remote_first"><para>
+								Include only the first codec in the remote list.
+							</para></enum>
+						</enumlist>
+					</description>
+				</configOption>
 				<configOption name="rtp_keepalive">
 					<synopsis>Number of seconds between RTP comfort noise keepalive packets.</synopsis>
 					<description><para>
 						At the specified interval, Asterisk will send an RTP comfort noise frame. This may
-						be useful for situations where Asterisk is behind a NAT or firewall and must keep a
-						hole open in order to allow for media to arrive at Asterisk.
+						be useful for situations where Asterisk is behind a NAT or firewall and must keep
+						a hole open in order to allow for media to arrive at Asterisk.
 					</para></description>
 				</configOption>
 				<configOption name="rtp_timeout" default="0">
@@ -20976,6 +21380,41 @@
 						on Ringing when already INUSE.
 					</para></description>
 				</configOption>
+				<configOption name="max_audio_streams" default="1">
+					<synopsis>The maximum number of allowed audio streams for the endpoint</synopsis>
+					<description><para>
+						This option enforces a limit on the maximum simultaneous negotiated audio
+						streams allowed for the endpoint.
+					</para></description>
+				</configOption>
+				<configOption name="max_video_streams" default="1">
+					<synopsis>The maximum number of allowed video streams for the endpoint</synopsis>
+					<description><para>
+						This option enforces a limit on the maximum simultaneous negotiated video
+						streams allowed for the endpoint.
+					</para></description>
+				</configOption>
+				<configOption name="bundle" default="no">
+					<synopsis>Enable RTP bundling</synopsis>
+					<description><para>
+						With this option enabled, Asterisk will attempt to negotiate the use of bundle.
+						If negotiated this will result in multiple RTP streams being carried over the same
+						underlying transport. Note that enabling bundle will also enable the rtcp_mux option.
+					</para></description>
+				</configOption>
+				<configOption name="webrtc" default="no">
+					<synopsis>Defaults and enables some options that are relevant to WebRTC</synopsis>
+					<description><para>
+						When set to "yes" this also enables the following values that are needed in
+						order for basic WebRTC support to work: rtcp_mux, use_avpf, ice_support, and
+						use_received_transport. The following configuration settings also get defaulted
+						as follows:</para>
+						<para>media_encryption=dtls</para>
+						<para>dtls_auto_generate_cert=yes (if dtls_cert_file is not set)</para>
+						<para>dtls_verify=fingerprint</para>
+						<para>dtls_setup=actpass</para>
+					</description>
+				</configOption>
 				<configOption name="incoming_mwi_mailbox">
 					<synopsis>Mailbox name to use when incoming MWI NOTIFYs are received</synopsis>
 					<description><para>
@@ -20983,6 +21422,62 @@
 						this mailbox will be used when notifying other modules of MWI status
 						changes.  If not set, incoming MWI NOTIFYs are ignored.
 					</para></description>
+				</configOption>
+				<configOption name="follow_early_media_fork">
+					<synopsis>Follow SDP forked media when To tag is different</synopsis>
+					<description><para>
+						On outgoing calls, if the UAS responds with different SDP attributes
+						on subsequent 18X or 2XX responses (such as a port update) AND the
+						To tag on the subsequent response is different than that on the previous
+						one, follow it. This usually happens when the INVITE is forked to multiple
+						UASs and more than one sends an SDP answer.
+						</para>
+						<note><para>
+							This option must also be enabled in the <literal>system</literal>
+							section for it to take effect here.
+						</para></note>
+					</description>
+				</configOption>
+				<configOption name="accept_multiple_sdp_answers" default="no">
+					<synopsis>Accept multiple SDP answers on non-100rel responses</synopsis>
+					<description><para>
+						On outgoing calls, if the UAS responds with different SDP attributes
+						on non-100rel 18X or 2XX responses (such as a port update) AND the
+						To tag on the subsequent response is the same as that on the previous one,
+						process the updated SDP.  This can happen when the UAS needs to change ports
+						for some reason such as using a separate port for custom ringback.
+						</para>
+						<note><para>
+							This option must also be enabled in the <literal>system</literal>
+							section for it to take effect here.
+						</para></note>
+					</description>
+				</configOption>
+				<configOption name="suppress_q850_reason_headers" default="no">
+					<synopsis>Suppress Q.850 Reason headers for this endpoint</synopsis>
+					<description><para>
+						Some devices can't accept multiple Reason headers and get confused
+						when both 'SIP' and 'Q.850' Reason headers are received.  This
+						option allows the 'Q.850' Reason header to be suppressed.</para>
+					</description>
+				</configOption>
+				<configOption name="ignore_183_without_sdp" default="no">
+					<synopsis>Do not forward 183 when it doesn't contain SDP</synopsis>
+					<description><para>
+						Certain SS7 internetworking scenarios can result in a 183
+						to be generated for reasons other than early media.  Forwarding
+						this 183 can cause loss of ringback tone.  This flag emulates
+						the behavior of chan_sip and prevents these 183 responses from
+						being forwarded.</para>
+					</description>
+				</configOption>
+				<configOption name="stir_shaken" default="no">
+					<synopsis>Enable STIR/SHAKEN support on this endpoint</synopsis>
+					<description><para>
+						Enable STIR/SHAKEN support on this endpoint. On incoming INVITEs,
+						the Identity header will be checked for validity. On outgoing
+						INVITEs, an Identity header will be added.</para>
+					</description>
 				</configOption>
 			</configObject>
 			<configObject name="auth">
@@ -20999,11 +21494,12 @@
 						This option specifies which of the password style config options should be read
 						when trying to authenticate an endpoint inbound request. If set to <literal>userpass</literal>
 						then we'll read from the 'password' option. For <literal>md5</literal> we'll read
-						from 'md5_cred'.
+						from 'md5_cred'. If set to <literal>google_oauth</literal> then we'll read from the refresh_token/oauth_clientid/oauth_secret fields.
 						</para>
 						<enumlist>
 							<enum name="md5"/>
 							<enum name="userpass"/>
+							<enum name="google_oauth"/>
 						</enumlist>
 					</description>
 				</configOption>
@@ -21017,6 +21513,15 @@
 				<configOption name="password">
 					<synopsis>Plain text password used for authentication.</synopsis>
 					<description><para>Only used when auth_type is <literal>userpass</literal>.</para></description>
+				</configOption>
+				<configOption name="refresh_token">
+					<synopsis>OAuth 2.0 refresh token</synopsis>
+				</configOption>
+				<configOption name="oauth_clientid">
+					<synopsis>OAuth 2.0 application's client id</synopsis>
+				</configOption>
+				<configOption name="oauth_secret">
+					<synopsis>OAuth 2.0 application's secret</synopsis>
 				</configOption>
 				<configOption name="realm">
 					<synopsis>SIP realm for endpoint</synopsis>
@@ -21085,13 +21590,13 @@
 					<synopsis>IP Address and optional port to bind to for this transport</synopsis>
 				</configOption>
 				<configOption name="ca_list_file">
-					<synopsis>File containing a list of certificates to read (TLS ONLY)</synopsis>
+					<synopsis>File containing a list of certificates to read (TLS ONLY, not WSS)</synopsis>
 				</configOption>
 				<configOption name="ca_list_path">
-					<synopsis>Path to directory containing a list of certificates to read (TLS ONLY)</synopsis>
+					<synopsis>Path to directory containing a list of certificates to read (TLS ONLY, not WSS)</synopsis>
 				</configOption>
 				<configOption name="cert_file">
-					<synopsis>Certificate file for endpoint (TLS ONLY)</synopsis>
+					<synopsis>Certificate file for endpoint (TLS ONLY, not WSS)</synopsis>
 					<description><para>
 						A path to a .crt or .pem file can be provided.  However, only
 						the certificate is read from the file, not the private key.
@@ -21100,7 +21605,7 @@
 					</para></description>
 				</configOption>
 				<configOption name="cipher">
-					<synopsis>Preferred cryptography cipher names (TLS ONLY)</synopsis>
+					<synopsis>Preferred cryptography cipher names (TLS ONLY, not WSS)</synopsis>
 					<description>
 					<para>Comma separated list of cipher names or numeric equivalents.
 						Numeric equivalents can be either decimal or hexadecimal (0xX).
@@ -21132,7 +21637,7 @@
 					<synopsis>External port for SIP signalling</synopsis>
 				</configOption>
 				<configOption name="method">
-					<synopsis>Method of SSL transport (TLS ONLY)</synopsis>
+					<synopsis>Method of SSL transport (TLS ONLY, not WSS)</synopsis>
 					<description>
 						<enumlist>
 							<enum name="default">
@@ -21159,7 +21664,7 @@
 					<synopsis>Password required for transport</synopsis>
 				</configOption>
 				<configOption name="priv_key_file">
-					<synopsis>Private key file (TLS ONLY)</synopsis>
+					<synopsis>Private key file (TLS ONLY, not WSS)</synopsis>
 				</configOption>
 				<configOption name="protocol" default="udp">
 					<synopsis>Protocol to use for SIP traffic</synopsis>
@@ -21170,20 +21675,21 @@
 							<enum name="tls" />
 							<enum name="ws" />
 							<enum name="wss" />
+							<enum name="flow" />
 						</enumlist>
 					</description>
 				</configOption>
 				<configOption name="require_client_cert" default="false">
-					<synopsis>Require client certificate (TLS ONLY)</synopsis>
+					<synopsis>Require client certificate (TLS ONLY, not WSS)</synopsis>
 				</configOption>
 				<configOption name="type">
 					<synopsis>Must be of type 'transport'.</synopsis>
 				</configOption>
 				<configOption name="verify_client" default="false">
-					<synopsis>Require verification of client certificate (TLS ONLY)</synopsis>
+					<synopsis>Require verification of client certificate (TLS ONLY, not WSS)</synopsis>
 				</configOption>
 				<configOption name="verify_server" default="false">
-					<synopsis>Require verification of server certificate (TLS ONLY)</synopsis>
+					<synopsis>Require verification of server certificate (TLS ONLY, not WSS)</synopsis>
 				</configOption>
 				<configOption name="tos" default="false">
 					<synopsis>Enable TOS for the signalling sent over this transport</synopsis>
@@ -21382,7 +21888,7 @@
 						More than one mailbox can be specified with a comma-delimited string.
 						app_voicemail mailboxes must be specified as mailbox@context;
 						for example: mailboxes=6001@default. For mailboxes provided by external sources,
-						such as through the res_external_mwi module, you must specify strings supported by
+						such as through the res_mwi_external module, you must specify strings supported by
 						the external system.
 					</para><para>
 						For endpoints that cannot SUBSCRIBE for MWI, you can set the <literal>mailboxes</literal> option in your
@@ -21551,8 +22057,42 @@
 						request is too large.  See RFC 3261 section 18.1.1.
 					</para></description>
 				</configOption>
+				<configOption name="follow_early_media_fork">
+					<synopsis>Follow SDP forked media when To tag is different</synopsis>
+					<description><para>
+						On outgoing calls, if the UAS responds with different SDP attributes
+						on subsequent 18X or 2XX responses (such as a port update) AND the
+						To tag on the subsequent response is different than that on the previous
+						one, follow it.
+						</para>
+						<note><para>
+							This option must also be enabled on endpoints that require
+							this functionality.
+						</para></note>
+					</description>
+				</configOption>
+				<configOption name="accept_multiple_sdp_answers">
+					<synopsis>Follow SDP forked media when To tag is the same</synopsis>
+					<description><para>
+						On outgoing calls, if the UAS responds with different SDP attributes
+						on non-100rel 18X or 2XX responses (such as a port update) AND the
+						To tag on the subsequent response is the same as that on the previous one,
+						process the updated SDP.
+						</para>
+						<note><para>
+							This option must also be enabled on endpoints that require
+							this functionality.
+						</para></note>
+					</description>
+				</configOption>
+				<configOption name="disable_rport" default="no">
+					<synopsis>Disable the use of rport in outgoing requests.</synopsis>
+					<description><para>
+						Remove "rport" parameter from the outgoing requests.
+					</para></description>
+				</configOption>
 				<configOption name="type">
-					<synopsis>Must be of type 'system'.</synopsis>
+					<synopsis>Must be of type 'system' UNLESS the object name is 'system'.</synopsis>
 				</configOption>
 			</configObject>
 			<configObject name="global">
@@ -21599,7 +22139,7 @@
 					twice the unidentified_request_period are pruned.</synopsis>
 				</configOption>
 				<configOption name="type">
-					<synopsis>Must be of type 'global'.</synopsis>
+					<synopsis>Must be of type 'global' UNLESS the object name is 'global'.</synopsis>
 				</configOption>
 				<configOption name="user_agent" default="Asterisk &lt;Asterisk Version&gt;">
 					<synopsis>Value used in User-Agent header for SIP requests and Server header for SIP responses.</synopsis>
@@ -21615,7 +22155,7 @@
 					<synopsis>The voicemail extension to send in the NOTIFY Message-Account header if not specified on endpoint or aor</synopsis>
 				</configOption>
 				<configOption name="debug" default="no">
-					<synopsis>Enable/Disable SIP debug logging.  Valid options include yes|no or
+					<synopsis>Enable/Disable SIP debug logging.  Valid options include yes, no, or
 						a host address</synopsis>
 				</configOption>
 				<configOption name="endpoint_identifier_order">
@@ -21715,6 +22255,39 @@
 						obtained from incoming SIP URI user fields are always truncated
 						at the first semicolon.</para></note>
 					</description>
+				</configOption>
+				<configOption name="use_callerid_contact" default="no">
+					<synopsis>Place caller-id information into Contact header</synopsis>
+					<description><para>
+						This option will cause Asterisk to place caller-id information into
+						generated Contact headers.</para>
+					</description>
+				</configOption>
+				<configOption name="send_contact_status_on_update_registration" default="no">
+					<synopsis>Enable sending AMI ContactStatus event when a device refreshes its registration.</synopsis>
+				</configOption>
+				<configOption name="taskprocessor_overload_trigger">
+					<synopsis>Trigger scope for taskprocessor overloads</synopsis>
+					<description><para>
+						This option specifies the trigger the distributor will use for
+						detecting taskprocessor overloads.  When it detects an overload condition,
+						the distrubutor will stop accepting new requests until the overload is
+						cleared.
+						</para>
+						<enumlist>
+							<enum name="global"><para>(default) Any taskprocessor overload will trigger.</para></enum>
+							<enum name="pjsip_only"><para>Only pjsip taskprocessor overloads will trigger.</para></enum>
+							<enum name="none"><para>No overload detection will be performed.</para></enum>
+						</enumlist>
+						<warning><para>
+						The "none" and "pjsip_only" options should be used
+						with extreme caution and only to mitigate specific issues.
+						Under certain conditions they could make things worse.
+						</para></warning>
+					</description>
+				</configOption>
+				<configOption name="norefersub" default="yes">
+					<synopsis>Advertise support for RFC4488 REFER subscription suppression</synopsis>
 				</configOption>
 			</configObject>
 		</configFile>
@@ -22008,6 +22581,12 @@
 				<parameter name="DirectMediaMethod">
 					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='endpoint']/configOption[@name='direct_media_method']/synopsis/node())"/></para>
 				</parameter>
+				<parameter name="TrustConnectedLine">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='endpoint']/configOption[@name='trust_connected_line']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="SendConnectedLine">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='endpoint']/configOption[@name='send_connected_line']/synopsis/node())"/></para>
+				</parameter>
 				<parameter name="ConnectedLineMethod">
 					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='endpoint']/configOption[@name='connected_line_method']/synopsis/node())"/></para>
 				</parameter>
@@ -22119,6 +22698,9 @@
 				<parameter name="UserEqPhone">
 					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='endpoint']/configOption[@name='user_eq_phone']/synopsis/node())"/></para>
 				</parameter>
+				<parameter name="MohPassthrough">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='endpoint']/configOption[@name='moh_passthrough']/synopsis/node())"/></para>
+				</parameter>
 				<parameter name="SdpOwner">
 					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='endpoint']/configOption[@name='sdp_owner']/synopsis/node())"/></para>
 				</parameter>
@@ -22194,6 +22776,9 @@
 				<parameter name="Accountcode">
 					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='endpoint']/configOption[@name='accountcode']/synopsis/node())"/></para>
 				</parameter>
+				<parameter name="PreferredCodecOnly">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='endpoint']/configOption[@name='preferred_codec_only']/synopsis/node())"/></para>
+				</parameter>
 				<parameter name="DeviceState">
 					<para>The aggregate device state for this endpoint.</para>
 				</parameter>
@@ -22205,6 +22790,151 @@
 				</parameter>
 				<parameter name="Allowoverlap">
 					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='endpoint']/configOption[@name='allow_overlap']/synopsis/node())"/></para>
+				</parameter>
+			</syntax>
+		</managerEventInstance>
+	</managerEvent>
+	<managerEvent language="en_US" name="AorList">
+		<managerEventInstance class="EVENT_FLAG_COMMAND">
+			<synopsis>Provide details about an Address of Record (AoR) section.</synopsis>
+			<syntax>
+				<parameter name="ObjectType">
+					<para>The object's type. This will always be 'aor'.</para>
+				</parameter>
+				<parameter name="ObjectName">
+					<para>The name of this object.</para>
+				</parameter>
+				<parameter name="MinimumExpiration">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='aor']/configOption[@name='minimum_expiration']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="MaximumExpiration">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='aor']/configOption[@name='maximum_expiration']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="DefaultExpiration">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='aor']/configOption[@name='default_expiration']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="QualifyFrequency">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='aor']/configOption[@name='qualify_frequency']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="AuthenticateQualify">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='aor']/configOption[@name='authenticate_qualify']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="MaxContacts">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='aor']/configOption[@name='max_contacts']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="RemoveExisting">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='aor']/configOption[@name='remove_existing']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="Mailboxes">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='aor']/configOption[@name='mailboxes']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="OutboundProxy">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='aor']/configOption[@name='outbound_proxy']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="SupportPath">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='aor']/configOption[@name='support_path']/synopsis/node())"/></para>
+				</parameter>
+			</syntax>
+		</managerEventInstance>
+	</managerEvent>
+	<managerEvent language="en_US" name="AuthList">
+		<managerEventInstance class="EVENT_FLAG_COMMAND">
+			<synopsis>Provide details about an Address of Record (Auth) section.</synopsis>
+			<syntax>
+				<parameter name="ObjectType">
+					<para>The object's type. This will always be 'auth'.</para>
+				</parameter>
+				<parameter name="ObjectName">
+					<para>The name of this object.</para>
+				</parameter>
+				<parameter name="Username">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='auth']/configOption[@name='username']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="Md5Cred">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='auth']/configOption[@name='md5_cred']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="Realm">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='auth']/configOption[@name='realm']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="AuthType">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='auth']/configOption[@name='auth_type']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="Password">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='auth']/configOption[@name='password']/synopsis/node())"/></para>
+				</parameter>
+				<parameter name="NonceLifetime">
+					<para><xi:include xpointer="xpointer(/docs/configInfo[@name='res_pjsip']/configFile[@name='pjsip.conf']/configObject[@name='auth']/configOption[@name='nonce_lifetime']/synopsis/node())"/></para>
+				</parameter>
+			</syntax>
+		</managerEventInstance>
+	</managerEvent>
+	<managerEvent language="en_US" name="ContactList">
+		<managerEventInstance class="EVENT_FLAG_COMMAND">
+			<synopsis>Provide details about a contact section.</synopsis>
+			<syntax>
+				<parameter name="ObjectType">
+					<para>The object's type. This will always be 'contact'.</para>
+				</parameter>
+				<parameter name="ObjectName">
+					<para>The name of this object.</para>
+				</parameter>
+				<parameter name="ViaAddr">
+					<para>IP address of the last Via header in REGISTER request.
+					Will only appear in the event if available.</para>
+				</parameter>
+				<parameter name="ViaPort">
+					<para>Port number of the last Via header in REGISTER request.
+					Will only appear in the event if available.</para>
+				</parameter>
+				<parameter name="QualifyTimeout">
+					<para>The elapsed time in decimal seconds after which an OPTIONS
+					message is sent before the contact is considered unavailable.</para>
+				</parameter>
+				<parameter name="CallId">
+					<para>Content of the Call-ID header in REGISTER request.
+					Will only appear in the event if available.</para>
+				</parameter>
+				<parameter name="RegServer">
+					<para>Asterisk Server name.</para>
+				</parameter>
+				<parameter name="PruneOnBoot">
+					<para>If true delete the contact on Asterisk restart/boot.</para>
+				</parameter>
+				<parameter name="Path">
+					<para>The Path header received on the REGISTER.</para>
+				</parameter>
+				<parameter name="Endpoint">
+					<para>The name of the endpoint associated with this information.</para>
+				</parameter>
+				<parameter name="AuthenticateQualify">
+					<para>A boolean indicating whether a qualify should be authenticated.</para>
+				</parameter>
+				<parameter name="Uri">
+					<para>This contact's URI.</para>
+				</parameter>
+				<parameter name="QualifyFrequency">
+					<para>The interval in seconds at which the contact will be qualified.</para>
+				</parameter>
+				<parameter name="UserAgent">
+					<para>Content of the User-Agent header in REGISTER request</para>
+				</parameter>
+				<parameter name="ExpirationTime">
+					<para>Absolute time that this contact is no longer valid after</para>
+				</parameter>
+				<parameter name="OutboundProxy">
+					<para>The contact's outbound proxy.</para>
+				</parameter>
+				<parameter name="Status">
+					<para>This contact's status.</para>
+					<enumlist>
+						<enum name="Reachable"/>
+						<enum name="Unreachable"/>
+						<enum name="NonQualified"/>
+						<enum name="Unknown"/>
+					</enumlist>
+				</parameter>
+				<parameter name="RoundtripUsec">
+					<para>The round trip time in microseconds.</para>
 				</parameter>
 			</syntax>
 		</managerEventInstance>
@@ -22224,6 +22954,8 @@
 					<enumlist>
 						<enum name="Reachable"/>
 						<enum name="Unreachable"/>
+						<enum name="NonQualified"/>
+						<enum name="Unknown"/>
 					</enumlist>
 				</parameter>
 				<parameter name="RoundtripUsec">
@@ -22367,6 +23099,182 @@
 			</managerEvent>
 		</responses>
 	</manager>
+	<manager name="PJSIPShowAors" language="en_US">
+		<synopsis>
+			Lists PJSIP AORs.
+		</synopsis>
+		<syntax />
+		<description>
+			<para>
+			Provides a listing of all AORs. For each AOR an <literal>AorList</literal> event
+			is raised that contains relevant attributes and status information.  Once all
+			aors have been listed an <literal>AorListComplete</literal> event is issued.
+			</para>
+		</description>
+		<responses>
+			<list-elements>
+				<xi:include xpointer="xpointer(/docs/managerEvent[@name='AorList'])" />
+			</list-elements>
+			<managerEvent language="en_US" name="AorListComplete">
+				<managerEventInstance class="EVENT_FLAG_COMMAND">
+					<synopsis>Provide final information about an aor list.</synopsis>
+					<syntax>
+						<parameter name="EventList"/>
+						<parameter name="ListItems"/>
+					</syntax>
+				</managerEventInstance>
+			</managerEvent>
+		</responses>
+	</manager>
+	<manager name="PJSIPShowAuths" language="en_US">
+		<synopsis>
+			Lists PJSIP Auths.
+		</synopsis>
+		<syntax />
+		<description>
+			<para>Provides a listing of all Auths. For each Auth an <literal>AuthList</literal> event
+			is raised that contains relevant attributes and status information.  Once all
+			auths have been listed an <literal>AuthListComplete</literal> event is issued.
+			</para>
+		</description>
+		<responses>
+			<list-elements>
+				<xi:include xpointer="xpointer(/docs/managerEvent[@name='AuthList'])" />
+			</list-elements>
+			<managerEvent language="en_US" name="AuthListComplete">
+				<managerEventInstance class="EVENT_FLAG_COMMAND">
+					<synopsis>Provide final information about an auth list.</synopsis>
+					<syntax>
+						<parameter name="EventList"/>
+						<parameter name="ListItems"/>
+					</syntax>
+				</managerEventInstance>
+			</managerEvent>
+		</responses>
+	</manager>
+	<manager name="PJSIPShowContacts" language="en_US">
+		<synopsis>
+			Lists PJSIP Contacts.
+		</synopsis>
+		<syntax />
+		<description>
+			<para>Provides a listing of all Contacts. For each Contact a <literal>ContactList</literal>
+			event is raised that contains relevant attributes and status information.
+			Once all contacts have been listed a <literal>ContactListComplete</literal> event
+			is issued.
+			</para>
+		</description>
+		<responses>
+			<list-elements>
+				<xi:include xpointer="xpointer(/docs/managerEvent[@name='ContactList'])" />
+			</list-elements>
+			<managerEvent language="en_US" name="ContactListComplete">
+				<managerEventInstance class="EVENT_FLAG_COMMAND">
+					<synopsis>Provide final information about a contact list.</synopsis>
+					<syntax>
+						<parameter name="EventList"/>
+						<parameter name="ListItems"/>
+					</syntax>
+				</managerEventInstance>
+			</managerEvent>
+		</responses>
+	</manager>
+
+	<configInfo name="res_stir_shaken" language="en_US">
+		<synopsis>STIR/SHAKEN module for Asterisk</synopsis>
+		<configFile name="stir_shaken.conf">
+			<configObject name="general">
+				<synopsis>STIR/SHAKEN general options</synopsis>
+				<configOption name="type">
+					<synopsis>Must be of type 'general'.</synopsis>
+				</configOption>
+				<configOption name="ca_file" default="">
+					<synopsis>File path to the certificate authority certificate</synopsis>
+				</configOption>
+				<configOption name="ca_path" default="">
+					<synopsis>File path to a chain of trust</synopsis>
+				</configOption>
+				<configOption name="cache_max_size" default="1000">
+					<synopsis>Maximum size to use for caching public keys</synopsis>
+				</configOption>
+				<configOption name="curl_timeout" default="2">
+					<synopsis>Maximum time to wait to CURL certificates</synopsis>
+				</configOption>
+				<configOption name="signature_timeout" default="15">
+					<synopsis>Amount of time a signature is valid for</synopsis>
+				</configOption>
+			</configObject>
+			<configObject name="store">
+				<synopsis>STIR/SHAKEN certificate store options</synopsis>
+				<configOption name="type">
+					<synopsis>Must be of type 'store'.</synopsis>
+				</configOption>
+				<configOption name="path" default="">
+					<synopsis>Path to a directory containing certificates</synopsis>
+				</configOption>
+				<configOption name="public_key_url" default="">
+					<synopsis>URL to the public key(s)</synopsis>
+					<description><para>
+					 Must be a valid http, or https, URL. The URL must also contain the ${CERTIFICATE} variable, which is used for public key name substitution.
+					 For example: http://mycompany.com/${CERTIFICATE}.pub
+					</para></description>
+				</configOption>
+			</configObject>
+			<configObject name="certificate">
+				<synopsis>STIR/SHAKEN certificate options</synopsis>
+				<configOption name="type">
+					<synopsis>Must be of type 'certificate'.</synopsis>
+				</configOption>
+				<configOption name="path" default="">
+					<synopsis>File path to a certificate</synopsis>
+				</configOption>
+				<configOption name="public_key_url" default="">
+					<synopsis>URL to the public key</synopsis>
+					<description><para>
+					 Must be a valid http, or https, URL.
+					</para></description>
+				</configOption>
+				<configOption name="attestation">
+					<synopsis>Attestation level</synopsis>
+				</configOption>
+				<configOption name="origid" default="">
+					<synopsis>The origination ID</synopsis>
+				</configOption>
+				<configOption name="caller_id_number" default="">
+					<synopsis>The caller ID number to match on.</synopsis>
+				</configOption>
+			</configObject>
+		</configFile>
+	</configInfo>
+	<function name="STIR_SHAKEN" language="en_US">
+		<synopsis>
+			Gets the number of STIR/SHAKEN results or a specific STIR/SHAKEN value from a result on the channel.
+		</synopsis>
+		<syntax>
+			<parameter name="index" required="true">
+				<para>The index of the STIR/SHAKEN result to get. If only 'count' is passed in, gets the number of STIR/SHAKEN results instead.</para>
+			</parameter>
+			<parameter name="value" required="false">
+				<para>The value to get from the STIR/SHAKEN result. Only used when an index is passed in (instead of 'count'). Allowable values:</para>
+				<enumlist>
+					<enum name = "identity" />
+					<enum name = "attestation" />
+					<enum name = "verify_result" />
+				</enumlist>
+			</parameter>
+		</syntax>
+		<description>
+			<para>This function will either return the number of STIR/SHAKEN identities, or return information on the specified identity.
+			To get the number of identities, just pass 'count' as the only parameter to the function. If you want to get information on a
+			specific STIR/SHAKEN identity, you can get the number of identities and then pass an index as the first parameter and one of
+			the values you would like to retrieve as the second parameter.
+			</para>
+			<example title="Get count and retrieve value">
+			same => n,NoOp(Number of STIR/SHAKEN identities: ${STIR_SHAKEN(count)})
+			same => n,NoOp(Identity ${STIR_SHAKEN(0, identity)} has attestation level ${STIR_SHAKEN(0, attestation)})
+			</example>
+		</description>
+	</function>
 	<manager name="PresenceStateList" language="en_US">
 		<synopsis>
 			List the current known presence states.
@@ -22414,7 +23322,7 @@
 				<description>
 					<para>This module provides alternatives to matching inbound requests to
 					a configured endpoint. At least one of the matching mechanisms
-					must be provided, or the object configuration will be invalid.</para>
+					must be provided, or the object configuration is invalid.</para>
 					<para>The matching mechanisms are provided by the following
 					configuration options:</para>
 					<enumlist>
@@ -22432,11 +23340,26 @@
 					<synopsis>IP addresses or networks to match against.</synopsis>
 					<description>
 						<para>The value is a comma-delimited list of IP addresses or
-						hostnames.  IP addresses may have a subnet mask appended.  The
-						subnet mask may be written in either CIDR or dotted-decimal
-						notation.  Separate the IP address and subnet mask with a slash
-						('/').
-						</para>
+						hostnames.</para>
+						<para>IP addresses may have a subnet mask appended. The subnet
+						mask may be written in either CIDR or dotted-decimal
+						notation. Separate the IP address and subnet mask with a slash
+						('/'). A source port can also be specified by adding a colon (':')
+						after the address but before the subnet mask, e.g.
+						3.2.1.0:5061/24. To specify a source port for an IPv6 address, the
+						address itself must be enclosed in square brackets
+						('[2001:db8:0::1]:5060')</para>
+						<para>When a hostname is used, the behavior depends on whether
+						<replaceable>srv_lookups</replaceable> is enabled and/or a source
+						port is provided. If <replaceable>srv_lookups</replaceable> is
+						enabled and a source port is not provided, Asterisk will perform
+						an SRV lookup on the provided hostname, adding all of the A and
+						AAAA records that are resolved.</para>
+						<para>If the SRV lookup fails,
+						<replaceable>srv_lookups</replaceable> is disabled, or a source
+						port is specified when the hostname is configured, Asterisk will
+						resolve the hostname and add all A and AAAA records that are
+						resolved.</para>
 					</description>
 				</configOption>
 				<configOption name="srv_lookups" default="yes">
@@ -22458,6 +23381,13 @@
 						specified with a <literal>:</literal>, as in
 						<literal>match_header = SIPHeader: value</literal>.
 						</para>
+						<para>The specified SIP header value can be a regular
+						expression if the value is of the form
+						/<replaceable>regex</replaceable>/.
+						</para>
+						<note><para>Use of a regex is expensive so be sure you need
+						to use a regex to match your endpoint.
+						</para></note>
 					</description>
 				</configOption>
 				<configOption name="type">
@@ -22502,11 +23432,19 @@
 				<configOption name="contact_user">
 					<synopsis>Contact User to use in request</synopsis>
 				</configOption>
+				<configOption name="contact_header_params">
+					<synopsis>Header parameters to place in the Contact header</synopsis>
+				</configOption>
 				<configOption name="expiration" default="3600">
 					<synopsis>Expiration time for registrations in seconds</synopsis>
 				</configOption>
 				<configOption name="max_retries" default="10">
 					<synopsis>Maximum number of registration attempts.</synopsis>
+					<description><para>
+						This sets the maximum number of registration attempts that are made before
+						stopping any further attempts. If set to 0 then upon failure no further attempts
+						are made.
+					</para></description>
 				</configOption>
 				<configOption name="outbound_auth" default="">
 					<synopsis>Authentication object(s) to be used for outbound registrations.</synopsis>
@@ -22590,12 +23528,15 @@
 					<synopsis>Must be of type 'registration'.</synopsis>
 				</configOption>
 				<configOption name="support_path">
-					<synopsis>Enables Path support for outbound REGISTER requests.</synopsis>
+					<synopsis>Enables advertising SIP Path support for outbound REGISTER requests.</synopsis>
 					<description><para>
 						When this option is enabled, outbound REGISTER requests will advertise
 						support for Path headers so that intervening proxies can add to the Path
 						header as necessary.
 					</para></description>
+				</configOption>
+				<configOption name="support_outbound">
+					<synopsis>Enables advertising SIP Outbound support (RFC5626) for outbound REGISTER requests.</synopsis>
 				</configOption>
 			</configObject>
 		</configFile>
@@ -22648,6 +23589,21 @@
                         </para>
 		</description>
 	</manager>
+	<function name="PARK_GET_CHANNEL" language="en_US">
+		<synopsis>
+			Get the channel name of an occupied parking space in a parking lot.
+		</synopsis>
+			<syntax>
+				<parameter name="parking_space" required="true">
+				</parameter>
+				<parameter name="parking_lot" required="true">
+				</parameter>
+			</syntax>
+		<description>
+			<para>This function returns the channel of the specified parking space
+				if the parking lot space is occupied.</para>
+			</description>
+	</function>
 	<application name="Park" language="en_US">
 		<synopsis>
 			Park yourself.
@@ -23343,6 +24299,9 @@
 				<configOption name="allowed_origins">
 					<synopsis>Comma separated list of allowed origins, for Cross-Origin Resource Sharing. May be set to * to allow all origins.</synopsis>
 				</configOption>
+				<configOption name="channelvars">
+					<synopsis>Comma separated list of channel variables to display in channel json.</synopsis>
+				</configOption>
 			</configObject>
 
 			<configObject name="user">
@@ -23438,6 +24397,10 @@
 						<literal>pjsip.conf</literal>. As with other <literal>res_pjsip</literal> modules, this will use the first available transport of the appropriate type if unconfigured.</para></note>
 					</description>
 				</configOption>
+				<configOption name="multi_user" default="no">
+					<synopsis>Enable multi-user support</synopsis>
+					<description><para>When enabled the user portion of the server uri is replaced by a dynamically created user</para></description>
+				</configOption>
 				<configOption name="type">
 					<synopsis>Must be of type 'outbound-publish'.</synopsis>
 				</configOption>
@@ -23525,6 +24488,11 @@
 				<configOption name="prune_on_boot">
 					<synopsis>If set, indicates that the contact used a reliable transport
 					and therefore the subscription must be deleted after an asterisk restart.
+					</synopsis>
+				</configOption>
+				<configOption name="generator_data">
+					<synopsis>If set, contains persistence data for all generators of content
+					for the subscription.
 					</synopsis>
 				</configOption>
 			</configObject>
@@ -24161,21 +25129,34 @@
 		</description>
 	</manager>
 	<configInfo name="res_statsd" language="en_US">
-		<synopsis>Statsd client.</synopsis>
+		<synopsis>StatsD client</synopsis>
+		<description>
+			<para>The <literal>res_statsd</literal> module provides an API that
+			allows Asterisk and its modules to send statistics to a StatsD
+			server. It only provides a means to communicate with a StatsD server
+			and does not send any metrics of its own.</para>
+			<para>An example module, <literal>res_chan_stats</literal>, is
+			provided which uses the API exposed by this module to send channel
+			statistics to the configured StatsD server.</para>
+			<para>More information about StatsD can be found at
+			https://github.com/statsd/statsd</para>
+		</description>
 		<configFile name="statsd.conf">
 			<configObject name="global">
 				<synopsis>Global configuration settings</synopsis>
 				<configOption name="enabled">
-					<synopsis>Enable/disable the statsd module</synopsis>
+					<synopsis>Enable/disable the StatsD module</synopsis>
 				</configOption>
 				<configOption name="server">
-					<synopsis>Address of the statsd server</synopsis>
+					<synopsis>Address of the StatsD server</synopsis>
 				</configOption>
 				<configOption name="prefix">
 					<synopsis>Prefix to prepend to every metric</synopsis>
 				</configOption>
 				<configOption name="add_newline">
-					<synopsis>Append a newline to every event. This is useful if you want to fake out a server using netcat (nc -lu 8125)</synopsis>
+					<synopsis>Append a newline to every event. This is useful if
+					you want to fake out a server using netcat
+					(nc -lu 8125)</synopsis>
 				</configOption>
 			</configObject>
 		</configFile>
@@ -24388,7 +25369,9 @@
 			</parameter>
 		</syntax>
 		<description>
-			<para>Expires (removes) an object from a sorcery memory cache.</para>
+			<para>Expires (removes) an object from a sorcery memory cache. If full backend caching is enabled
+			this action is not available and will fail. In this case the SorceryMemoryCachePopulate or
+			SorceryMemoryCacheExpire AMI actions must be used instead.</para>
 		</description>
 	</manager>
 	<manager name="SorceryMemoryCacheExpire" language="en_US">
@@ -24753,6 +25736,9 @@
 					</enum>
 					<enum name="t38timeout">
 						<para>R/W The timeout used for T.38 negotiation.</para>
+					</enum>
+					<enum name="negotiate_both">
+						<para>R/W Upon v21 detection allow gateway to send negotiation requests to both T.38 endpoints, and do not wait on the "other" side to initiate (yes|no)</para>
 					</enum>
 				</enumlist>
 			</parameter>
@@ -25280,15 +26266,21 @@
 			Evaluates a channel expression
 		</synopsis>
 		<syntax>
-			<parameter name="variablename" required="true" />
-			<parameter name="channel name" />
+			<parameter name="expression" required="true" />
+			<parameter name="channelname" />
 		</syntax>
 		<description>
-			<para>Returns <literal>0</literal> if <replaceable>variablename</replaceable> is not set
-			or channel does not exist. Returns <literal>1</literal> if <replaceable>variablename</replaceable>
-			is set and returns the variable in parenthesis. Understands complex variable names and builtin
-			variables, unlike GET VARIABLE.</para>
-			<para>Example return code: 200 result=1 (testvariable)</para>
+			<para>Evaluates the given <replaceable>expression</replaceable> against the
+			channel specified by <replaceable>channelname</replaceable>, or the current
+			channel if <replaceable>channelname</replaceable> is not provided.</para>
+			<para>Unlike GET VARIABLE, the <replaceable>expression</replaceable> is
+			processed in a manner similar to dialplan evaluation, allowing complex
+			and built-in variables to be accessed, e.g. <literal>The time is
+			${EPOCH}</literal></para>
+			<para>Returns <literal>0</literal> if no channel matching
+			<replaceable>channelname</replaceable> exists, <literal>1</literal>
+			otherwise.</para>
+			<para>Example return code: 200 result=1 (The time is 1578493800)</para>
 		</description>
 		<see-also>
 			<ref type="agi">get variable</ref>

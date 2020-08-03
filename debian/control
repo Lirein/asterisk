@@ -49,11 +49,9 @@ Build-Depends: debhelper (>= 9),
  libopenr2-dev [linux-any],
  libresample1-dev,
  libsrtp-dev,
- libjansson-dev,
  libldap-dev,
  libxslt1-dev,
  uuid-dev,
- libpjproject-dev,
  libncurses-dev,
  libneon27-gnutls-dev | libneon27-dev,
  libsdl2-dev, libopencore-amrnb-dev, libopencore-amrwb-dev, libavformat-dev, libv4l-dev, libavutil-dev, libswscale-dev, libavcodec-dev,
@@ -138,23 +136,6 @@ Description: simple voicemail support for the Asterisk PBX
  is normally the one you use and is the one that will Just Work. The only
  reason not to install it is if you want to use a different Asterisk
  voicemail storage (ODBC or IMAP).
- .
- For more information about the Asterisk PBX, have a look at the Asterisk
- package.
-
-Package: asterisk-voicemail-odbcstorage
-Architecture: any
-Depends: asterisk (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Provides: asterisk-voicemail-storage
-Conflicts: asterisk-voicemail-storage
-Breaks: asterisk (<< 1:1.8.3.3)
-Replaces: asterisk (<< 1:1.8.3.3)
-Description: ODBC voicemail storage support for the Asterisk PBX
- Asterisk is an Open Source PBX and telephony toolkit.
- .
- This package includes an database-based voicemail storage: storing the
- voicemail in a database accessed through the ODBC interface. While more
- complex to set up, it may be useful in some settings.
  .
  For more information about the Asterisk PBX, have a look at the Asterisk
  package.

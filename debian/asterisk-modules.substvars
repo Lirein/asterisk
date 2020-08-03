@@ -1,3 +1,0 @@
-shlibs:Depends=libc-client2007e, libc6 (>= 2.14), libcurl3 (>= 7.16.2), libglib2.0-0 (>= 2.12.0), libgmime-2.6-0 (>= 2.6.4), libgsm1 (>= 1.0.13), libical1a (>= 1.0), libiksemel3 (>= 1.2), libneon27, libodbc1 (>= 2.3.1), libogg0 (>= 1.0rc3), libpj2 (>= 2.2~svn.4723~dfsg), libpjlib-util2 (>= 2.1.0~ast20130801), libpjmedia2 (>= 2.1.0~ast20130801), libpjnath2 (>= 2.1.0~ast20130801), libpjsip-simple2 (>= 2.1.0~ast20130801), libpjsip-ua2 (>= 2.1.0~ast20130801), libpjsip2 (>= 2.3~dfsg), libspandsp2 (>= 0.0.6~pre18), libspeex1 (>= 1.2~beta3-1), libspeexdsp1 (>= 1.2~beta3.2-1), libsqlite3-0 (>= 3.5.9), libsrtp0, libssl1.0.0 (>= 1.0.2~beta3), libvorbis0a (>= 1.1.2), libvorbisenc2 (>= 1.1.2), libvorbisfile3 (>= 1.1.2), libxml2 (>= 2.7.4)
-misc:Depends=
-misc:Pre-Depends=

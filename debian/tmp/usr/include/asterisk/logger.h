@@ -69,6 +69,9 @@ enum ast_logger_results {
 void ast_log(int level, const char *file, int line, const char *function, const char *fmt, ...)
 	__attribute__((format(printf, 5, 6)));
 
+void ast_log_ap(int level, const char *file, int line, const char *function, const char *fmt, va_list ap)
+	 __attribute__((format(printf, 5, 0)));
+
 /*!
  * \brief Used for sending a log message with protection against recursion.
  *
@@ -81,7 +84,7 @@ void ast_log_safe(int level, const char *file, int line, const char *function, c
 	__attribute__((format(printf, 5, 6)));
 
 /* XXX needs documentation */
-struct ast_callid;
+typedef unsigned int ast_callid;
 
 /*! \brief Used for sending a log message with a known call_id
 	This is a modified logger function which is functionally identical to the above logger function,
@@ -95,7 +98,7 @@ struct ast_callid;
 	\param callid	This is the ast_callid that is associated with the log message. May be NULL.
 	\param fmt	This is what is important.  The format is the same as your favorite breed of printf.  You know how that works, right? :-)
 */
-void ast_log_callid(int level, const char *file, int line, const char *function, struct ast_callid *callid, const char *fmt, ...)
+void ast_log_callid(int level, const char *file, int line, const char *function, ast_callid callid, const char *fmt, ...)
 	__attribute__((format(printf, 6, 7)));
 
 /*!
@@ -133,9 +136,6 @@ int ast_logger_remove_channel(const char *log_channel);
  */
 void ast_log_backtrace(void);
 
-/*! \brief Reload logger without rotating log files */
-int logger_reload(void);
-
 /*! \brief Reload logger while rotating log files */
 int ast_logger_rotate(void);
 
@@ -172,12 +172,12 @@ void __attribute__((format(printf, 5, 6))) __ast_verbose(const char *file, int l
  * allow you to specify that a log will never display a call id even when there is a call id bound to the
  * thread.
  */
-void __attribute__((format(printf, 6, 7))) __ast_verbose_callid(const char *file, int line, const char *func, int level, struct ast_callid *callid, const char *fmt, ...);
+void __attribute__((format(printf, 6, 7))) __ast_verbose_callid(const char *file, int line, const char *func, int level, ast_callid callid, const char *fmt, ...);
 
 #define ast_verbose(...) __ast_verbose(__FILE__, __LINE__, __PRETTY_FUNCTION__, -1, __VA_ARGS__)
 #define ast_verbose_callid(callid, ...) __ast_verbose_callid(__FILE__, __LINE__, __PRETTY_FUNCTION__, -1, callid, __VA_ARGS__)
 
-void __attribute__((format(printf, 6, 0))) __ast_verbose_ap(const char *file, int line, const char *func, int level, struct ast_callid *callid, const char *fmt, va_list ap);
+void __attribute__((format(printf, 6, 0))) __ast_verbose_ap(const char *file, int line, const char *func, int level, ast_callid callid, const char *fmt, va_list ap);
 
 void __attribute__((format(printf, 2, 3))) ast_child_verbose(int level, const char *fmt, ...);
 
@@ -195,11 +195,25 @@ int ast_unregister_verbose(void (*verboser)(const char *string)) attribute_warn_
 void ast_console_puts(const char *string);
 
 /*!
- * \brief log the string to the console, and all attached
- * console clients
+ * \brief log the string to the console, and all attached console clients
+ *
+ * \param string The message to write to the console
+ * \param level The log level of the message
+ *
  * \version 1.6.1 added level parameter
  */
 void ast_console_puts_mutable(const char *string, int level);
+
+/*!
+ * \brief log the string to the console, and all attached console clients
+ * \since 14.0.0
+ *
+ * \param message The message to write to the console
+ * \param sublevel If the log level supports it, the sub-level of the message
+ * \param level The log level of the message
+ */
+void ast_console_puts_mutable_full(const char *message, int level, int sublevel);
+
 void ast_console_toggle_mute(int fd, int silent);
 
 /*!
@@ -230,6 +244,17 @@ void ast_console_toggle_loglevel(int fd, int level, int state);
 #undef AST_LOG_DEBUG
 #endif
 #define AST_LOG_DEBUG      __LOG_DEBUG, _A_
+
+#ifdef LOG_TRACE
+#undef LOG_TRACE
+#endif
+#define __LOG_TRACE   1
+#define LOG_TRACE     __LOG_TRACE, _A_
+
+#ifdef AST_LOG_TRACE
+#undef AST_LOG_TRACE
+#endif
+#define AST_LOG_TRACE     __LOG_TRACE, _A_
 
 #ifdef LOG_NOTICE
 #undef LOG_NOTICE
@@ -296,14 +321,6 @@ void ast_console_toggle_loglevel(int fd, int level, int state);
 unsigned int ast_debug_get_by_module(const char *module);
 
 /*!
- * \brief Get the verbose level for a module
- * \param module the name of module
- * \return the verbose level
- * \version 11.0.0 deprecated
- */
-unsigned int ast_verbose_get_by_module(const char *module) __attribute__((deprecated));
-
-/*!
  * \brief Register a new logger level
  * \param name The name of the level to be registered
  * \retval -1 if an error occurs
@@ -332,49 +349,17 @@ const char *ast_logger_get_dateformat(void);
 /*!
  * \brief factory function to create a new uniquely identifying callid.
  *
- * \retval ast_callid struct pointer containing the call id
- *
- * \note The newly created callid will be referenced upon creation and this function should be
- * paired with a call to ast_callid_unref()
+ * \retval The call id
  */
-struct ast_callid *ast_create_callid(void);
+ast_callid ast_create_callid(void);
 
 /*!
  * \brief extracts the callerid from the thread
  *
- * \retval ast_callid reference to call_id related to the thread
- * \retval NULL if no call_id is present in the thread
- *
- * This reference must be unreffed before it loses scope to prevent memory leaks.
+ * \retval Non-zero Call id related to the thread
+ * \retval 0 if no call_id is present in the thread
  */
-struct ast_callid *ast_read_threadstorage_callid(void);
-
-/*!
- * \brief Increase callid reference count
- *
- * \param c the ast_callid
- *
- * \retval c always
- */
-#define ast_callid_ref(c) ({ ao2_ref(c, +1); (c); })
-
-/*!
- * \brief Decrease callid reference count
- *
- * \param c the ast_callid
- *
- * \retval NULL always
- */
-#define ast_callid_unref(c) ({ ao2_ref(c, -1); (struct ast_callid *) (NULL); })
-
-/*!
- * \brief Cleanup a callid reference (NULL safe ao2 unreference)
- *
- * \param c the ast_callid
- *
- * \retval NULL always
- */
-#define ast_callid_cleanup(c) ({ ao2_cleanup(c); (struct ast_callid *) (NULL); })
+ast_callid ast_read_threadstorage_callid(void);
 
 /*!
  * \brief Sets what is stored in the thread storage to the given
@@ -383,7 +368,7 @@ struct ast_callid *ast_read_threadstorage_callid(void);
  * \retval 0 - success
  * \retval non-zero - failure
  */
-int ast_callid_threadassoc_change(struct ast_callid *callid);
+int ast_callid_threadassoc_change(ast_callid callid);
 
 /*!
  * \brief Adds a known callid to thread storage of the calling thread
@@ -391,7 +376,7 @@ int ast_callid_threadassoc_change(struct ast_callid *callid);
  * \retval 0 - success
  * \retval non-zero - failure
  */
-int ast_callid_threadassoc_add(struct ast_callid *callid);
+int ast_callid_threadassoc_add(ast_callid callid);
 
 /*!
  * \brief Removes callid from thread storage of the calling thread
@@ -406,12 +391,12 @@ int ast_callid_threadassoc_remove(void);
  *        If not, then a new one will be created, bound to the thread, and a reference
  *        to it will be stored.
  *
- * \param callid pointer to struct pointer used to store the referenced callid
+ * \param callid pointer to store the callid
  * \retval 0 - callid was found
  * \retval 1 - callid was created
  * \retval -1 - the function failed somehow (presumably memory problems)
  */
-int ast_callid_threadstorage_auto(struct ast_callid **callid);
+int ast_callid_threadstorage_auto(ast_callid *callid);
 
 /*!
  * \brief Use in conjunction with ast_callid_threadstorage_auto. Cleans up the
@@ -420,7 +405,7 @@ int ast_callid_threadstorage_auto(struct ast_callid **callid);
  * \param callid The callid set by ast_callid_threadstorage_auto
  * \param callid_created The integer returned through ast_callid_threadstorage_auto
  */
-void ast_callid_threadstorage_auto_clean(struct ast_callid *callid, int callid_created);
+void ast_callid_threadstorage_auto_clean(ast_callid callid, int callid_created);
 
 /*!
  * \brief copy a string representation of the callid into a target string
@@ -429,7 +414,7 @@ void ast_callid_threadstorage_auto_clean(struct ast_callid *callid, int callid_c
  * \param buffer_size maximum writable length of the string (Less than 13 will result in truncation)
  * \param callid Callid for which string is being requested
  */
-void ast_callid_strnprint(char *buffer, size_t buffer_size, struct ast_callid *callid);
+void ast_callid_strnprint(char *buffer, size_t buffer_size, ast_callid callid);
 
 /*!
  * \brief Send a log message to a dynamically registered log level
@@ -542,6 +527,355 @@ void ast_logger_set_queue_limit(int queue_limit);
  * \return Queue limit
  */
 int ast_logger_get_queue_limit(void);
+
+
+/*!
+ \page Scope_Trace Scope Trace
+
+The Scope Trace facility allows you to instrument code and output scope entry
+and exit messages with associated data.
+
+To start using it:
+ * You must have used --enable-dev-mode.
+ * In logger.conf, set a logger channel to output the "trace" level.
+ * Instrument your code as specified below.
+ * Use the cli or cli.conf to enable tracing: CLI> core set trace <trace_level> [ module ]
+
+Its simplest usage requires only 1 macro call that...
+	- Registers a descructor for a special variable that gets called when the
+	  variable goes out of scope.  Uses the same principle as RAII_VAR.
+	  The destructor prints the name of the function with an "exiting" indicator
+	  along with an optional message.
+	- Prints the name of the function with an "entering" indicator along with
+	  an optional message.
+
+Simple Example:
+The following code...
+\code
+static struct pjmedia_sdp_session *create_local_sdp(pjsip_inv_session *inv,
+	struct ast_sip_session *session, const pjmedia_sdp_session *offer)
+{
+	SCOPE_TRACE(1, "%s\n", ast_sip_session_get_name(session));
+	...
+}
+\endcode
+would produce...
+\b [2020-05-17 15:16:51 -0600] TRACE[953402] : --> res_pjsip_session.c:4283 create_local_sdp PJSIP/1173-00000001
+\b [2020-05-17 15:16:51 -0600] TRACE[953402] : <-- res_pjsip_session.c:4283 create_local_sdp PJSIP/1173-00000001
+
+There is one odd bit.  There's no way to capture the line number of there the scope exited
+so it's always going to be the line where SCOPE_TRACE is located.
+
+Similar to RAII_VAR, any block scope can be traced including "if", "for", "while", etc.
+\note "case" statements don't create a scope block by themselves but you can create
+a block for it, or use the generic trace functions mentioned below.
+
+Scope Output and Level:
+
+Rather than sending trace messages to the debug facility, a new facility "trace" has been
+added to logger.  A corresponding CLI command "core set trace", and a corresponding "trace"
+parameter in asterisk.conf were added.  This allows a separate log channel to be created
+just for storing trace messages.  The levels are the same as those for debug and verbose.
+
+Scope Indenting:
+
+Each time SCOPE_TRACE or SCOPE_TRACE is called, a thread-local indent value is
+incremented on scope enter, and decremented on scope exit.  This allows output
+like the following (timestamp omitted for brevity):
+
+TRACE[953402] : --> res_pjsip_session.c:3940 session_inv_on_tsx_state_changed PJSIP/1173-00000001 TSX State: Proceeding  Inv State: CALLING
+TRACE[953402] : 	--> res_pjsip_session.c:3680 handle_incoming PJSIP/1173-00000001
+TRACE[953402] : 		--> res_pjsip_session.c:3661 handle_incoming_response PJSIP/1173-00000001 Method: INVITE Status: 100
+TRACE[953402] : 			--> res_pjsip_session.c:3669 handle_incoming_response PJSIP/1173-00000001 Method: INVITE Status: 100 Supplement: chan_pjsip
+TRACE[953402] : 				--> chan_pjsip.c:3265 chan_pjsip_incoming_response_after_media PJSIP/1173-00000001 Method: INVITE Status: 100  After Media
+TRACE[953402] : 					--> chan_pjsip.c:3194 chan_pjsip_incoming_response PJSIP/1173-00000001 Method: INVITE Status: 100
+TRACE[953402] : 					    chan_pjsip.c:3245 chan_pjsip_incoming_response PJSIP/1173-00000001 Method: INVITE Status: 100  Ignored
+TRACE[953402] : 					<-- chan_pjsip.c:3194 chan_pjsip_incoming_response PJSIP/1173-00000001 Method: INVITE Status: 100
+TRACE[953402] : 				<-- chan_pjsip.c:3265 chan_pjsip_incoming_response_after_media PJSIP/1173-00000001 Method: INVITE Status: 100  After Media
+TRACE[953402] : 			<-- res_pjsip_session.c:3669 handle_incoming_response PJSIP/1173-00000001 Method: INVITE Status: 100 Supplement: chan_pjsip
+TRACE[953402] : 		<-- res_pjsip_session.c:3661 handle_incoming_response PJSIP/1173-00000001 Method: INVITE Status: 100
+TRACE[953402] : 	<-- res_pjsip_session.c:3680 handle_incoming PJSIP/1173-00000001
+TRACE[953402] : <-- res_pjsip_session.c:3940 session_inv_on_tsx_state_changed PJSIP/1173-00000001 TSX State: Proceeding  Inv State: CALLING
+
+\note The trace level indicates which messages to print and has no effect on indent.
+
+Generic Trace Messages:
+
+Sometimes you may just want to print a message to the trace log with the appropriate indent
+such as when executing a "case" clause in a "switch" statement. For example, the deepest
+message in the sample output above (chan_pjsip.c:3245) is just a single message instead of
+an entry/exit message.  To do so, you can use the ast_trace macros...
+\code
+	ast_trace(1, "%s Method: %.*s Status: %d  Ignored\n", ast_sip_session_get_name(session),
+		(int)rdata->msg_info.cseq->method.name.slen, rdata->msg_info.cseq->method.name.ptr, status.code);
+\endcode
+
+/note Final note:  The trace facility, like debug, is only available when AST_DEVMODE is defined.
+
+ */
+
+/*!
+ * \brief Get the trace level for a module
+ * \param module the name of module
+ * \return the trace level
+ */
+unsigned int ast_trace_get_by_module(const char *module);
+
+#define TRACE_ATLEAST(level) \
+	(option_trace >= (level) \
+		|| (ast_opt_trace_module \
+			&& ((int)ast_trace_get_by_module(AST_MODULE) >= (level) \
+				|| (int)ast_trace_get_by_module(__FILE__) >= (level))))
+
+/*!
+ * \brief Controls if and when indenting is applied.
+ */
+enum ast_trace_indent_type {
+	/*! Use the existing indent level */
+	AST_TRACE_INDENT_SAME = 0,
+	/*! Increment the indent before printing the message */
+	AST_TRACE_INDENT_INC_BEFORE,
+	/*! Increment the indent after printing the message */
+	AST_TRACE_INDENT_INC_AFTER,
+	/*! Decrement the indent before printing the message */
+	AST_TRACE_INDENT_DEC_BEFORE,
+	/*! Decrement the indent after printing the message */
+	AST_TRACE_INDENT_DEC_AFTER,
+	/*! Set the indent to the one provided */
+	AST_TRACE_INDENT_PROVIDED,
+	/*! Don't use or alter the level */
+	AST_TRACE_INDENT_NONE,
+};
+
+#ifdef AST_DEVMODE
+
+void __attribute__((format (printf, 6, 7))) __ast_trace(const char *file, int line, const char *func,
+	enum ast_trace_indent_type indent_type, unsigned long indent, const char* format, ...);
+
+/*!
+ * \brief Print a trace message
+ *
+ * \param level The trace level
+ * \param indent_type One of the \ref ast_trace_indent_type values
+ * \param (optional) A printf style format string
+ * \param (optional) Arguments
+ *
+ */
+#define ast_trace_raw(level, indent_type, ...) \
+	if (TRACE_ATLEAST(level)) { \
+		__ast_trace(__FILE__, __LINE__, __PRETTY_FUNCTION__, indent_type, 0, " " __VA_ARGS__); \
+	}
+
+/*!
+ * \brief Print a basic trace message
+ *
+ * \param level The trace level
+ * \param (optional) A printf style format string
+ * \param (optional) Arguments
+ *
+ *  This will print the file, line and function at the current indent level
+ */
+#define ast_trace(level, ...) \
+	if (TRACE_ATLEAST(level)) { \
+		__ast_trace(__FILE__, __LINE__, __PRETTY_FUNCTION__, AST_TRACE_INDENT_SAME, 0, " " __VA_ARGS__); \
+	}
+
+/*!
+ * \brief Get the current indent level
+ *
+ * \returns The current indent level
+ */
+unsigned long _ast_trace_get_indent(void);
+#define ast_trace_get_indent() _ast_trace_get_indent()
+
+/*!
+ * \brief Set the current indent level
+ *
+ * \param indent The new indent level
+ */
+void _ast_trace_set_indent(unsigned long indent);
+#define ast_trace_set_indent(indent) _ast_trace_set_indent(indent)
+
+/*!
+ * \brief Increment the indent level
+ *
+ * \returns The new indent level
+ */
+unsigned long _ast_trace_inc_indent(void);
+#define ast_trace_inc_indent() _ast_trace_inc_indent()
+
+/*!
+ * \brief Decrement the indent level
+ *
+ * \returns The new indent level
+ */
+unsigned long _ast_trace_dec_indent(void);
+#define ast_trace_dec_indent() _ast_trace_dec_indent()
+
+/*!
+ * \brief Print a trace message with details when a scope is entered or existed.
+ *
+ * \param level The trace level
+ * \param (optional) A printf style format string
+ * \param (optional) Arguments
+ *
+ *  This will print the file, line and function plus details at the current indent level.
+ * \note Like RAII_VAR, this macro must be called before any code in the scope.
+ *
+ * \note The variables used to detect scope change will look like
+ * __scopevar1234__EXIT and __scopevar1234__ENTER.
+ * The ENTER variable and function are needed to prevent mixed code and declaration issues.
+ * If we simple called __ast_trace, then this macro would need to be the last line
+ * of scope variable declaration.  The following would fail.
+ *
+ * 	SCOPE_TRACE(1, "Help!\n");
+ * 	int i;
+ */
+#define SCOPE_TRACE(level, ...) \
+	const char *__trace_funcname = __PRETTY_FUNCTION__; \
+	auto void __scopevar ## __LINE__ ## __EXIT(void * v); \
+	void __scopevar ## __LINE__ ## __EXIT(void * v __attribute__((unused))) { \
+		if (TRACE_ATLEAST(level)) { \
+			__ast_trace(__FILE__, __LINE__, __trace_funcname, AST_TRACE_INDENT_DEC_BEFORE, 0, " " __VA_ARGS__); \
+		} \
+	} \
+	void *__scopevar ## __LINE__ ## __TRACER __attribute__((cleanup(__scopevar ## __LINE__ ## __EXIT))) = (void *) __PRETTY_FUNCTION__ ; \
+	auto int __scopevar ## __LINE__ ## __ENTER(void); \
+	int __scopevar ## __LINE__ ## __ENTER(void) { \
+		if (TRACE_ATLEAST(level)) { \
+			__ast_trace(__FILE__, __LINE__, __trace_funcname, AST_TRACE_INDENT_INC_AFTER, 0, " " __VA_ARGS__); \
+		} \
+		return 0; \
+	} \
+	int __scopevar ## __LINE__ ## __RETURN __attribute__((unused)) = __scopevar ## __LINE__ ## __ENTER()
+
+/*!
+ * \brief Non RAII_VAR Scope Trace macros
+ * The advantage of these macros is that the EXITs will have the actual
+ * line number where the scope exited.  Much less code is required as well.
+ */
+
+/*!
+ * \brief Scope Enter
+ *
+ * \param level The trace level
+ * \param (optional) A printf style format string
+ * \param (optional) Arguments
+ */
+#define SCOPE_ENTER(level, ...) \
+	int __scope_level = level; \
+	int __scope_task = 0; \
+	if (TRACE_ATLEAST(level)) { \
+		__ast_trace(__FILE__, __LINE__, __PRETTY_FUNCTION__, AST_TRACE_INDENT_INC_AFTER, 0, " " __VA_ARGS__); \
+	} \
+
+#define SCOPE_ENTER_TASK(level, indent, ...) \
+	int __scope_level = level; \
+	int __scope_task = 1; \
+	if (TRACE_ATLEAST(level)) { \
+		__ast_trace(__FILE__, __LINE__, __PRETTY_FUNCTION__, AST_TRACE_INDENT_PROVIDED, indent, " " __VA_ARGS__); \
+	} \
+
+/*!
+ * \brief Scope Exit
+ *
+ * \param (optional) A printf style format string
+ * \param (optional) Arguments
+ *
+ * \details
+ * This macro can be used at the exit points of a statement block since it just prints the message.
+ */
+#define SCOPE_EXIT(...) \
+	if (TRACE_ATLEAST(__scope_level)) { \
+		__ast_trace(__FILE__, __LINE__, __PRETTY_FUNCTION__, AST_TRACE_INDENT_DEC_BEFORE, 0, " " __VA_ARGS__); \
+		if (__scope_task) { \
+			_ast_trace_set_indent(0); \
+		} \
+	} \
+
+/*!
+ * \brief Scope Exit with expression
+ *
+ * \param __expr An expression to execute after printing the message
+ * \param (optional) A printf style format string
+ * \param (optional) Arguments
+ *
+ * \details
+ * Handy for getting out of or continuing loops.
+ *
+ * \example
+ * while(something) {
+ *     SCOPE_ENTER(2, "In a while\n");
+ *     if (something) {
+ *         SCOPE_EXIT_EXPR(break, "Somethiung broke me\n");
+ *     } else {
+ *         SCOPE_EXIT_EXPR(contniue, "Somethiung continued me\n");
+ *     }
+ * }
+ */
+#define SCOPE_EXIT_EXPR(__expr, ...) \
+	if (TRACE_ATLEAST(__scope_level)) { \
+		__ast_trace(__FILE__, __LINE__, __PRETTY_FUNCTION__, AST_TRACE_INDENT_DEC_BEFORE, 0, " " __VA_ARGS__); \
+		if (__scope_task) { \
+			_ast_trace_set_indent(0); \
+		} \
+	} \
+	__expr
+
+/*!
+ * \brief Scope Exit with return
+ *
+ * \param (optional) A printf style format string
+ * \param (optional) Arguments
+ *
+ * \details
+ * This macro can be used at the exit points of a function when no value
+ * needs to be returned.
+ */
+#define SCOPE_EXIT_RTN(...) \
+	if (TRACE_ATLEAST(__scope_level)) { \
+		__ast_trace(__FILE__, __LINE__, __PRETTY_FUNCTION__, AST_TRACE_INDENT_DEC_BEFORE, 0, " " __VA_ARGS__); \
+		if (__scope_task) { \
+			_ast_trace_set_indent(0); \
+		} \
+	} \
+	return
+
+/*!
+ * \brief Scope Exit with return value
+ *
+ * \param __return_value The return value
+ * \param (optional) A printf style format string
+ * \param (optional) Arguments
+ *
+ * \details
+ * This macro can be used at the exit points of a function when a value
+ * needs to be returned.
+ */
+#define SCOPE_EXIT_RTN_VALUE(__return_value, ...) \
+	if (TRACE_ATLEAST(__scope_level)) { \
+		__ast_trace(__FILE__, __LINE__, __PRETTY_FUNCTION__, AST_TRACE_INDENT_DEC_BEFORE, 0, " " __VA_ARGS__); \
+		if (__scope_task) { \
+			_ast_trace_set_indent(0); \
+		} \
+	} \
+	return(__return_value)
+
+#else
+#define ast_trace_raw(__level, __indent_type, ...)
+#define ast_trace(__level, ...)
+#define ast_trace_get_indent() (0)
+#define ast_trace_set_indent(indent)
+#define ast_trace_inc_indent()
+#define ast_trace_dec_indent()
+#define SCOPE_TRACE(__level, ...)
+#define SCOPE_ENTER(level, ...)
+#define SCOPE_ENTER_TASK(level, indent, ...)
+#define SCOPE_EXIT(...)
+#define SCOPE_EXIT_EXPR(__expr, ...) __expr
+#define SCOPE_EXIT_RTN(...) return
+#define SCOPE_EXIT_RTN_VALUE(__return_value, ...) return __return_value
+#endif
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

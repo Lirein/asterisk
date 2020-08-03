@@ -2,7 +2,6 @@ asterisk
 asterisk-modules
 asterisk-dahdi
 asterisk-voicemail
-asterisk-voicemail-odbcstorage
 asterisk-ooh323
 asterisk-mp3
 asterisk-mysql
@@ -15,7 +14,6 @@ asterisk
 asterisk-modules
 asterisk-dahdi
 asterisk-voicemail
-asterisk-voicemail-odbcstorage
 asterisk-ooh323
 asterisk-mp3
 asterisk-mysql

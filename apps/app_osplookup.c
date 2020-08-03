@@ -32,6 +32,7 @@
  */
 
 /*** MODULEINFO
+	<defaultenabled>no</defaultenabled>
 	<depend>osptk</depend>
 	<depend>openssl</depend>
 	<support_level>extended</support_level>
