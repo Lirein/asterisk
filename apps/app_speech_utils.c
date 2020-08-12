@@ -594,13 +594,11 @@ static int speech_load(struct ast_channel *chan, const char *vdata)
 	AST_STANDARD_APP_ARGS(args, data);
 
 	if (args.argc != 2) {
-   		ast_free(data);
 		return -1;
 	}
 
 	/* Load the grammar locally on the object */
 	res = ast_speech_grammar_load(speech, args.grammar, args.path);
-	ast_free(data);
 
 	return res;
 }
@@ -958,7 +956,6 @@ static int speech_background(struct ast_channel *chan, const char *data)
 		ast_set_read_format(chan, oldreadformat);
 	}
 
-	ast_free(data);
 	return 0;
 }
 

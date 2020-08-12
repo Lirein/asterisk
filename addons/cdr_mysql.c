@@ -324,7 +324,6 @@ db_reconnect:
 					}
 
 					if (!ast_strlen_zero(workspace)) {
-						ast_free(value);
 						value = ast_strdupa(workspace);
 					}
 				}
@@ -340,7 +339,6 @@ db_reconnect:
 						(double) (ast_tvdiff_us(cdr->end, cdr->start) / 1000000.0));
 
 					if (!ast_strlen_zero(workspace)) {
-						ast_free(value);
 						value = ast_strdupa(workspace);
 					}
 				}
@@ -557,7 +555,6 @@ static int my_connect_db(struct ast_config *cfg)
 					item++;
 				}
 				staticvalue = ast_strdup(item);
-				ast_free(origitem);
 			}
 		}
 		if(cdrvar==NULL) cdrvar = ast_strdup("");
