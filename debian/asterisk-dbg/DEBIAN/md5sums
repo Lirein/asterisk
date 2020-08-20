@@ -20,7 +20,6 @@ d84fbbff1410c3cba12736527dcb8d43  usr/lib/debug/.build-id/0e/1a5977d704417251454
 02469c840f5e185945fd837b5fb398f9  usr/lib/debug/.build-id/0e/200e7213863cda6ce09a1a86070de11bd374e1.debug
 af28cfe056e7360dce3beb8a1f2351ef  usr/lib/debug/.build-id/0e/23ad5b3d8f342449c4053e2d62673171f9c1ec.debug
 3ba4808d81e45fb32f9635a4514fa333  usr/lib/debug/.build-id/10/a0675f05027d72bceddf8028b5714404fbec56.debug
-b627602089a6296d1af796af4b9a4ebc  usr/lib/debug/.build-id/12/7ffa5e041c2c7d40248809ab526994087a813c.debug
 d096bca687a537639ee7abb2116b454e  usr/lib/debug/.build-id/13/62df076d2b95ee650d1c1c5699b55c2d8fe73f.debug
 bcbb579324b8abfdb17d8970a5fc66a4  usr/lib/debug/.build-id/13/82506828b77531d3e2ae5c6b2d0de192af125e.debug
 4f38dd6f2da4091159cb49a761ff375b  usr/lib/debug/.build-id/13/fe29bccc66dab15cce131830780f2246c7c46d.debug
@@ -43,7 +42,6 @@ b0c28c8846ed65357988886dbd4da841  usr/lib/debug/.build-id/1a/8607904760bf36c64f3
 58e5d82e8fb9084b4ad9b131af0a5a4d  usr/lib/debug/.build-id/1b/f2e40eb45c1f5669daa4e2f921af6dd329be85.debug
 7ba4c74bc685a2d429de1cd75080b978  usr/lib/debug/.build-id/1c/e843dfdbe71b925b9cf575d545c2374ea5c6e4.debug
 970fee3cffa5de00edc915b532b1324a  usr/lib/debug/.build-id/1d/f0c7debe0fbb012b3a44b511b2a6c636e0f322.debug
-f0df5ef28ee2ad9778d0cffbc234e7f9  usr/lib/debug/.build-id/1f/4f8d29e23133a986f2afeb0cfaf9a5874acf93.debug
 1105181bf27c2952b22800f79dce2ca8  usr/lib/debug/.build-id/21/1c644abd70c572894b01c5f839d3109cb07ba8.debug
 7100a7b23e282e0af05c4039f6d610ff  usr/lib/debug/.build-id/21/49f42a2e8f37d9cc172da536e54a6438da0599.debug
 6b062ad3b2495eac586c5674313389f0  usr/lib/debug/.build-id/21/887623456937753d8bb2e8af7f15a8b6624e30.debug
@@ -91,7 +89,6 @@ e8311fdfbf37ebfc883c7ec1e5bb4376  usr/lib/debug/.build-id/45/208d0635209d9bfa5f7
 e094660e8052890f985e91d5568f6dc5  usr/lib/debug/.build-id/46/93fef0656a46691b94f3edebe193507349c88d.debug
 8d830d2787481893c3a3bb205b81a002  usr/lib/debug/.build-id/46/d60e92f1c4fd4cd304f969fad5d4375fa2526b.debug
 af6d93407bee865245e00424612d3642  usr/lib/debug/.build-id/4a/94856db48db3f09f8dfe464ba8f003efebb495.debug
-e7aa9e93b21c5ae4156178625ea04821  usr/lib/debug/.build-id/4a/bdf9da5418e188367227e5e8cc3085eb4b4ef8.debug
 e7a12c8663e6225a0965149726975e6e  usr/lib/debug/.build-id/4b/30a729d2bd65833d506e182c342b00bf2c909f.debug
 c7e601e5b2af483fe308b3d3ecb872fd  usr/lib/debug/.build-id/4d/3ab8626605d8c7ad68ddb9d9f4e76079774a44.debug
 5f5f42bdd3ecb552adcd4457e6084741  usr/lib/debug/.build-id/4e/fc76da5ef5c38d8c2ba3c4a808282d0f738347.debug
@@ -104,7 +101,6 @@ ed72cbf45118aefb39c4027d66ad037d  usr/lib/debug/.build-id/51/f55fdaa02d7664c8e42
 6906e68b404669d8df06fd30c2012cf1  usr/lib/debug/.build-id/54/30d20b7c8b10c94433ae371d707bc6f7dfb54c.debug
 572039e77765b5ace8cd86654f725b5d  usr/lib/debug/.build-id/54/3d900013604d6da7106cfdc951c0f4cbccec33.debug
 c7c8eac6e850a398b06973e4c602b2f6  usr/lib/debug/.build-id/54/a851cbd789f264a9513caf1a5b8680401ee469.debug
-331cf8d8c6c782d07a3d55064585a1d4  usr/lib/debug/.build-id/55/09c85480ef504e7527679c65d0e9ca92a4fe44.debug
 e8d8a986f57c231bccbba6a6e3e3e29c  usr/lib/debug/.build-id/55/192f21315def0cf0b57364749a29b1a41e2357.debug
 93128d5c617ae75b919325cba5a58255  usr/lib/debug/.build-id/56/859f240d54c754023d119166246b7e5128d90b.debug
 72f80fac68bb99d93b1c6151aec03dcc  usr/lib/debug/.build-id/57/6df713c6e99ab79b793a9a8bb427243fb89d25.debug
@@ -198,6 +194,7 @@ db132cbfe97d907652f39699c4cd2f94  usr/lib/debug/.build-id/95/3740e927e3fcb5829c2
 9376507e36a9900f77e0ade456df7b98  usr/lib/debug/.build-id/97/d57fa11103ce3ffc6a083c56a052a0e7ba0753.debug
 f1c953ef1e9219e65ec694bede1c90a8  usr/lib/debug/.build-id/9a/27b2ead7ecd45e1579fcd688924eaa36256289.debug
 9aafa49c3f3222c8d369c77840dd5c97  usr/lib/debug/.build-id/9a/3ad7e8ad34ea3ef626c421f797b6f7108c2adf.debug
+49bed45482ddceca5576b344bfec0ac0  usr/lib/debug/.build-id/9a/6bf79605f6e59a531233bc2a524df35aee6895.debug
 3bfc65f21ece4a09ccf6b734a92d1e5a  usr/lib/debug/.build-id/9a/fe1ad169e66ea858c4b0a2aad3b9f46e69a8d4.debug
 4a5c5803a3b13e2c121b6ab2908dd045  usr/lib/debug/.build-id/9b/267a677e936a0ee5f7d69e8c6cbb93b1e7bb47.debug
 fc586ce0b512fb3466ba9128fc0e2ef4  usr/lib/debug/.build-id/9c/dcd146ffe0f43b3a61396868d738ebaae84f3f.debug
@@ -214,6 +211,7 @@ aef2a18134fd0d002a87c9d5fdbd3bb5  usr/lib/debug/.build-id/a4/c02a0a0e8e1e7f2161b
 b08f743e422c33e6ed7b93f11328f359  usr/lib/debug/.build-id/a5/484e57d6f67ffd93d92d9a589ea8b2d2645974.debug
 64a6ecf88745b1ef10828b9874b1f2c9  usr/lib/debug/.build-id/a5/539cd9e00081fa247c6bd118a009a45e173f5f.debug
 565c4d18c1d1a39df0d37146c199c16a  usr/lib/debug/.build-id/a6/d92456edee1203313ca7ba17ab84b129b650f6.debug
+3c5f789632cb28d650d85c1bb94c3149  usr/lib/debug/.build-id/a6/d92ec90d4aca9923805a407a65969e5b9e74ca.debug
 6a923d4fe59322f6c46e229ebcc4d2cc  usr/lib/debug/.build-id/a7/c3b112f275ea7380fd0ea3b0c712a804dc9065.debug
 38c052f65b9d210d6dedfad7ed418380  usr/lib/debug/.build-id/aa/55b542ef8afdbcb21a95bb53a984c59373faa0.debug
 4e0e42278b45a3cfc1fb7f3e73790983  usr/lib/debug/.build-id/aa/5c11834b5450f1e3d411542f42dcb66a10bdeb.debug
@@ -290,6 +288,7 @@ f957b198fd91ee374a40f1f18d85912f  usr/lib/debug/.build-id/d5/303ccf6e5730f7c3d56
 e96e59c3ac103d9b5f4d734e7bfed39c  usr/lib/debug/.build-id/d6/b46300a490cf038fe60d227997e76863e1e421.debug
 28dbe94e57a38e23f2fa32cb6c057152  usr/lib/debug/.build-id/d7/6f6182fbf15da8b124bc9a1d9fdfb201c8d197.debug
 3010d3ce850c3d300940b8d92d22c94b  usr/lib/debug/.build-id/d7/b4e343797a24a5969ac1f8f34b069e7d26c348.debug
+cbad11f3090ee9f46f9ce729819593de  usr/lib/debug/.build-id/d7/b52d6e4b0aa690bec921f33b6743453f81b707.debug
 28b48000c14e243aee3f8eac2c56116f  usr/lib/debug/.build-id/d8/1eed13d6e3a9af07cdf68f729e466ded0f0235.debug
 e25e78077af83edaa35ee9248f9b9bfd  usr/lib/debug/.build-id/d8/5a8433baed4df7bb845b7d219a24c722ad7e72.debug
 38670753417b8bb09bbfdb8a0099700e  usr/lib/debug/.build-id/d9/573ed7c8e16d81f7da9df7de2a3ef24e69dea2.debug
@@ -302,6 +301,7 @@ edcd190119096123cc509f46955aa9d7  usr/lib/debug/.build-id/da/3c4b5839038086b6311
 7ff2da8daa007ecbaac0c2d3a32b10b0  usr/lib/debug/.build-id/db/5ab47bdf994d0d85f2c65d0670a044d8445afb.debug
 a9f9253e2ed059290e7d03450310c7f1  usr/lib/debug/.build-id/dc/840757cc902698103cc1c9b9f92dfc9d20bfc2.debug
 b0e8b09c4a085d4478738a828b3a34d1  usr/lib/debug/.build-id/dd/0edd9e9f95ea4563a34095e8bbe7901fff6b8a.debug
+7ebaaf500a69f263b3f5b478ef51a49b  usr/lib/debug/.build-id/dd/66f4af14494c971049421d64653dfbcb111d19.debug
 4035c8ebaa6cd4e429b5d4644553ac98  usr/lib/debug/.build-id/de/a9511d48c17f997117d397adce4d8b7d19fdf2.debug
 e615a58e2c6ec6ea36038ff393f72936  usr/lib/debug/.build-id/df/12c2e01c08468471bd490592ee069d96ff30fa.debug
 e808f8935f75b337e2ccb9a03df3880c  usr/lib/debug/.build-id/e0/5c95769f4ffe2a1013caa7cf80451392b0a547.debug
@@ -344,5 +344,5 @@ d38fca8e35da6a3442191de0a8abfc4d  usr/lib/debug/.build-id/fe/dbe20f6f3d0f5bb26ff
 1d9898bd26823d7363787ce7b7d4c5a5  usr/lib/debug/.build-id/ff/81fdf236453e39506d198e073baba0edabeb9c.debug
 24e2a42d23ce165f679e644e5c73747b  usr/lib/debug/.build-id/ff/db3d47a6a3edcdf083161a348772775abc9ed0.debug
 efa5890f58abc7033941ab859ba0b5be  usr/share/doc/asterisk-dbg/NEWS.Debian.gz
-62c2ce59448d1ee9bf97fbf19e1af816  usr/share/doc/asterisk-dbg/changelog.Debian.gz
+5141b961e8fa9ea7b9ac6455f8c7497a  usr/share/doc/asterisk-dbg/changelog.Debian.gz
 8d091cf42dcb251a486c4150f67efdb8  usr/share/doc/asterisk-dbg/copyright

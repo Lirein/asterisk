@@ -1,10 +1,10 @@
 Package: asterisk-dbg
 Source: asterisk
-Version: 1:16.12.1~dfsg-1.1ubuntu1.0
+Version: 1:16.12.1~dfsg-1.1ubuntu1.1
 Architecture: amd64
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Installed-Size: 7262
-Depends: asterisk (= 1:16.12.1~dfsg-1.1ubuntu1.0)
+Installed-Size: 7260
+Depends: asterisk (= 1:16.12.1~dfsg-1.1ubuntu1.1)
 Section: debug
 Priority: extra
 Homepage: http://www.asterisk.org/
@@ -14,5 +14,5 @@ Description: Debugging symbols for Asterisk
  This package includes the debugging symbols useful for debugging
  Asterisk. The debugging symbols are used for execution tracing and core
  dump analysis.
-Build-Ids: 51f55fdaa02d7664c8e42b8237eb55b377d757fe 5509c85480ef504e7527679c65d0e9ca92a4fe44 5d0b024485173decde7b1abedc939bbfe84e1be1 aed155d1bf4c6a330623b86c11c438bc53d1d713 bb4fa413c85119830adc1993787f1aaec597d036 daaa5e8a0fa26d0aae363cd9f7cc84f893ad617a e4ce6750a4a2acae719ab7be2428b7a024b6d370
+Build-Ids: 51f55fdaa02d7664c8e42b8237eb55b377d757fe 5d0b024485173decde7b1abedc939bbfe84e1be1 a6d92ec90d4aca9923805a407a65969e5b9e74ca aed155d1bf4c6a330623b86c11c438bc53d1d713 bb4fa413c85119830adc1993787f1aaec597d036 daaa5e8a0fa26d0aae363cd9f7cc84f893ad617a e4ce6750a4a2acae719ab7be2428b7a024b6d370
 Original-Maintainer: Debian VoIP Team <pkg-voip-maintainers@lists.alioth.debian.org>

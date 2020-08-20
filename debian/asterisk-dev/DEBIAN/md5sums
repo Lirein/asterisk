@@ -30,7 +30,7 @@ ce1473751ec1318c963bde636aa66229  usr/include/asterisk/bridge_channel_internal.h
 0b55da215fd050991dea3b5383dafc96  usr/include/asterisk/bridge_roles.h
 93b131d694a9cb5b6d7b47c40c7f3657  usr/include/asterisk/bridge_technology.h
 64b97ff54c69f35bdd2ff46607827c83  usr/include/asterisk/bucket.h
-d8ecf0be83c2b9752439841219d928e6  usr/include/asterisk/build.h
+c447ebff22749c0871631c6295ed2bc9  usr/include/asterisk/build.h
 10911379a3fea0a2566716868e513041  usr/include/asterisk/buildinfo.h
 98e6af5be2a655f7808096cb5d462cab  usr/include/asterisk/buildopts.h
 46d8d6c8a58cf5db63e5c0b7f4f0749a  usr/include/asterisk/calendar.h
@@ -225,5 +225,5 @@ aae7be89366a6139d590e7b4280792da  usr/include/asterisk/vector.h
 1ccee71370d1cee3d47bb86a9396fb33  usr/include/asterisk/xmldoc.h
 fff50df904611dd50abc64d9dec3dd94  usr/include/asterisk/xmpp.h
 efa5890f58abc7033941ab859ba0b5be  usr/share/doc/asterisk-dev/NEWS.Debian.gz
-62c2ce59448d1ee9bf97fbf19e1af816  usr/share/doc/asterisk-dev/changelog.Debian.gz
+5141b961e8fa9ea7b9ac6455f8c7497a  usr/share/doc/asterisk-dev/changelog.Debian.gz
 8d091cf42dcb251a486c4150f67efdb8  usr/share/doc/asterisk-dev/copyright

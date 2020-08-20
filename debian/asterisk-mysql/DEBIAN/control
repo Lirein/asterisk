@@ -1,10 +1,10 @@
 Package: asterisk-mysql
 Source: asterisk
-Version: 1:16.12.1~dfsg-1.1ubuntu1.0
+Version: 1:16.12.1~dfsg-1.1ubuntu1.1
 Architecture: amd64
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Installed-Size: 189
-Depends: asterisk (= 1:16.12.1~dfsg-1.1ubuntu1.0), libc6 (>= 2.14), libmysqlclient20 (>= 5.7.11)
+Depends: asterisk (= 1:16.12.1~dfsg-1.1ubuntu1.1), libc6 (>= 2.14), libmysqlclient20 (>= 5.7.11)
 Section: comm
 Priority: optional
 Homepage: http://www.asterisk.org/

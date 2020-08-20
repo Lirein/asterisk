@@ -1,10 +1,10 @@
 Package: asterisk-voicemail
 Source: asterisk
-Version: 1:16.12.1~dfsg-1.1ubuntu1.0
+Version: 1:16.12.1~dfsg-1.1ubuntu1.1
 Architecture: amd64
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Installed-Size: 329
-Depends: asterisk (= 1:16.12.1~dfsg-1.1ubuntu1.0), libc6 (>= 2.14)
+Depends: asterisk (= 1:16.12.1~dfsg-1.1ubuntu1.1), libc6 (>= 2.14)
 Conflicts: asterisk-voicemail-storage
 Breaks: asterisk (<< 1:1.8.3.3)
 Replaces: asterisk (<< 1:1.8.3.3)

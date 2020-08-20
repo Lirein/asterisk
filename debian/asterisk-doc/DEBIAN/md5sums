@@ -8,7 +8,7 @@ efa5890f58abc7033941ab859ba0b5be  usr/share/doc/asterisk-doc/NEWS.Debian.gz
 61b514ae7c734c4099602b2c3a636e1b  usr/share/doc/asterisk-doc/README.txt
 c98cba1a545f3a934b8c0901dd68c5dd  usr/share/doc/asterisk-doc/UPGRADE.txt.gz
 4e59fc21a16f076b80a50cfd9734c14a  usr/share/doc/asterisk-doc/Zaptel-to-DAHDI.txt
-62c2ce59448d1ee9bf97fbf19e1af816  usr/share/doc/asterisk-doc/changelog.Debian.gz
+5141b961e8fa9ea7b9ac6455f8c7497a  usr/share/doc/asterisk-doc/changelog.Debian.gz
 936742344c2a155921f85f3b63160eac  usr/share/doc/asterisk-doc/configs/basic-pbx/README
 b375f74163dd37799a3cb8c203467d8a  usr/share/doc/asterisk-doc/configs/basic-pbx/asterisk.conf
 8cd82233480628aaf58c38e5d71a087f  usr/share/doc/asterisk-doc/configs/basic-pbx/cdr.conf

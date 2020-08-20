@@ -1,6 +1,6 @@
 Package: asterisk-config
 Source: asterisk
-Version: 1:16.12.1~dfsg-1.1ubuntu1.0
+Version: 1:16.12.1~dfsg-1.1ubuntu1.1
 Architecture: all
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Installed-Size: 1332

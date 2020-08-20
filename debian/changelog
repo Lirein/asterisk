@@ -1,3 +1,9 @@
+asterisk (1:16.12.1~dfsg-1.1ubuntu1.1) xenial; urgency=medium
+
+  * Patched speech engine
+
+ -- Ivan Batalin <director@oas.su>  Wed, 12 Aug 2020 14:41:14 +0500
+
 asterisk (1:16.12.1~dfsg-1.1ubuntu1.0) xenial; urgency=medium
 
   * Moved to the 16.12 branch with patches

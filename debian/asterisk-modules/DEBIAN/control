@@ -1,6 +1,6 @@
 Package: asterisk-modules
 Source: asterisk
-Version: 1:16.12.1~dfsg-1.1ubuntu1.0
+Version: 1:16.12.1~dfsg-1.1ubuntu1.1
 Architecture: amd64
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Installed-Size: 11879
