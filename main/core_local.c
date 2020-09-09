@@ -996,8 +996,6 @@ static struct ast_channel *local_request_with_stream_topology(const char *type, 
 				ast_format_cap_get_names(local_tech.capabilities, &tech_codecs),
 				ast_format_cap_get_names(ast_stream_get_formats(stream), &request_codecs));
 
-			ast_free(tech_codecs);
-			ast_free(request_codecs);
 			/* If there are no formats then we abort */
 			ao2_ref(caps, -1);
 			ao2_ref(audio_filtered_topology, -1);

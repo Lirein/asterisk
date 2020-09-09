@@ -1391,10 +1391,6 @@ static void set_bridge_peer_vars_multiparty(struct ast_bridge *bridge)
 		ast_bridge_vars_set(bridge_channel->chan, buf, NULL);
 		ast_channel_unlock(bridge_channel->chan);
 	}
-	for (idx = 0; idx < num_names; ++idx) {
-		ast_free(names[idx]);
-	}
-	ast_free(names);
 }
 
 /*!
