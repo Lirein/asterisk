@@ -129,6 +129,7 @@ struct ast_channel_tech chan_pjsip_tech = {
 	.transfer = chan_pjsip_transfer,
 	.fixup = chan_pjsip_fixup,
 	.devicestate = chan_pjsip_devicestate,
+	.setoption = chan_pjsip_setoption,
 	.queryoption = chan_pjsip_queryoption,
 	.func_channel_read = pjsip_acf_channel_read,
 	.get_pvt_uniqueid = chan_pjsip_get_uniqueid,
@@ -1250,6 +1251,31 @@ static int chan_pjsip_devicestate(const char *data)
 	}
 
 	return state;
+}
+
+/*! \brief Set an option on a SIP dialog */
+static int chan_pjsip_setoption(struct ast_channel *ast, int option, void *data, int datalen)
+{
+	struct ast_sip_channel_pvt *channel = ast_channel_tech_pvt(ast);
+	int res = -1;
+
+	if (!channel) {
+		return -1;
+	}
+
+	switch (option) {
+	case AST_OPTION_RELAXDTMF:
+		if(*(int *) data) {
+		    ast_dsp_set_digitmode(channel->session->dsp, DSP_DIGITMODE_DTMF | DSP_DIGITMODE_RELAXDTMF);
+		} else {
+		    ast_dsp_set_digitmode(channel->session->dsp, DSP_DIGITMODE_DTMF);
+		}
+		break;
+	default:
+		break;
+	}
+
+	return res;
 }
 
 /*! \brief Function called to query options on a channel */

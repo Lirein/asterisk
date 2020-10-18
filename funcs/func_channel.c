@@ -179,6 +179,9 @@
 					<enum name="rxgain">
 						<para>R/W set rxgain level on channel drivers that support it.</para>
 					</enum>
+					<enum name="relaxdtmf">
+						<para>W/O Set immediate relaxdtmf mode.</para>
+					</enum>
 					<enum name="secure_bridge_signaling">
 						<para>Whether or not channels bridged to this channel require secure signaling (1/0)</para>
 					</enum>
@@ -475,6 +478,7 @@ static int func_channel_write_real(struct ast_channel *chan, const char *functio
 {
 	int ret = 0;
 	signed char gainset;
+	int relaxdtmf;
 
 	if (!strcasecmp(data, "language"))
 		locked_string_field_set(chan, language, value);
@@ -554,6 +558,11 @@ static int func_channel_write_real(struct ast_channel *chan, const char *functio
 	} else if (!strcasecmp(data, "rxgain")) {
 		sscanf(value, "%4hhd", &gainset);
 		ast_channel_setoption(chan, AST_OPTION_RXGAIN, &gainset, sizeof(gainset), 0);
+	} else if (!strcasecmp(data, "relaxdtmf")) {
+		relaxdtmf=!strcasecmp(value, "on");
+		ast_channel_lock(chan);
+		ast_channel_setoption(chan, AST_OPTION_RELAXDTMF, &relaxdtmf, sizeof(relaxdtmf), 0);
+		ast_channel_unlock(chan);
 	} else if (!strcasecmp(data, "transfercapability")) {
 		unsigned short i;
 

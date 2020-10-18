@@ -4975,6 +4975,13 @@ static int sip_setoption(struct ast_channel *chan, int option, void *data, int d
 			res = 0;
 		}
 		break;
+	case AST_OPTION_RELAXDTMF:
+		if(*(int *) data) {
+		    ast_dsp_set_digitmode(p->dsp, DSP_DIGITMODE_DTMF | DSP_DIGITMODE_RELAXDTMF);
+		} else {
+		    ast_dsp_set_digitmode(p->dsp, DSP_DIGITMODE_DTMF);
+		}
+		break;
 	case AST_OPTION_SECURE_SIGNALING:
 		p->req_secure_signaling = *(unsigned int *) data;
 		res = 0;
