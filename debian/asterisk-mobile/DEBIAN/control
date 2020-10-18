@@ -1,10 +1,10 @@
 Package: asterisk-mobile
 Source: asterisk
-Version: 1:16.12.1~dfsg-1.1ubuntu1.1
+Version: 1:16.12.1~dfsg-1.1ubuntu1.3
 Architecture: amd64
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Installed-Size: 179
-Depends: asterisk (= 1:16.12.1~dfsg-1.1ubuntu1.1), libbluetooth3 (>= 4.91), libc6 (>= 2.14)
+Depends: asterisk (= 1:16.12.1~dfsg-1.1ubuntu1.3), libbluetooth3 (>= 4.91), libc6 (>= 2.14)
 Section: comm
 Priority: optional
 Homepage: http://www.asterisk.org/

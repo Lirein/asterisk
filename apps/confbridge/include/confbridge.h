@@ -48,6 +48,8 @@
 /*! Default time in ms of silence necessary to declare talking stopped by the bridge. */
 #define DEFAULT_SILENCE_THRESHOLD 2500
 
+#define DEFAULT_VOLUME_LEVEL 0
+
 enum user_profile_flags {
 	USER_OPT_ADMIN =        (1 << 0), /*!< Set if the caller is an administrator */
 	USER_OPT_NOONLYPERSON = (1 << 1), /*!< Set if the "you are currently the only person in this conference" sound file should not be played */
@@ -153,6 +155,8 @@ struct user_profile {
 	char moh_class[128];
 	char announcement[PATH_MAX];
 	unsigned int flags;
+	int volumein;
+	int volumeout;
 	unsigned int announce_user_count_all_after;
 	/*! Minimum average magnitude threshold to determine talking by the DSP. */
 	unsigned int talking_threshold;

@@ -289,6 +289,12 @@
 						<enum name="No"/>
 					</enumlist>
 				</parameter>
+				<parameter name="VolumeIn">
+					<para>Microphone volume gain</para>
+				</parameter>
+				<parameter name="VolumeOut">
+					<para>Playback volume gain</para>
+				</parameter>
 				<parameter name="AnsweredTime">
 					<para>The number of seconds the channel has been up.</para>
 				</parameter>
@@ -364,6 +370,21 @@
 			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
 			<parameter name="Conference" required="true" />
 			<parameter name="Channel" required="true" />
+		</syntax>
+		<description>
+		</description>
+	</manager>
+	<manager name="ConfbridgeSetVolume" language="en_US">
+		<synopsis>
+			Set user volume in Confbridge.
+		</synopsis>
+		<syntax>
+			<xi:include xpointer="xpointer(/docs/manager[@name='Login']/syntax/parameter[@name='ActionID'])" />
+			<parameter name="Conference" required="true" />
+			<parameter name="Channel" required="true" />
+			<parameter name="Volume" required="false" />
+			<parameter name="VolumeIn" required="false" />
+			<parameter name="VolumeOut" required="false" />
 		</syntax>
 		<description>
 		</description>
@@ -2718,6 +2739,8 @@ static int confbridge_exec(struct ast_channel *chan, const char *data)
 	/* Keep a copy of volume adjustments so we can restore them later if need be */
 	volume_adjustments[0] = ast_audiohook_volume_get(chan, AST_AUDIOHOOK_DIRECTION_READ);
 	volume_adjustments[1] = ast_audiohook_volume_get(chan, AST_AUDIOHOOK_DIRECTION_WRITE);
+	ast_audiohook_volume_set(chan, AST_AUDIOHOOK_DIRECTION_READ, user.u_profile.volumein);
+	ast_audiohook_volume_set(chan, AST_AUDIOHOOK_DIRECTION_WRITE, user.u_profile.volumeout);
 
 	if (ast_test_flag(&user.u_profile, USER_OPT_DROP_SILENCE)) {
 		user.tech_args.drop_silence = 1;
@@ -3354,6 +3377,31 @@ static int safeleave_conference_participant(struct confbridge_conference *confer
 	return res;
 }
 
+static int setvolume_conference_participant(struct confbridge_conference *conference,
+	const char *channel, int volumein, int volumeout)
+{
+	int res = -1;
+	int match;
+	struct confbridge_user *user = NULL;
+
+	SCOPED_AO2LOCK(bridge_lock, conference);
+
+	AST_LIST_TRAVERSE(&conference->active_list, user, list) {
+		if (user->kicked) {
+			continue;
+		}
+		match = !strcasecmp(channel, ast_channel_name(user->chan));
+		if (match) {
+            ast_audiohook_volume_set(user->chan, AST_AUDIOHOOK_DIRECTION_READ, volumein);
+            ast_audiohook_volume_set(user->chan, AST_AUDIOHOOK_DIRECTION_WRITE, volumeout);
+			res = 0;
+			return res;
+		}
+	}
+
+	return res;
+}
+
 static char *complete_confbridge_name(const char *line, const char *word, int pos, int state)
 {
 	int which = 0;
@@ -3922,6 +3970,8 @@ static int action_confbridgelist_item(struct mansession *s, const char *id_text,
 		"Waiting: %s\r\n"
 		"Muted: %s\r\n"
 		"Talking: %s\r\n"
+		"VolumeIn: %d\r\n"
+		"VolumeOut: %d\r\n"
 		"AnsweredTime: %d\r\n"
 		"%s"
 		"\r\n",
@@ -3934,6 +3984,8 @@ static int action_confbridgelist_item(struct mansession *s, const char *id_text,
 		AST_YESNO(waiting),
 		AST_YESNO(user->muted),
 		AST_YESNO(user->talking),
+	 	ast_audiohook_volume_get(user->chan, AST_AUDIOHOOK_DIRECTION_READ),
+	 	ast_audiohook_volume_get(user->chan, AST_AUDIOHOOK_DIRECTION_WRITE),
 		ast_channel_get_up_time(user->chan),
 		ast_str_buffer(snap_str));
 
@@ -4171,6 +4223,55 @@ static int action_confbridgesafeleave(struct mansession *s, const struct message
 
 	if (found) {
 		astman_send_ack(s, m, "User leaved");
+	} else {
+		astman_send_error(s, m, "No Channel by that name found in Conference.");
+	}
+	return 0;
+}
+
+static int action_confbridgesetvolume(struct mansession *s, const struct message *m)
+{
+	const char *conference_name = astman_get_header(m, "Conference");
+	const char *channel = astman_get_header(m, "Channel");
+	const char *volume = astman_get_header(m, "Volume");
+	const char *volumein = astman_get_header(m, "VolumeIn");
+	const char *volumeout = astman_get_header(m, "VolumeOut");
+	struct confbridge_conference *conference;
+	int found, newvolumein = 0, newvolumeout = 0;
+
+	if (ast_strlen_zero(conference_name)) {
+		astman_send_error(s, m, "No Conference name provided.");
+		return 0;
+	}
+	if (!ast_strlen_zero(volume)) {
+		newvolumein = atoi(volume);
+		newvolumeout = atoi(volume);
+		return 0;
+	}
+	if (!ast_strlen_zero(volumein)) {
+		newvolumein = atoi(volumein);
+		return 0;
+	}
+	if (!ast_strlen_zero(volumeout)) {
+		newvolumeout = atoi(volumeout);
+		return 0;
+	}
+	if (!ao2_container_count(conference_bridges)) {
+		astman_send_error(s, m, "No active conferences.");
+		return 0;
+	}
+
+	conference = ao2_find(conference_bridges, conference_name, OBJ_KEY);
+	if (!conference) {
+		astman_send_error(s, m, "No Conference by that name found.");
+		return 0;
+	}
+
+	found = !setvolume_conference_participant(conference, channel, newvolumein, newvolumeout);
+	ao2_ref(conference, -1);
+
+	if (found) {
+		astman_send_ack(s, m, "User volume adjusted");
 	} else {
 		astman_send_error(s, m, "No Channel by that name found in Conference.");
 	}
@@ -4541,6 +4642,7 @@ static int load_module(void)
 	res |= ast_manager_register_xml("ConfbridgeUnmute", EVENT_FLAG_CALL, action_confbridgeunmute);
 	res |= ast_manager_register_xml("ConfbridgeKick", EVENT_FLAG_CALL, action_confbridgekick);
 	res |= ast_manager_register_xml("ConfbridgeSafeLeave", EVENT_FLAG_CALL, action_confbridgesafeleave);
+	res |= ast_manager_register_xml("ConfbridgeSetVolume", EVENT_FLAG_CALL, action_confbridgesetvolume);
 	res |= ast_manager_register_xml("ConfbridgeUnlock", EVENT_FLAG_CALL, action_confbridgeunlock);
 	res |= ast_manager_register_xml("ConfbridgeLock", EVENT_FLAG_CALL, action_confbridgelock);
 	res |= ast_manager_register_xml("ConfbridgeStartRecord", EVENT_FLAG_SYSTEM, action_confbridgestartrecord);

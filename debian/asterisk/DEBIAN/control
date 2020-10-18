@@ -1,9 +1,9 @@
 Package: asterisk
-Version: 1:16.12.1~dfsg-1.1ubuntu1.1
+Version: 1:16.12.1~dfsg-1.1ubuntu1.3
 Architecture: amd64
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Installed-Size: 7490
-Depends: libc6 (>= 2.15), libcap2 (>= 1:2.10), libedit2 (>= 2.11-20080614), libpopt0 (>= 1.14), libsqlite3-0 (>= 3.5.9), libssl1.0.0 (>= 1.0.2~beta3), libsystemd0, liburiparser1 (>= 0.6.0), libuuid1 (>= 2.16), libxml2 (>= 2.7.4), libxslt1.1 (>= 1.1.25), asterisk-config (= 1:16.12.1~dfsg-1.1ubuntu1.1) | asterisk-config-custom, asterisk-modules (= 1:16.12.1~dfsg-1.1ubuntu1.1), adduser, asterisk-core-sounds-en-gsm | asterisk-prompt-en
+Depends: libc6 (>= 2.15), libcap2 (>= 1:2.10), libedit2 (>= 2.11-20080614), libpopt0 (>= 1.14), libsqlite3-0 (>= 3.5.9), libssl1.0.0 (>= 1.0.2~beta3), libsystemd0, liburiparser1 (>= 0.6.0), libuuid1 (>= 2.16), libxml2 (>= 2.7.4), libxslt1.1 (>= 1.1.25), asterisk-config (= 1:16.12.1~dfsg-1.1ubuntu1.3) | asterisk-config-custom, asterisk-modules (= 1:16.12.1~dfsg-1.1ubuntu1.3), adduser, asterisk-core-sounds-en-gsm | asterisk-prompt-en
 Recommends: sox, asterisk-voicemail | asterisk-voicemail-storage, asterisk-moh-opsound-gsm
 Suggests: asterisk-doc, asterisk-dev, asterisk-ooh323, asterisk-dahdi
 Provides: asterisk-da6642af068ee5e6490c5b1d2cc1d238

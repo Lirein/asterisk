@@ -4,7 +4,7 @@ cafd8e617e908ae77c9b53f8d58c4782  usr/lib/libasteriskpj.so.2
 a5e97fccba655a29405e8f8660446a52  usr/sbin/astcanary
 946c90df5005e8b630c5d6e5346eb0d6  usr/sbin/astdb2bdb
 cdf00ad708a76ccd541c24937b4c4520  usr/sbin/astdb2sqlite3
-7784c31f5adfb341a50ff483cb512706  usr/sbin/asterisk
+16087da5cb50eb56a3f510dbd549c32b  usr/sbin/asterisk
 2cac797417281a6e3c55d231e9269679  usr/sbin/astgenkey
 9f77ad3adbf7dde465dd6a54fee88ddf  usr/sbin/astversion
 bba8d68da5e8c429a98989c6a66410bb  usr/sbin/autosupport
@@ -149,7 +149,7 @@ b921189fc8b9d6528635e354945dd63c  usr/share/doc/asterisk/CREDITS.gz
 efa5890f58abc7033941ab859ba0b5be  usr/share/doc/asterisk/NEWS.Debian.gz
 e6da8942e7d4a7e3be1607c22fc7fc78  usr/share/doc/asterisk/README.Debian.gz
 1ae5ebfee5d8d3fe75b45da81e1f4817  usr/share/doc/asterisk/README.md.gz
-5141b961e8fa9ea7b9ac6455f8c7497a  usr/share/doc/asterisk/changelog.Debian.gz
+e6610a848d27471c28e17e74d18f0c03  usr/share/doc/asterisk/changelog.Debian.gz
 8d091cf42dcb251a486c4150f67efdb8  usr/share/doc/asterisk/copyright
 2592d9fa21814ae4072c46ca55b81d7a  usr/share/doc/asterisk/examples/asterisk.startup.conf
 5b93475df4d87ebdf5a3e5fadbc1051a  usr/share/doc/asterisk/examples/sample.call

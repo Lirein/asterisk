@@ -183,7 +183,7 @@ f5e230f61cdc97ed167efc9f45d1c53a  usr/lib/asterisk/modules/func_sysinfo.so
 2fb2927e7b8ab9eda56b5cc02fa40e7e  usr/lib/asterisk/modules/func_talkdetect.so
 4bdc5b1bd9fd6a2279bbce12fb867830  usr/lib/asterisk/modules/func_timeout.so
 30714e1594ecaf53a08d43564ffc0a43  usr/lib/asterisk/modules/func_uri.so
-2fdd47cdac274f93da1276be48eedf6b  usr/lib/asterisk/modules/func_version.so
+f92353b4fb12d6b159d4d6520410fcbb  usr/lib/asterisk/modules/func_version.so
 eed4a52ea42bef6cd017928acc9c60cd  usr/lib/asterisk/modules/func_vmcount.so
 c8203b0e9e574cab7e8fd1838dc3b439  usr/lib/asterisk/modules/func_volume.so
 f366ca6b9f1c81a017c440f72f9b5999  usr/lib/asterisk/modules/pbx_ael.so
@@ -191,7 +191,7 @@ f366ca6b9f1c81a017c440f72f9b5999  usr/lib/asterisk/modules/pbx_ael.so
 27339d8f096fd8e35d6d0a7c742aac57  usr/lib/asterisk/modules/pbx_dundi.so
 613296114012f4731cd6634b6b278754  usr/lib/asterisk/modules/pbx_loopback.so
 621cbf749dd51433a91b864271f43976  usr/lib/asterisk/modules/pbx_lua.so
-92db433f7f5297292357881bf1b4c9bd  usr/lib/asterisk/modules/pbx_realtime.so
+a58ae9a4392f218b191be7cbdcc003ba  usr/lib/asterisk/modules/pbx_realtime.so
 557e32fd507e493acef5fd6bc63e3995  usr/lib/asterisk/modules/pbx_spool.so
 11de747e14caf0cb2eb18ccd69fbd3d8  usr/lib/asterisk/modules/res_adsi.so
 c906dbec077af1bfb018ebd17f03e690  usr/lib/asterisk/modules/res_ael_share.so
@@ -306,13 +306,13 @@ ff42574fb9c12c692447441f2727aa34  usr/lib/asterisk/modules/res_pjsip_xpidf_body_
 ca8cefdb1710122acd40d10c9562a594  usr/lib/asterisk/modules/res_rtp_multicast.so
 f02fbd8cd275d6ae07b75c123a26dc4c  usr/lib/asterisk/modules/res_security_log.so
 f4d82b9fe6a0cb68a49868045293702e  usr/lib/asterisk/modules/res_smdi.so
-76879142b2e852a4fdd4059e323290f3  usr/lib/asterisk/modules/res_snmp.so
+6ef737c4a0f6e354ca1d5577393d690b  usr/lib/asterisk/modules/res_snmp.so
 22b54cbaa94ba0d2f2e4f0d2d85584be  usr/lib/asterisk/modules/res_sorcery_astdb.so
 41fda32981e543ed95ef185100bd56b0  usr/lib/asterisk/modules/res_sorcery_config.so
 f629e13ba4fbff3f99d449241e8bdbdd  usr/lib/asterisk/modules/res_sorcery_memory.so
 d2c8da715ee952ef50ec213830d5e73b  usr/lib/asterisk/modules/res_sorcery_memory_cache.so
 87fe4079ba522bf4d8a1078a30ff01f1  usr/lib/asterisk/modules/res_sorcery_realtime.so
-ebef823a646ca75a34189c441e1d0696  usr/lib/asterisk/modules/res_speech.so
+fc1f1a63163821eda5b895140b5748dd  usr/lib/asterisk/modules/res_speech.so
 34063474caec6605a281541c1c85eba9  usr/lib/asterisk/modules/res_srtp.so
 d6dd6fc99794e7fc2bfd36f8d6b0e38f  usr/lib/asterisk/modules/res_stasis.so
 685f223f37f1d3c22cab4f301d63a301  usr/lib/asterisk/modules/res_stasis_answer.so
@@ -327,5 +327,5 @@ ecb9d0896c82c403173b9309c876b3a7  usr/lib/asterisk/modules/res_stir_shaken.so
 b89913e0b1e1c791805a1e04acc2682b  usr/lib/asterisk/modules/res_timing_timerfd.so
 52f868f1b47f4fdd69e3524f3e6b3f7d  usr/lib/asterisk/modules/res_xmpp.so
 efa5890f58abc7033941ab859ba0b5be  usr/share/doc/asterisk-modules/NEWS.Debian.gz
-5141b961e8fa9ea7b9ac6455f8c7497a  usr/share/doc/asterisk-modules/changelog.Debian.gz
+e6610a848d27471c28e17e74d18f0c03  usr/share/doc/asterisk-modules/changelog.Debian.gz
 8d091cf42dcb251a486c4150f67efdb8  usr/share/doc/asterisk-modules/copyright

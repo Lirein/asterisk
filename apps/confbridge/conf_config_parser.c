@@ -2401,6 +2401,8 @@ int conf_load_config(void)
 	aco_option_register(&cfg_info, "jitterbuffer", ACO_EXACT, user_types, "no", OPT_BOOLFLAG_T, 1, FLDSET(struct user_profile, flags), USER_OPT_JITTERBUFFER);
 	aco_option_register(&cfg_info, "timeout", ACO_EXACT, user_types, "0", OPT_UINT_T, 0, FLDSET(struct user_profile, timeout));
 	aco_option_register(&cfg_info, "text_messaging", ACO_EXACT, user_types, "yes", OPT_BOOLFLAG_T, 1, FLDSET(struct user_profile, flags), USER_OPT_TEXT_MESSAGING);
+	aco_option_register(&cfg_info, "volumein", ACO_EXACT, user_types, __stringify(DEFAULT_VOLUME_LEVEL), OPT_INT_T, 0, FLDSET(struct user_profile, volumein));
+	aco_option_register(&cfg_info, "volumeout", ACO_EXACT, user_types, __stringify(DEFAULT_VOLUME_LEVEL), OPT_INT_T, 0, FLDSET(struct user_profile, volumeout));
 
 	/* This option should only be used with the CONFBRIDGE dialplan function */
 	aco_option_register_custom(&cfg_info, "template", ACO_EXACT, user_types, NULL, user_template_handler, 0);

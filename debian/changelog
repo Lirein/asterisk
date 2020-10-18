@@ -1,3 +1,15 @@
+asterisk (1:16.12.1~dfsg-1.1ubuntu1.3) xenial; urgency=medium
+
+  * Fixes on memory corruption in the bridge engine
+
+ -- Ivan Batalin <director@oas.su>  Thu, 9 Sep 2020 09:31:18 +0500
+
+asterisk (1:16.12.1~dfsg-1.1ubuntu1.2) xenial; urgency=medium
+
+  * Stability patch, improved speech recognition engine
+
+ -- Ivan Batalin <director@oas.su>  Fri, 4 Sep 2020 09:29:16 +0500
+
 asterisk (1:16.12.1~dfsg-1.1ubuntu1.1) xenial; urgency=medium
 
   * Patched speech engine
