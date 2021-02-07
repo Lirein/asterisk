@@ -1,4 +1,10 @@
-asterisk (1:16.12.1~dfsg-1.1ubuntu1.3) xenial; urgency=medium
+asterisk (1:16.12.1~dfsg-astra2) orel; urgency=medium
+
+  * Fixed package build dependencies
+
+ -- Ivan Batalin <director@oas.su>  Sun, 7 Feb 2021 14:25:37 +0500
+
+asterisk (1:16.12.1~dfsg-astra1) orel; urgency=medium
 
   * Fixes on memory corruption in the bridge engine
 

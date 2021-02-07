@@ -1,9 +1,9 @@
 Package: asterisk-dev
 Source: asterisk
-Version: 1:16.12.1~dfsg-1.1ubuntu1.3
+Version: 1:16.12.1~dfsg-astra2
 Architecture: all
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Installed-Size: 2891
+Installed-Size: 2997
 Recommends: asterisk
 Section: devel
 Priority: extra

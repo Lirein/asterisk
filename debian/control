@@ -16,7 +16,6 @@ Build-Depends: debhelper (>= 9),
  portaudio19-dev,
  libpq-dev,
  unixodbc-dev,
- libmysqlclient-dev | libmysqlclient15-dev,
  libbluetooth-dev [linux-any],
  libpri-dev (>= 1.4.12),
  libss7-dev,
@@ -35,7 +34,6 @@ Build-Depends: debhelper (>= 9),
  libxml2-dev,
  libpopt-dev,
  libiksemel-dev,
- libfreeradius-client-dev | libradiusclient-ng-dev | libfreeradius-dev,
  freetds-dev,
  libvorbis-dev,
  libogg-dev,
@@ -54,7 +52,7 @@ Build-Depends: debhelper (>= 9),
  uuid-dev,
  libncurses-dev,
  libneon27-gnutls-dev | libneon27-dev,
- libsdl2-dev, libopencore-amrnb-dev, libopencore-amrwb-dev, libavformat-dev, libv4l-dev, libavutil-dev, libswscale-dev, libavcodec-dev,
+ libsdl2-dev, libopencore-amrnb-dev, libopencore-amrwb-dev, libavformat-dev, libavutil-dev, libswscale-dev, libavcodec-dev,
  libical-dev,
  libsrtp0-dev,
  zlib1g-dev,
@@ -67,9 +65,9 @@ Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-voip/asterisk.git
 
 Package: asterisk
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, asterisk-config (= ${source:Version}) | asterisk-config-custom, asterisk-modules (= ${binary:Version}), adduser, asterisk-core-sounds-en-gsm | asterisk-prompt-en
+Depends: ${shlibs:Depends}, ${misc:Depends}, asterisk-config (= ${source:Version}) | asterisk-config-confbridge, asterisk-modules (= ${binary:Version}), adduser, asterisk-core-sounds-en-gsm | asterisk-core-sounds-ru-gsm
 Provides: asterisk-${asterisk:ABI}
-Recommends: sox, asterisk-voicemail | asterisk-voicemail-storage, asterisk-moh-opsound-gsm
+Recommends: sox, asterisk-moh-opsound-gsm
 Suggests: asterisk-doc, asterisk-dev, asterisk-ooh323, asterisk-dahdi
 Description: Open Source Private Branch Exchange (PBX)
  Asterisk is an Open Source PBX and telephony toolkit.  It is, in a
@@ -122,24 +120,6 @@ Description: DAHDI devices support for the Asterisk PBX
  For more information about the Asterisk PBX, have a look at the Asterisk
  package.
 
-Package: asterisk-voicemail
-Architecture: any
-Depends: asterisk (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Provides: asterisk-voicemail-storage
-Conflicts: asterisk-voicemail-storage
-Breaks: asterisk (<< 1:1.8.3.3)
-Replaces: asterisk (<< 1:1.8.3.3)
-Description: simple voicemail support for the Asterisk PBX
- Asterisk is an Open Source PBX and telephony toolkit.
- .
- This package includes the standard files-based voicemail storage. This
- is normally the one you use and is the one that will Just Work. The only
- reason not to install it is if you want to use a different Asterisk
- voicemail storage (ODBC or IMAP).
- .
- For more information about the Asterisk PBX, have a look at the Asterisk
- package.
-
 Package: asterisk-ooh323
 Architecture: any
 Depends: asterisk (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
@@ -161,19 +141,6 @@ Description: MP3 playback support for the Asterisk PBX
  .
  This package provides support for playing MP3-encoded files in
  Asterisk.
- .
- For more information about the Asterisk PBX, have a look at the Asterisk
- package.
-
-Package: asterisk-mysql
-Architecture: any
-Depends: asterisk (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Description: MySQL database protocol support for the Asterisk PBX
- Asterisk is an Open Source PBX and telephony toolkit.
- .
- This package provides support for using a MySQL database to store
- configuration, call detail records, and also provides generic access to
- it from the dialplan.
  .
  For more information about the Asterisk PBX, have a look at the Asterisk
  package.
@@ -230,10 +197,24 @@ Description: Debugging symbols for Asterisk
 Package: asterisk-config
 Depends: ${misc:Depends}
 Recommends: asterisk
-Conflicts: asterisk-config-custom
-Replaces: asterisk-config-custom
+Conflicts: asterisk-config-confbridge
+Replaces: asterisk-config-confbridge
 Architecture: all
 Description: Configuration files for Asterisk
+ Asterisk is an Open Source PBX and telephony toolkit.
+ .
+ This package contains the default configuration files of Asterisk.
+ .
+ With program asterisk-config-custom in the asterisk package,
+ you can create an asterisk-config replacement package.
+
+Package: asterisk-config-confbridge
+Depends: ${misc:Depends}
+Recommends: asterisk
+Conflicts: asterisk-config
+Replaces: asterisk-config
+Architecture: all
+Description: Configuration files for OAS´terisk confbridging
  Asterisk is an Open Source PBX and telephony toolkit.
  .
  This package contains the default configuration files of Asterisk.

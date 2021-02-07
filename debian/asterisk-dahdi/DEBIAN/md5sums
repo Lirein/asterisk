@@ -1,7 +1,8 @@
-c140638be33f860c52518661b7352d6a  usr/lib/asterisk/modules/app_flash.so
-d7a332f52ce2e09b8e5d0479bd15deee  usr/lib/asterisk/modules/chan_dahdi.so
-96b24e7f74a2f8228015c7522ebd2082  usr/lib/asterisk/modules/codec_dahdi.so
-5da58e81830ee9f93af3842437ec7b16  usr/lib/asterisk/modules/res_timing_dahdi.so
+4fa5e1d520b98f3f746fc112b642d24e  usr/lib/asterisk/modules/app_flash.so
+fe15580d67abef4f925d3fc0d945d5f2  usr/lib/asterisk/modules/chan_dahdi.so
+c037a4e3dddec0cfa6de6b724db044b8  usr/lib/asterisk/modules/codec_dahdi.so
+cf6b16aeb2da7f31ba17d142aa66aa57  usr/lib/asterisk/modules/res_timing_dahdi.so
 efa5890f58abc7033941ab859ba0b5be  usr/share/doc/asterisk-dahdi/NEWS.Debian.gz
-e6610a848d27471c28e17e74d18f0c03  usr/share/doc/asterisk-dahdi/changelog.Debian.gz
+3fc223948747466b2ffaa92de4165aef  usr/share/doc/asterisk-dahdi/changelog.Debian.gz
+592c9261dd7e27a585fef471267ffc46  usr/share/doc/asterisk-dahdi/changelog.gz
 8d091cf42dcb251a486c4150f67efdb8  usr/share/doc/asterisk-dahdi/copyright

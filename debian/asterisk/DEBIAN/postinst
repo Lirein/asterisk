@@ -73,9 +73,9 @@ case "$1" in
 	set +e # ignore errors temporarily
 
 	# find the name of the package providing config; either asterisk-config
-	# or a package providing asterisk-config-custom
+	# or a package providing asterisk-config-cunfbridge
 	ASTERISK_CONFIG=`dpkg-query -W -f='${Package}\t${Provides}\n' | \
-			 sed -nr 's/(.*)\tasterisk-config-custom|(asterisk-config)(\t.*)?/\1\2/p'`
+			 sed -nr 's/(.*)\tasterisk-config-confbridge|(asterisk-config)(\t.*)?/\1\2/p'`
 
 	# find conffiles under /etc/asterisk belonging to asterisk-config
 	# and chown them to user asterisk.
@@ -110,8 +110,6 @@ esac
 if [ "$1" = "configure" ] || [ "$1" = "abort-upgrade" ]; then
 	if [ -x "/etc/init.d/asterisk" ]; then
 		update-rc.d asterisk defaults >/dev/null
-	fi
-	if [ -x "/etc/init.d/asterisk" ] || [ -e "/etc/init/asterisk.conf" ]; then
 		invoke-rc.d asterisk start || exit $?
 	fi
 fi

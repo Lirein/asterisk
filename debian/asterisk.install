@@ -3,7 +3,6 @@ usr/lib/libasteriskpj.so.2
 usr/lib/libasteriskssl.so
 usr/lib/libasteriskssl.so.1
 usr/sbin
-usr/bin/asterisk-config-custom
 usr/share/asterisk/firmware
 usr/share/asterisk/keys
 usr/share/asterisk/conf
