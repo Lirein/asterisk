@@ -1,0 +1,20 @@
+Package: asterisk-config-confbridge
+Source: asterisk
+Version: 1:16.12.1~dfsg-astra2
+Architecture: all
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Installed-Size: 1385
+Recommends: asterisk
+Conflicts: asterisk-config
+Replaces: asterisk-config
+Section: comm
+Priority: optional
+Homepage: http://www.asterisk.org/
+Description: Configuration files for OAS´terisk confbridging
+ Asterisk is an Open Source PBX and telephony toolkit.
+ .
+ This package contains the default configuration files of Asterisk.
+ .
+ With program asterisk-config-custom in the asterisk package,
+ you can create an asterisk-config replacement package.
+Original-Maintainer: Debian VoIP Team <pkg-voip-maintainers@lists.alioth.debian.org>
