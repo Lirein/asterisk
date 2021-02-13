@@ -3398,6 +3398,18 @@ static int setvolume_conference_participant(struct confbridge_conference *confer
 			return res;
 		}
 	}
+	AST_LIST_TRAVERSE(&conference->waiting_list, user, list) {
+		if (user->kicked) {
+			continue;
+		}
+		match = !strcasecmp(channel, ast_channel_name(user->chan));
+		if (match) {
+            ast_audiohook_volume_set(user->chan, AST_AUDIOHOOK_DIRECTION_READ, volumein);
+            ast_audiohook_volume_set(user->chan, AST_AUDIOHOOK_DIRECTION_WRITE, volumeout);
+			res = 0;
+			return res;
+		}
+	}
 
 	return res;
 }
@@ -4246,15 +4258,12 @@ static int action_confbridgesetvolume(struct mansession *s, const struct message
 	if (!ast_strlen_zero(volume)) {
 		newvolumein = atoi(volume);
 		newvolumeout = atoi(volume);
-		return 0;
 	}
 	if (!ast_strlen_zero(volumein)) {
 		newvolumein = atoi(volumein);
-		return 0;
 	}
 	if (!ast_strlen_zero(volumeout)) {
 		newvolumeout = atoi(volumeout);
-		return 0;
 	}
 	if (!ao2_container_count(conference_bridges)) {
 		astman_send_error(s, m, "No active conferences.");
@@ -4571,6 +4580,7 @@ static int unload_module(void)
 	ast_manager_unregister("ConfbridgeUnmute");
 	ast_manager_unregister("ConfbridgeKick");
 	ast_manager_unregister("ConfbridgeSafeLeave");
+	ast_manager_unregister("ConfbridgeSetVolume");
 	ast_manager_unregister("ConfbridgeUnlock");
 	ast_manager_unregister("ConfbridgeLock");
 	ast_manager_unregister("ConfbridgeStartRecord");
