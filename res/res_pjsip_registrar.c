@@ -1012,6 +1012,12 @@ static char *find_aor_name(const pj_str_t *pj_username, const pj_str_t *pj_domai
 		}
 	}
 
+	/* Look for the first AOR */
+	configured_aors = strcpy(aors_buf, aors);/* Safe */
+	if ((aor_name = ast_strip(strsep(&configured_aors, ",")))) {
+		return ast_strdup(aor_name);
+	}
+    
 	return NULL;
 }
 
