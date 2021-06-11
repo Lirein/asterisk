@@ -3244,7 +3244,7 @@ static int execute_menu_entry(struct confbridge_conference *conference,
 			break;
 		case MENU_ACTION_SET_SINGLE_VIDEO_SRC:
 			ao2_lock(conference);
-			if (!ast_test_flag(&conference->b_profile, BRIDGE_OPT_VIDEO_SRC_SFU)) {
+			if (!ast_test_flag(&conference->b_profile, BRIDGE_OPT_VIDEO_SRC_SFU) && !ast_test_flag(&conference->b_profile, BRIDGE_OPT_VIDEO_SRC_MCU)) {
 				ast_bridge_set_single_src_video_mode(conference->bridge, bridge_channel->chan);
 			}
 			ao2_unlock(conference);

@@ -82,13 +82,14 @@ enum bridge_profile_flags {
 	BRIDGE_OPT_RECORD_FILE_TIMESTAMP = (1 << 5), /*!< Set if the record file should have a timestamp appended */
 	BRIDGE_OPT_BINAURAL_ACTIVE = (1 << 6), /*!< Set if binaural convolution is activated */
 	BRIDGE_OPT_VIDEO_SRC_SFU = (1 << 7), /*!< Selective forwarding unit */
-	BRIDGE_OPT_REMB_BEHAVIOR_AVERAGE = (1 << 8), /*!< The average of all REMB reports is sent to the sender */
-	BRIDGE_OPT_REMB_BEHAVIOR_LOWEST = (1 << 9), /*!< The lowest estimated maximum bitrate is sent to the sender */
-	BRIDGE_OPT_REMB_BEHAVIOR_HIGHEST = (1 << 10), /*!< The highest estimated maximum bitrate is sent to the sender */
-	BRIDGE_OPT_ENABLE_EVENTS = (1 << 11), /*!< Enable sending events to participants */
-	BRIDGE_OPT_REMB_BEHAVIOR_AVERAGE_ALL = (1 << 12), /*!< The average of all REMB reports in the entire bridge is sent to each sender */
-	BRIDGE_OPT_REMB_BEHAVIOR_LOWEST_ALL = (1 << 13), /*!< The lowest estimated maximum bitrate from all receivers is sent to each sender */
-	BRIDGE_OPT_REMB_BEHAVIOR_HIGHEST_ALL = (1 << 14), /*!< The highest estimated maximum bitrate from all receivers is sent to each sender */
+	BRIDGE_OPT_VIDEO_SRC_MCU = (1 << 8), /*!< Selective forwarding unit */
+	BRIDGE_OPT_REMB_BEHAVIOR_AVERAGE = (1 << 9), /*!< The average of all REMB reports is sent to the sender */
+	BRIDGE_OPT_REMB_BEHAVIOR_LOWEST = (1 << 10), /*!< The lowest estimated maximum bitrate is sent to the sender */
+	BRIDGE_OPT_REMB_BEHAVIOR_HIGHEST = (1 << 11), /*!< The highest estimated maximum bitrate is sent to the sender */
+	BRIDGE_OPT_ENABLE_EVENTS = (1 << 12), /*!< Enable sending events to participants */
+	BRIDGE_OPT_REMB_BEHAVIOR_AVERAGE_ALL = (1 << 13), /*!< The average of all REMB reports in the entire bridge is sent to each sender */
+	BRIDGE_OPT_REMB_BEHAVIOR_LOWEST_ALL = (1 << 14), /*!< The lowest estimated maximum bitrate from all receivers is sent to each sender */
+	BRIDGE_OPT_REMB_BEHAVIOR_HIGHEST_ALL = (1 << 15), /*!< The highest estimated maximum bitrate from all receivers is sent to each sender */
 };
 
 enum conf_menu_action_id {

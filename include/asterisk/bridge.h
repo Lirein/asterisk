@@ -107,6 +107,10 @@ enum ast_bridge_video_mode_type {
 	 * cloned to a dedicated stream on a subset of the remaining participants.
 	 */
 	AST_BRIDGE_VIDEO_MODE_SFU,
+	/*! Redirect video sources to the external MCU engine module and retranslate
+	 * bridged media stream to the remaining participants.
+	 */
+	AST_BRIDGE_VIDEO_MODE_MCU,
 };
 
 /*! \brief This is used for both SINGLE_SRC mode to set what channel
@@ -252,6 +256,69 @@ typedef void (*ast_bridge_notify_masquerade_fn)(struct ast_bridge *self, struct 
  */
 typedef int (*ast_bridge_merge_priority_fn)(struct ast_bridge *self);
 
+enum ast_mcu_mode_type {
+	AST_MCU_MODE_MATRIX = 0,
+	AST_MCU_MODE_CENTRAL = 1,
+	AST_MCU_MODE_SIDEBAR = 2,
+};
+
+struct ast_mcu_participant {
+	/*! Structure lock */
+	ast_mutex_t lock;
+	/*! Expected read audio format */
+	struct ast_format *read_audio_format;
+	/*! Expected read video format */
+	struct ast_format *read_video_format;
+	/*! Expected write audio format */
+	struct ast_format *write_audio_format;
+	/*! Expected write video format */
+	struct ast_format *write_video_format;
+	/*! Participant id */
+	unsigned int id;
+	/*! Mute status */
+	unsigned int mute:1;
+	/*! Talking status */
+	unsigned int talking:1;
+	/*! Data for MCU participant */
+	void *data;
+};
+
+/* Speech structure */
+struct ast_mcu {
+	/*! Structure lock */
+	ast_mutex_t lock;
+	/*! Current state of structure */
+	int state;
+	/*! Data for speech engine */
+	void *data;
+	struct ast_mcu_engine *engine;
+};
+
+/* MCU engine structure */
+struct ast_mcu_engine {
+	/*! Name of MCU engine */
+	char *name;
+	/*! Set up the MCU structure within the engine */
+	int (*create)(struct ast_mcu *mcu, enum ast_mcu_mode_type mode);
+	/*! Destroy any data set on the MCU structure by the engine */
+	int (*destroy)(struct ast_mcu *mcu);
+	/*! Add participant */
+	int (*add_participant)(struct ast_mcu *mcu, struct ast_mcu_participant *participant);
+	/*! Remove participant */
+	int (*remove_participant)(struct ast_mcu *mcu, struct ast_mcu_participant *participant);
+	/*! Mute participant */
+	int (*mute_participant)(struct ast_mcu *mcu, struct ast_mcu_participant *participant);
+	/*! Unmute participant */
+	int (*unmute_participant)(struct ast_mcu *mcu, struct ast_mcu_participant *participant);
+	/*! Update participant */
+	int (*write_participant)(struct ast_mcu *mcu, struct ast_mcu_participant *participant, struct ast_frame *frame);
+	/*! Receive sream */
+	int (*read_data)(struct ast_mcu *mcu, struct ast_frame *audio, struct ast_frame *video);
+	struct ast_format_cap *formats;
+	AST_LIST_ENTRY(ast_mcu_engine) list;
+};
+
+
 /*!
  * \brief Bridge virtual methods table definition.
  *
@@ -308,6 +375,10 @@ struct ast_bridge_softmix {
 	 * \note If this value is 0, there is no maximum sample rate.
 	 */
 	unsigned int maximum_sample_rate;
+    /*!
+	 * \brief Handle to the selected MCU engine
+	 */
+	struct ast_mcu *mcu;
 };
 
 AST_LIST_HEAD_NOLOCK(ast_bridge_channels_list, ast_bridge_channel);
@@ -1282,6 +1353,12 @@ void ast_bridge_features_remove(struct ast_bridge_features *features, enum ast_b
  * \return non-NULL reference to bridge
  */
 struct ast_bridge *ast_bridge_find_by_id(const char *bridge_id);
+
+/*! \brief Register a MCU engine */
+int ast_mcu_register(struct ast_mcu_engine *engine);
+/*! \brief Unregister a MCU engine */
+int ast_mcu_unregister(const char *engine_name);
+
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }

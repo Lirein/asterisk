@@ -105,6 +105,7 @@ static int chan_pjsip_indicate(struct ast_channel *ast, int condition, const voi
 static int chan_pjsip_transfer(struct ast_channel *ast, const char *target);
 static int chan_pjsip_fixup(struct ast_channel *oldchan, struct ast_channel *newchan);
 static int chan_pjsip_devicestate(const char *data);
+static int chan_pjsip_setoption(struct ast_channel *ast, int option, void *data, int datalen);
 static int chan_pjsip_queryoption(struct ast_channel *ast, int option, void *data, int *datalen);
 static const char *chan_pjsip_get_uniqueid(struct ast_channel *ast);
 

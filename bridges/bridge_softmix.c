@@ -75,6 +75,29 @@
 #define SOFTBRIDGE_VIDEO_DEST_LEN strlen(SOFTBRIDGE_VIDEO_DEST_PREFIX)
 #define SOFTBRIDGE_VIDEO_DEST_SEPARATOR '_'
 
+static AST_RWLIST_HEAD_STATIC(mcus, ast_mcu_engine);
+static struct ast_mcu_engine *default_mcu = NULL;
+
+/*! \brief Find a speech recognition engine of specified name, if NULL then use the default one */
+static struct ast_mcu_engine *find_mcu(const char *engine_name)
+{
+	struct ast_mcu_engine *engine = NULL;
+
+	/* If no name is specified -- use the default engine */
+	if (ast_strlen_zero(engine_name))
+		return default_mcu;
+
+	AST_RWLIST_RDLOCK(&mcus);
+	AST_RWLIST_TRAVERSE(&mcus, engine, list) {
+		if (!strcasecmp(engine->name, engine_name)) {
+			break;
+		}
+	}
+	AST_RWLIST_UNLOCK(&mcus);
+
+	return engine;
+}
+
 struct softmix_remb_collector {
 	/*! The frame which will be given to each source stream */
 	struct ast_frame frame;
@@ -680,6 +703,75 @@ cleanup:
 	ast_stream_topology_free(joiner_video);
 }
 
+/*!
+ * \brief Issue channel stream topology change requests.
+ *
+ * When in MCU mode, each participant needs to be send
+ * Video and Audio stream to the selected MCU engine module
+ * to the selected MCU participant.
+ *
+ * \param joiner The channel that is joining the softmix bridge
+ * \param participants The current participants in the softmix bridge
+ */
+static void mcu_topologies_on_join(struct ast_bridge *bridge,
+	struct ast_bridge_channel *joiner)
+{
+	struct ast_stream_topology *joiner_video = NULL;
+	struct ast_bridge_channels_list *participants = &bridge->channels;
+	struct ast_bridge_channel *participant;
+	int res;
+	struct softmix_channel *sc;
+
+	joiner_video = ast_stream_topology_alloc();
+	if (!joiner_video) {
+		return;
+	}
+
+	sc = joiner->tech_pvt;
+
+	ast_channel_lock(joiner->chan);
+	res = append_source_streams(joiner_video, ast_channel_name(joiner->chan),
+		bridge->softmix.send_sdp_label ? ast_channel_uniqueid(joiner->chan) : NULL,
+		ast_channel_get_stream_topology(joiner->chan));
+	sc->topology = ast_stream_topology_clone(ast_channel_get_stream_topology(joiner->chan));
+	ast_channel_unlock(joiner->chan);
+
+	if (res || !sc->topology) {
+		goto cleanup;
+	}
+
+	AST_LIST_TRAVERSE(participants, participant, entry) {
+		if (participant == joiner) {
+			continue;
+		}
+		ast_channel_lock(participant->chan);
+		res = append_source_streams(sc->topology, ast_channel_name(participant->chan),
+			bridge->softmix.send_sdp_label ? ast_channel_uniqueid(participant->chan) : NULL,
+			ast_channel_get_stream_topology(participant->chan));
+		ast_channel_unlock(participant->chan);
+		if (res) {
+			goto cleanup;
+		}
+	}
+
+	ast_channel_request_stream_topology_change(joiner->chan, sc->topology, NULL);
+
+	AST_LIST_TRAVERSE(participants, participant, entry) {
+		if (participant == joiner) {
+			continue;
+		}
+
+		sc = participant->tech_pvt;
+		if (append_all_streams(sc->topology, joiner_video)) {
+			goto cleanup;
+		}
+		ast_channel_request_stream_topology_change(participant->chan, sc->topology, NULL);
+	}
+
+cleanup:
+	ast_stream_topology_free(joiner_video);
+}
+
 /*! \brief Function called when a channel is joined into the bridge */
 static int softmix_bridge_join(struct ast_bridge *bridge, struct ast_bridge_channel *bridge_channel)
 {
@@ -746,6 +838,9 @@ static int softmix_bridge_join(struct ast_bridge *bridge, struct ast_bridge_chan
 
 	if (bridge->softmix.video_mode.mode == AST_BRIDGE_VIDEO_MODE_SFU) {
 		sfu_topologies_on_join(bridge, bridge_channel);
+	} else
+	if (bridge->softmix.video_mode.mode == AST_BRIDGE_VIDEO_MODE_MCU) {
+		mcu_topologies_on_join(bridge, bridge_channel);
 	}
 
 	/* Complete any active hold before entering, or transitioning to softmix. */
@@ -910,6 +1005,13 @@ static void softmix_bridge_write_video(struct ast_bridge *bridge, struct ast_bri
 		 * video goes everywhere it needs to
 		 */
 		ast_bridge_queue_everyone_else(bridge, bridge_channel, frame);
+		break;
+	case AST_BRIDGE_VIDEO_MODE_MCU:
+		/* Nothing special to do here, send video frame to the MCU
+		 */
+		if(bridge->softmix.mcu) {
+		  bridge->softmix.mcu->engine->write_participant(bridge->softmix.mcu, bridge_channel->mcu_participant, frame);
+		}
 		break;
 	}
 }
@@ -2397,6 +2499,7 @@ static void softmix_bridge_stream_topology_changed(struct ast_bridge *bridge, st
 	case AST_BRIDGE_VIDEO_MODE_NONE:
 	case AST_BRIDGE_VIDEO_MODE_SINGLE_SRC:
 	case AST_BRIDGE_VIDEO_MODE_TALKER_SRC:
+	case AST_BRIDGE_VIDEO_MODE_MCU:
 	default:
 		ast_bridge_channel_stream_map(bridge_channel);
 		return;
@@ -2806,6 +2909,67 @@ end:
 }
 
 #endif
+
+/*! \brief Register a speech recognition engine */
+int ast_mcu_register(struct ast_mcu_engine *engine)
+{
+	int res = 0;
+
+	/* Confirm the engine meets the minimum API requirements */
+	if (!engine->create || !engine->add_participant || !engine->write_participant || !engine->read_data || !engine->destroy) {
+		ast_log(LOG_WARNING, "MCU engine '%s' did not meet minimum API requirements.\n", engine->name);
+		return -1;
+	}
+
+	/* If an engine is already loaded with this name, error out */
+	if (find_mcu(engine->name)) {
+		ast_log(LOG_WARNING, "MCU engine '%s' already exists.\n", engine->name);
+		return -1;
+	}
+
+	ast_verb(2, "Registered MCU engine '%s'\n", engine->name);
+
+	/* Add to the engine linked list and make default if needed */
+	AST_RWLIST_WRLOCK(&mcus);
+	AST_RWLIST_INSERT_HEAD(&mcus, engine, list);
+	if (!default_mcu) {
+		default_mcu = engine;
+		ast_verb(2, "Made '%s' the default MCU engine\n", engine->name);
+	}
+	AST_RWLIST_UNLOCK(&mcus);
+
+	return res;
+}
+
+/*! \brief Unregister a speech recognition engine */
+int ast_mcu_unregister(const char *engine_name)
+{
+	struct ast_mcu_engine *engine = NULL;
+	int res = -1;
+
+	if (ast_strlen_zero(engine_name))
+		return -1;
+
+	AST_RWLIST_WRLOCK(&mcus);
+	AST_RWLIST_TRAVERSE_SAFE_BEGIN(&mcus, engine, list) {
+		if (!strcasecmp(engine->name, engine_name)) {
+			/* We have our engine... removed it */
+			AST_RWLIST_REMOVE_CURRENT(list);
+			/* If this was the default engine, we need to pick a new one */
+			if (engine == default_mcu) {
+				default_mcu = AST_RWLIST_FIRST(&mcus);
+			}
+			ast_verb(2, "Unregistered MCU engine '%s'\n", engine_name);
+			/* All went well */
+			res = 0;
+			break;
+		}
+	}
+	AST_RWLIST_TRAVERSE_SAFE_END;
+	AST_RWLIST_UNLOCK(&mcus);
+
+	return res;
+}
 
 static int unload_module(void)
 {

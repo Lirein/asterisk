@@ -149,6 +149,7 @@ struct ast_bridge_channel {
 	AST_LIST_HEAD_NOLOCK(, ast_frame) deferred_queue;
 	/*! Pipe to alert thread when frames are put into the wr_queue. */
 	int alert_pipe[2];
+	struct ast_mcu_participant* mcu_participant;
 	/*!
 	 * \brief The bridge channel thread activity.
 	 *

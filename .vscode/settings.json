@@ -1,5 +1,15 @@
 {
     "files.associations": {
-        "mutex": "cpp"
+        "mutex": "cpp",
+        "test.h": "c",
+        "stream.h": "c",
+        "bridge_softmix_internal.h": "c",
+        "frame.h": "c",
+        "bridge.h": "c",
+        "bridge_technology.h": "c",
+        "format_cache.h": "c",
+        "list": "c",
+        "typeinfo": "c",
+        "system_error": "c"
     }
 }

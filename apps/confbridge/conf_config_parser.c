@@ -425,6 +425,10 @@
 								<para>Selective Forwarding Unit - Sets multi-stream
 								operation for a multi-party video conference.</para>
 							</enum>
+							<enum name="mcu">
+								<para>Multimedia Communication Unit - Sets multi-stream
+								operation for a multi-party video conference with an external MCU engine.</para>
+							</enum>
 						</enumlist>
 					</description>
 				</configOption>
@@ -1770,6 +1774,9 @@ static char *handle_cli_confbridge_show_bridge_profile(struct ast_cli_entry *e, 
 	case BRIDGE_OPT_VIDEO_SRC_SFU:
 		ast_cli(a->fd, "Video Mode:           sfu\n");
 		break;
+	case BRIDGE_OPT_VIDEO_SRC_MCU:
+		ast_cli(a->fd, "Video Mode:           mcu\n");
+		break;
 	case 0:
 		ast_cli(a->fd, "Video Mode:           no video\n");
 		break;
@@ -2143,6 +2150,13 @@ static int video_mode_handler(const struct aco_option *opt, struct ast_variable 
 				| BRIDGE_OPT_VIDEO_SRC_FOLLOW_TALKER
 				| BRIDGE_OPT_VIDEO_SRC_SFU,
 			BRIDGE_OPT_VIDEO_SRC_SFU);
+	} else if (!strcasecmp(var->value, "mcu")) {
+		ast_set_flags_to(b_profile,
+			BRIDGE_OPT_VIDEO_SRC_FIRST_MARKED
+				| BRIDGE_OPT_VIDEO_SRC_LAST_MARKED
+				| BRIDGE_OPT_VIDEO_SRC_FOLLOW_TALKER
+				| BRIDGE_OPT_VIDEO_SRC_SFU,
+			BRIDGE_OPT_VIDEO_SRC_MCU);
 	} else if (!strcasecmp(var->value, "none")) {
 		ast_clear_flag(b_profile,
 			BRIDGE_OPT_VIDEO_SRC_FIRST_MARKED

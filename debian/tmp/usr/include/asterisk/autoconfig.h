@@ -160,10 +160,10 @@
 /* #undef HAVE_CLOSEFROM */
 
 /* Define to 1 if you have the Codec 2 Audio Decoder/Encoder library. */
-/* #undef HAVE_CODEC2 */
+#define HAVE_CODEC2 1
 
 /* Define to 1 if you have the Corosync library. */
-/* #undef HAVE_COROSYNC */
+#define HAVE_COROSYNC 1
 
 /* Define to 1 if COROSYNC has the A callback only in corosync 1.x feature. */
 /* #undef HAVE_COROSYNC_CFG_STATE_TRACK */
@@ -267,7 +267,7 @@
 #define HAVE_FFSLL 1
 
 /* Define to 1 if you have the LIBFFTW3 library. */
-/* #undef HAVE_FFTW3 */
+#define HAVE_FFTW3 1
 
 /* Define to 1 if you have the <float.h> header file. */
 #define HAVE_FLOAT_H 1
@@ -430,7 +430,7 @@
 #define HAVE_LIBEDIT 1
 
 /* Define if your system has the LIBEDIT_IS_UNICODE headers. */
-#define HAVE_LIBEDIT_IS_UNICODE 1
+/* #undef HAVE_LIBEDIT_IS_UNICODE */
 
 /* Define to 1 if you have the <libintl.h> header file. */
 #define HAVE_LIBINTL_H 1
@@ -536,13 +536,13 @@
 #define HAVE_MUNMAP 1
 
 /* Define if your system has the MYSQLCLIENT libraries. */
-/* #undef HAVE_MYSQLCLIENT */
+#define HAVE_MYSQLCLIENT 1
 
 /* Define to 1 if mysql/mysql.h has bool defined. */
 /* #undef HAVE_MYSQLCLIENT_BOOL */
 
 /* Define to 1 if mysql/mysql.h has my_bool defined. */
-/* #undef HAVE_MYSQLCLIENT_MY_BOOL */
+#define HAVE_MYSQLCLIENT_MY_BOOL 1
 
 /* Define to 1 if you have the Network Broadcast Sound library. */
 /* #undef HAVE_NBS */
@@ -590,7 +590,7 @@
 #define HAVE_OPENSSL 1
 
 /* Define to 1 if CRYPTO has the OpenSSL BIO Method Support feature. */
-#define HAVE_OPENSSL_BIO_METHOD 1
+/* #undef HAVE_OPENSSL_BIO_METHOD */
 
 /* Define to 1 if CRYPTO has the OpenSSL SRTP Extension Support feature. */
 /* #undef HAVE_OPENSSL_SRTP */
@@ -620,7 +620,7 @@
 #define HAVE_PGSQL 1
 
 /* Define to indicate presence of the pg_encoding_to_char API. */
-#define HAVE_PGSQL_pg_encoding_to_char 1
+/* #undef HAVE_PGSQL_pg_encoding_to_char */
 
 /* Define to 1 if you have the `pipe2' function. */
 #define HAVE_PIPE2 1
@@ -956,7 +956,7 @@
 #define HAVE_SRTP_VERSION 1
 
 /* Define to 1 if you have the ISDN SS7 library. */
-#define HAVE_SS7 1
+/* #undef HAVE_SS7 */
 
 /* Define to 1 if `stat' has the bug that it succeeds when given the
    zero-length file name argument. */
@@ -1390,7 +1390,7 @@
 /* #undef PTHREAD_ONCE_INIT_NEEDS_BRACES */
 
 /* Name of RADIUS library include header */
-#define RADIUS_HEADER_STR <radcli/radcli.h>
+#define RADIUS_HEADER_STR <freeradius-client.h>
 
 /* Define to the type of arg 1 for `select'. */
 #define SELECT_TYPE_ARG1 int

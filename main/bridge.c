@@ -4007,6 +4007,8 @@ const char *ast_bridge_video_mode_to_string(enum ast_bridge_video_mode_type vide
 		return "single";
 	case AST_BRIDGE_VIDEO_MODE_SFU:
 		return "sfu";
+	case AST_BRIDGE_VIDEO_MODE_MCU:
+		return "mcu";
 	case AST_BRIDGE_VIDEO_MODE_NONE:
 	default:
 		return "none";
